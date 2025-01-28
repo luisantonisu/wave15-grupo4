@@ -17,7 +17,7 @@ func BuyerDtoToBuyer(buyerDto dto.BuyerDTO) model.Buyer {
 	return data
 }
 
-func BuyertoBuyerDto(buyerDto dto.BuyerDTO) model.Buyer {
+func BuyerToBuyerDto(buyerDto dto.BuyerDTO) model.Buyer {
 	data := model.Buyer{
 		Id: buyerDto.Id,
 		BuyerAttributes: model.BuyerAttributes{

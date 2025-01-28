@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
+	"github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
 func NewBuyerRepository(db map[int]model.Buyer) *BuyerRepository {
@@ -19,6 +20,11 @@ type BuyerRepository struct {
 // Create a new buyer
 func (r *BuyerRepository) Create(buyer model.Buyer) (model.Buyer, error) {
 	buyer.Id = r.getNextId()
+	// Validar que no exista ese card number id
+	if err := r.validateCardNumberId(buyer.CardNumberId); err != nil {
+		return model.Buyer{}, err
+	}
+	// Crear el buyer
 	r.db[buyer.Id] = buyer
 	return buyer, nil
 }
@@ -27,4 +33,14 @@ func (r *BuyerRepository) Create(buyer model.Buyer) (model.Buyer, error) {
 func (r *BuyerRepository) getNextId() int {
 	newId := len(r.db) + 1
 	return newId
+}
+
+// Validate if card number id is already in use
+func (r *BuyerRepository) validateCardNumberId(cardNumberId int) error {
+	for _, buyer := range r.db {
+		if buyer.CardNumberId == cardNumberId {
+			return error_handler.CardNumberIdAlreadyInUse
+		}
+	}
+	return nil
 }

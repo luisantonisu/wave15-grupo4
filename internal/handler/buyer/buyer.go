@@ -2,12 +2,14 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/bootcamp-go/web/response"
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/dto"
 	"github.com/luisantonisu/wave15-grupo4/internal/helper"
 	service "github.com/luisantonisu/wave15-grupo4/internal/service/buyer"
+	"github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
 func NewBuyerHandler(sv service.IBuyer) *BuyerHandler {
@@ -46,6 +48,10 @@ func (b *BuyerHandler) Create() http.HandlerFunc {
 		// Call service
 		buyer, err := b.sv.Create(newBuyer)
 		if err != nil {
+			if errors.Is(err, error_handler.CardNumberIdAlreadyInUse) {
+				response.Error(w, http.StatusConflict, err.Error())
+				return
+			}
 			response.Error(w, http.StatusInternalServerError, err.Error())
 			return
 		}
