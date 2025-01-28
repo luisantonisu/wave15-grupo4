@@ -15,3 +15,7 @@ func NewEmployeeRepository(db map[int]model.Employee) *EmployeeRepository {
 type EmployeeRepository struct {
 	db map[int]model.Employee
 }
+
+func (r *EmployeeRepository) GetAll() (map[int]model.Employee, error) {
+	return r.db, nil
+}
