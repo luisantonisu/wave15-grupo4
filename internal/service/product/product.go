@@ -16,3 +16,7 @@ type ProductService struct {
 func (pr *ProductService) GetProduct() (prMap map[int]model.Product, err error) {
 	return pr.rp.GetProduct()
 }
+
+func (pr *ProductService) GetProductById(id int) (p model.Product, err error) {
+	return pr.rp.GetProductById(id)
+}
