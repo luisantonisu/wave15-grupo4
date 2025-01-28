@@ -83,7 +83,7 @@ func (a *ServerChi) Run() (err error) {
 	// - handler
 	buyerHd := buyerHandler.NewBuyerHandler(buyerSv)             // buyerHd
 	employeeHd := employeeHandler.NewEmployeeHandler(employeeSv) // employeeHd
-	productHd = productHandler.NewProductHandler(productSv)              // productHd
+	productHd := productHandler.NewProductHandler(productSv)     // productHd
 	_ = sectionHandler.NewSectionHandler(sectionSv)              // sectionHd
 	_ = sellerHandler.NewSellerHandler(sellerSv)                 // sellerHd
 	_ = warehouseHandler.NewWarehouseHandler(warehouseSv)        // warehouseHd
