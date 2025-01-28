@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 	repository "github.com/luisantonisu/wave15-grupo4/internal/repository/employee"
 )
 
@@ -12,3 +13,10 @@ type EmployeeService struct {
 	rp repository.IEmployee
 }
 
+func (h *EmployeeService) GetAll() (map[int]model.Employee, error) {
+	return h.rp.GetAll()
+}
+
+func (h *EmployeeService) GetByID(id int) (model.Employee, error) {
+	return h.rp.GetByID(id)
+}
