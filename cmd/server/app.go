@@ -5,8 +5,27 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/luisantonisu/wave15-grupo4/internal/repository"
-	"honnef.co/go/tools/go/loader"
+	buyerRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/buyer"
+	employeeRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/employee"
+	productRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/product"
+	sectionRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/section"
+	sellerRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/seller"
+	warehouseRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/warehouse"
+
+	buyerService "github.com/luisantonisu/wave15-grupo4/internal/service/buyer"
+	employeeService "github.com/luisantonisu/wave15-grupo4/internal/service/employee"
+	productService "github.com/luisantonisu/wave15-grupo4/internal/service/product"
+	sectionService "github.com/luisantonisu/wave15-grupo4/internal/service/section"
+	sellerService "github.com/luisantonisu/wave15-grupo4/internal/service/seller"
+	warehouseService "github.com/luisantonisu/wave15-grupo4/internal/service/warehouse"
+
+	buyerHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/buyer"
+	employeeHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/employee"
+	productHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/product"
+	sectionHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/section"
+	sellerHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/seller"
+	warehouseHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/warehouse"
+	"github.com/luisantonisu/wave15-grupo4/internal/loader"
 )
 
 type ConfigServerChi struct {
@@ -40,35 +59,34 @@ type ServerChi struct {
 
 func (a *ServerChi) Run() (err error) {
 	//TODO
-	ld := loader.Load(a.loaderFilePath)
-	db, err := ld.Load()
+	db, err := loader.Load()
 	if err != nil {
 		return
 	}
 
 	// - repository
-	buyerRp := repository.NewBuyerRepository(db)
-	employeeRp := repository.NewEmployeeRepository(db)
-	productRp := repository.NewProductRepository(db)
-	sectionRp := repository.NewSectionRepository(db)
-	sellerRp := repository.NewSellerRepository(db)
-	warehouseRp := repository.NewWarehouseRepository(db)
+	buyerRp := buyerRepository.NewBuyerRepository(db.Buyers)
+	employeeRp := employeeRepository.NewEmployeeRepository(db.Employees)
+	productRp := productRepository.NewProductRepository(db.Products)
+	sectionRp := sectionRepository.NewSectionRepository(db.Sections)
+	sellerRp := sellerRepository.NewSellerRepository(db.Sellers)
+	warehouseRp := warehouseRepository.NewWarehouseRepository(db.Warehouses)
 
 	// - service
-	buyerSv := service.NewBuyerService(buyerRp)
-	employeeSv := service.NewEmployeeService(employeeRp)
-	productSv := service.NewProductService(productRp)
-	sectionSv := service.NewSectionService(sectionRp)
-	sellerSv := service.NewSellerService(sellerRp)
-	warehouseSv := service.NewWarehouseService(warehouseRp)
+	buyerSv := buyerService.NewBuyerService(buyerRp)
+	employeeSv := employeeService.NewEmployeeService(employeeRp)
+	productSv := productService.NewProductService(productRp)
+	sectionSv := sectionService.NewSectionService(sectionRp)
+	sellerSv := sellerService.NewSellerService(sellerRp)
+	warehouseSv := warehouseService.NewWarehouseService(warehouseRp)
 
 	// - handler
-	_ = handler.NewBuyerHandler(buyerSv)         // buyerHd
-	_ = handler.NewEmployeeHandler(employeeSv)   // employeeHd
-	_ = handler.NewProductHandler(productSv)     // productHd
-	_ = handler.NewSectionHandler(sectionSv)     // sectionHd
-	_ = handler.NewSellerHandler(sellerSv)       // sellerHd
-	_ = handler.NewWarehouseHandler(warehouseSv) // warehouseHd
+	buyerHd := buyerHandler.NewBuyerHandler(buyerSv)      // buyerHd
+	_ = employeeHandler.NewEmployeeHandler(employeeSv)    // employeeHd
+	_ = productHandler.NewProductHandler(productSv)       // productHd
+	_ = sectionHandler.NewSectionHandler(sectionSv)       // sectionHd
+	_ = sellerHandler.NewSellerHandler(sellerSv)          // sellerHd
+	_ = warehouseHandler.NewWarehouseHandler(warehouseSv) // warehouseHd
 
 	// router
 	rt := chi.NewRouter()
@@ -78,9 +96,31 @@ func (a *ServerChi) Run() (err error) {
 	rt.Use(middleware.Recoverer)
 
 	// - endpoints
-	rt.Route("/", func(rt chi.Router) {
-		// - GET /
-		// rt.Get("/", hd.GetAll())
+	rt.Route("/api/v1", func(rt chi.Router) {
+		rt.Route("/buyers", func(rt chi.Router) {
+			// - GET /
+			rt.Get("/", buyerHd.Ping())
+		})
+		rt.Route("/employees", func(rt chi.Router) {
+			// - GET /
+			// rt.Get("/", )
+		})
+		rt.Route("/products", func(rt chi.Router) {
+			// - GET /
+			// rt.Get("/", )
+		})
+		rt.Route("/sections", func(rt chi.Router) {
+			// - GET /
+			// rt.Get("/", )
+		})
+		rt.Route("/sellers", func(rt chi.Router) {
+			// - GET /
+			// rt.Get("/", )
+		})
+		rt.Route("/warehouses", func(rt chi.Router) {
+			// - GET /
+			// rt.Get("/", )
+		})
 	})
 
 	// run server

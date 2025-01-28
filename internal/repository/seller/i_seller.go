@@ -1,5 +1,5 @@
 package repository
 
-type ISellers interface {
+type ISeller interface {
 	
 }

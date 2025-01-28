@@ -1,5 +1,5 @@
 package service
 
-type IBuyers interface {
+type IBuyer interface {
 
 }

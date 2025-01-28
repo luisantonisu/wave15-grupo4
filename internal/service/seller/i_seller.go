@@ -1,5 +1,5 @@
 package service
 
-type ISellers interface {
+type ISeller interface {
 	
 }

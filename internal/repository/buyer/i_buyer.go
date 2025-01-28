@@ -1,5 +1,5 @@
 package repository
 
-type IBuyers interface {
+type IBuyer interface {
 
 }
