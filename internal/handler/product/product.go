@@ -6,9 +6,9 @@ import (
 	"strconv"
 
 	"github.com/bootcamp-go/web/response"
+	"github.com/go-chi/chi/v5"
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/dto"
 	"github.com/luisantonisu/wave15-grupo4/internal/helper"
-	"github.com/go-chi/chi/v5"
 	service "github.com/luisantonisu/wave15-grupo4/internal/service/product"
 )
 
@@ -29,7 +29,7 @@ func (p *ProductHandler) GetProductsHTTP() http.HandlerFunc {
 		// - get all vehicles
 		v, err := p.sv.GetProduct()
 		if err != nil {
-			response.JSON(w, http.StatusInternalServerError, nil)
+			response.JSON(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -40,7 +40,6 @@ func (p *ProductHandler) GetProductsHTTP() http.HandlerFunc {
 		})
 	}
 }
-
 
 func (p *ProductHandler) GetProductByIdHTTP() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -60,7 +59,7 @@ func (p *ProductHandler) GetProductByIdHTTP() http.HandlerFunc {
 		// - get all vehicles
 		v, err := p.sv.GetProductById(idInt)
 		if err != nil {
-			response.JSON(w, http.StatusInternalServerError, err.Error())
+			response.JSON(w, http.StatusNotFound, err.Error())
 			return
 		}
 
@@ -86,12 +85,12 @@ func (p *ProductHandler) CreateProductHTTP() http.HandlerFunc {
 		// - get all vehicles
 		v, err := p.sv.CreateProduct(&request)
 		if err != nil {
-			response.JSON(w, http.StatusInternalServerError, nil)
+			response.JSON(w, http.StatusUnprocessableEntity, err.Error())
 			return
 		}
 
 		// response
-		response.JSON(w, http.StatusOK, map[string]any{
+		response.JSON(w, http.StatusCreated, map[string]any{
 			"message": "success",
 			"data":    v,
 		})

@@ -109,11 +109,9 @@ func (a *ServerChi) Run() (err error) {
 		rt.Route("/products", func(rt chi.Router) {
 			// - GET /
 			rt.Get("/", productHd.GetProductsHTTP())
-<<<<<<< Updated upstream
 			rt.Get("/{id}", productHd.GetProductByIdHTTP())
-=======
+			// - POST /
 			rt.Post("/", productHd.CreateProductHTTP())
->>>>>>> Stashed changes
 		})
 		rt.Route("/sections", func(rt chi.Router) {
 			// - GET /
