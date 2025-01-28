@@ -16,3 +16,7 @@ type EmployeeService struct {
 func (h *EmployeeService) GetAll() (map[int]model.Employee, error) {
 	return h.rp.GetAll()
 }
+
+func (h *EmployeeService) GetByID(id int) (model.Employee, error) {
+	return h.rp.GetByID(id)
+}

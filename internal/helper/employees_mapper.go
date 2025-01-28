@@ -18,3 +18,14 @@ func MapEmployeeToEmployeeDTO(employees map[int]model.Employee) map[int]dto.Empl
 	}
 	return data
 }
+
+func EmployeeToEmployeeDTO(employee model.Employee) dto.EmployeeDTO {
+	data := dto.EmployeeDTO{
+		Id:           employee.Id,
+		CardNumberId: employee.CardNumberId,
+		FirstName:    employee.FirstName,
+		LastName:     employee.LastName,
+		WarehouseId:  employee.WarehouseId,
+	}
+	return data
+}
