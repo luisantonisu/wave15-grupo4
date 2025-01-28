@@ -1,7 +1,6 @@
 package aux
 
 type MyError struct {
-	Msg string
+	Msg   string
 	Error error
 }
-

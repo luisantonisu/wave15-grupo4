@@ -24,3 +24,15 @@ func (pr *ProductRepository) GetProduct() (prMap map[int]model.Product, err erro
 	}
 	return pr.db, nil
 }
+
+func (pr *ProductRepository) GetProductById(id int) (p model.Product, err error) {
+	if len(pr.db) == 0 {
+		return model.Product{}, errors.New("No products found")
+	}
+	for _, prod := range pr.db {
+		if prod.ID == id {
+			return prod, nil
+		}
+	}
+	return model.Product{}, errors.New("Product not found")
+}
