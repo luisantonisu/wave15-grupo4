@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/bootcamp-go/web/response"
-	"github.com/luisantonisu/wave15-grupo4/internal/domain/dto"
+	"github.com/luisantonisu/wave15-grupo4/internal/helper"
 	service "github.com/luisantonisu/wave15-grupo4/internal/service/employee"
 )
 
@@ -24,16 +24,7 @@ func (h *EmployeeHandler) GetAll() http.HandlerFunc {
 			return
 		}
 
-		data := make(map[int]dto.EmployeeDTO)
-		for key, value := range e {
-			data[key] = dto.EmployeeDTO{
-				Id:           value.Id,
-				CardNumberId: value.CardNumberId,
-				FirstName:    value.FirstName,
-				LastName:     value.LastName,
-				WarehouseId:  value.WarehouseId,
-			}
-		}
+		data := helper.MapEmployeeToEmployeeDTO(e)
 
 		response.JSON(w, http.StatusOK, map[string]any{
 			"data": data,
