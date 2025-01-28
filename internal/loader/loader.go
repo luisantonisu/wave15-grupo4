@@ -24,10 +24,8 @@ func Load() (*DB, error) {
 
 	if err != nil {
 		return nil, err
-	}
-
-	// load products
-	productDb, err := LoadProducts()
+	} 
+  productDb, err := LoadProducts()
 	if err != nil {
 		return nil, err
 	}
