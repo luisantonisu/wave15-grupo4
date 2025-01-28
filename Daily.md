@@ -9,7 +9,7 @@
 | Heyling | | | |
 | Izban | | | |
 | Juan | | | |
-| Luis | | | |
+| Luis | Nothing | Start working on Requirement 6 | Develop branch still has some errors that should be fixed before creating other branches |
 
 ### DAY 2
 | Name | Did | Will do | Blockers |
