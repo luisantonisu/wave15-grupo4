@@ -29,7 +29,7 @@ func (r *EmployeeRepository) GetAll() (map[int]model.Employee, error) {
 
 func (r *EmployeeRepository) GetByID(id int) (model.Employee, error) {
 	if !r.employeeExists(id) {
-		return model.Employee{}, errors.New("employee not found")
+		return model.Employee{}, errors.New("Employee not found")
 	}
 
 	return r.db[id], nil

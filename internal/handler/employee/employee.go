@@ -45,7 +45,7 @@ func (h *EmployeeHandler) GetByID() http.HandlerFunc {
 
 		e, err := h.sv.GetByID(id)
 		if err != nil {
-			response.JSON(w, http.StatusNotFound, "Employee not found")
+			response.JSON(w, http.StatusNotFound, err.Error())
 			return
 		}
 
