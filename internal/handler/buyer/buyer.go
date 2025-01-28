@@ -38,7 +38,7 @@ func (b *BuyerHandler) Create() http.HandlerFunc {
 			return
 		}
 
-		// Validate all fields
+		// Validate all fields except id
 		newBuyer := helper.BuyerDtoToBuyer(newBuyerDto)
 		if err := newBuyer.Validate(); err != nil {
 			response.Error(w, http.StatusUnprocessableEntity, err.Error())
