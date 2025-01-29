@@ -15,3 +15,12 @@ func NewSectionRepository(db map[int]model.Section) *SectionRepository {
 type SectionRepository struct {
 	db map[int]model.Section
 }
+
+func (s *SectionRepository) sectionExists(id int) bool {
+	_, exists := s.db[id]
+	return exists
+}
+
+func (s *SectionRepository) GetAll() (map[int]model.Section, error) {
+	return s.db, nil
+}
