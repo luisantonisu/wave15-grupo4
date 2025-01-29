@@ -8,3 +8,4 @@ type MyError struct {
 }
 
 var CardNumberIdAlreadyInUse = errors.New("Card number id already in use")
+var IDNotFound = errors.New("ID not found")

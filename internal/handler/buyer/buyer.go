@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/bootcamp-go/web/response"
+	"github.com/go-chi/chi/v5"
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/dto"
 	"github.com/luisantonisu/wave15-grupo4/internal/helper"
 	service "github.com/luisantonisu/wave15-grupo4/internal/service/buyer"
@@ -20,33 +22,24 @@ type BuyerHandler struct {
 	sv service.IBuyer
 }
 
-// Ping to check handler status
-func (b *BuyerHandler) Ping() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("pong"))
-	}
-}
-
-// Create a new buyer
-func (b *BuyerHandler) Create() http.HandlerFunc {
+func (h *BuyerHandler) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Decode body
-		var newBuyerDto dto.BuyerDTO
-		if err := json.NewDecoder(r.Body).Decode(&newBuyerDto); err != nil {
+		var buyerRequestDto dto.BuyerRequestDTO
+		if err := json.NewDecoder(r.Body).Decode(&buyerRequestDto); err != nil {
 			response.Error(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		// Validate all fields except id
-		newBuyer := helper.BuyerDtoToBuyer(newBuyerDto)
-		if err := newBuyer.Validate(); err != nil {
+		if err := buyerRequestDto.Validate(); err != nil {
 			response.Error(w, http.StatusUnprocessableEntity, err.Error())
 			return
 		}
+		newBuyer := helper.BuyerRequestDTOToBuyer(buyerRequestDto)
 
 		// Call service
-		buyer, err := b.sv.Create(newBuyer)
+		data, err := h.sv.Create(newBuyer)
 		if err != nil {
 			if errors.Is(err, error_handler.CardNumberIdAlreadyInUse) {
 				response.Error(w, http.StatusConflict, err.Error())
@@ -57,26 +50,60 @@ func (b *BuyerHandler) Create() http.HandlerFunc {
 		}
 
 		// Return response
-		response.JSON(w, http.StatusCreated, buyer)
+		response.JSON(w, http.StatusCreated, map[string]any{
+			"data": data,
+		})
 	}
 }
 
 // List all buyers
-func (b *BuyerHandler) GetAll() http.HandlerFunc {
+func (h *BuyerHandler) GetAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Call service
-		buyers, err := b.sv.GetAll()
+		buyers, err := h.sv.GetAll()
 		if err != nil {
 			response.Error(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		// Convert to DTO
-		data := make(map[int]dto.BuyerDTO)
-		for key, value := range buyers {
-			data[key] = helper.BuyerToBuyerDto(value)
+
+		// Convert to Response format
+		var data []dto.BuyerResponseDTO
+		for _, value := range buyers {
+			data = append(data, helper.BuyerToBuyerResponseDTO(value))
 		}
 
 		// Return response
-		response.JSON(w, http.StatusOK, data)
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data": data,
+		})
+	}
+}
+
+// Get a buyer by id
+func (h *BuyerHandler) GetByID() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Get id from url
+		idStr := chi.URLParam(r, "id")
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			response.Error(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		// Call service
+		data, err := h.sv.GetByID(id)
+		if err != nil {
+			if errors.Is(err, error_handler.IDNotFound) {
+				response.Error(w, http.StatusNotFound, "Buyer not found")
+				return
+			}
+			response.Error(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		// Return response
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data": helper.BuyerToBuyerResponseDTO(data),
+		})
 	}
 }
