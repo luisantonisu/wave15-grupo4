@@ -24,8 +24,13 @@ func Load() (*DB, error) {
 
 	if err != nil {
 		return nil, err
-	} 
-  productDb, err := LoadProducts()
+	}
+	productDb, err := LoadProducts()
+	if err != nil {
+		return nil, err
+	}
+
+	sectionDb, err := LoadSections()
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +39,7 @@ func Load() (*DB, error) {
 		Buyers:     map[int]model.Buyer{},
 		Employees:  employeesDb,
 		Products:   productDb,
-		Sections:   map[int]model.Section{},
+		Sections:   sectionDb,
 		Sellers:    map[int]model.Seller{},
 		Warehouses: map[int]model.Warehouse{},
 	}, nil
@@ -42,7 +47,7 @@ func Load() (*DB, error) {
 
 func LoadEmployees() (map[int]model.Employee, error) {
 	// open file
-	file, err := os.Open("./infrastructure/json/employees.json") //TODO static path
+	file, err := os.Open("../infrastructure/json/employees.json") //TODO static path
 	if err != nil {
 		return nil, errors.New("Error opening Employees file")
 	}
@@ -74,7 +79,7 @@ func LoadEmployees() (map[int]model.Employee, error) {
 
 func LoadProducts() (p map[int]model.Product, err error) {
 	// open file
-	file, err := os.Open("./infrastructure/json/product.json")
+	file, err := os.Open("../infrastructure/json/product.json")
 	if err != nil {
 		return
 	}
@@ -109,4 +114,41 @@ func LoadProducts() (p map[int]model.Product, err error) {
 	}
 
 	return
+}
+
+func LoadSections() (map[int]model.Section, error) {
+	// open file
+	file, err := os.Open("../infrastructure/json/section.json")
+	if err != nil {
+		return nil, errors.New("Error opening Sections file")
+	}
+	defer file.Close()
+
+	// decode file
+	var sectionsJSON []dto.SectionDTO
+	err = json.NewDecoder(file).Decode(&sectionsJSON)
+	if err != nil {
+		return nil, errors.New("Error decoding Sections file")
+	}
+
+	// serialize sections
+	s := make(map[int]model.Section)
+	for _, sec := range sectionsJSON {
+		s[sec.Id] = model.Section{
+			Id: sec.Id,
+			SectionAttributes: model.SectionAttributes{
+				SectionNumber:      sec.SectionNumber,
+				CurrentTemperature: sec.CurrentTemperature,
+				MinimumTemperature: sec.MinimumTemperature,
+				CurrentCapacity:    sec.CurrentCapacity,
+				MinimumCapacity:    sec.MinimumCapacity,
+				MaximumCapacity:    sec.MaximumCapacity,
+				WarehouseId:        sec.WarehouseId,
+				ProductTypeId:      sec.ProductTypeId,
+				ProductBatchId:     sec.ProductBatchId,
+			},
+		}
+	}
+
+	return s, nil
 }
