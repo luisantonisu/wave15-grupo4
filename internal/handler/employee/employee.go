@@ -92,3 +92,21 @@ func (h *EmployeeHandler) Create() http.HandlerFunc {
 		})
 	}
 }
+
+func (h *EmployeeHandler) Delete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id, err := strconv.Atoi(chi.URLParam(r, "id"))
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, "Invalid id")
+			return
+		}
+
+		err = h.sv.Delete(id)
+		if err != nil {
+			response.JSON(w, http.StatusNotFound, err.Error())
+			return
+		}
+
+		response.JSON(w, http.StatusNoContent, "Employee deleted successfully")
+	}
+}

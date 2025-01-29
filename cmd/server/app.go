@@ -110,6 +110,8 @@ func (a *ServerChi) Run() (err error) {
 			rt.Get("/{id}", employeeHd.GetByID())
 			// - POST /api/v1/employees
 			rt.Post("/", employeeHd.Create())
+			// - DELETE /api/v1/employees/{id}
+			rt.Delete("/{id}", employeeHd.Delete())
 		})
 		rt.Route("/products", func(rt chi.Router) {
 			// - GET /

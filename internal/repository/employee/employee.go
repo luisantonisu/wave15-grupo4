@@ -57,3 +57,12 @@ func (r *EmployeeRepository) Create(employee model.Employee) (model.Employee, er
 
 	return r.db[lastId], nil
 }
+
+func (r *EmployeeRepository) Delete(id int) error {
+	if !r.employeeExists(id) {
+		return errors.New("Employee not found")
+	}
+
+	delete(r.db, id)
+	return nil
+}
