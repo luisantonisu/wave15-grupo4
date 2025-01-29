@@ -43,13 +43,19 @@ func Load() (*DB, error) {
 		return nil, err
 	}
 
+	// load warehouses
+	warehousesDb, err := LoadWarehouses()
+	if err != nil {
+		return nil, err
+	}
+
 	return &DB{
 		Buyers:     buyersDb,
 		Employees:  employeesDb,
 		Products:   productDb,
 		Sections:   sectionDb,
 		Sellers:    map[int]model.Seller{},
-		Warehouses: map[int]model.Warehouse{},
+		Warehouses: warehousesDb,
 	}, nil
 }
 
@@ -182,4 +188,28 @@ func LoadSections() (map[int]model.Section, error) {
 	}
 
 	return s, nil
+}
+
+func LoadWarehouses() (w map[int]model.Warehouse, err error) {
+	// open file
+	file, err := os.Open("./infrastructure/json/warehouses.json")
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	var warehousesJSON []dto.WarehouseRequestDTO
+	err = json.NewDecoder(file).Decode(&warehousesJSON)
+	if err != nil {
+		return
+	}
+
+	// serialize warehouses
+	w = make(map[int]model.Warehouse)
+	for key, value := range warehousesJSON {
+		warehouse := helper.WarehouseRequestDTOToWarehouse(value)
+		warehouse.Id = key + 1
+		w[key+1] = warehouse
+	}
+	return
 }
