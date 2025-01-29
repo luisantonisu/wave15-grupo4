@@ -32,21 +32,21 @@ func (b *BuyerHandler) Ping() http.HandlerFunc {
 func (b *BuyerHandler) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Decode body
-		var newBuyerDto dto.BuyerDTO
-		if err := json.NewDecoder(r.Body).Decode(&newBuyerDto); err != nil {
+		var buyerRequestDto dto.BuyerRequestDTO
+		if err := json.NewDecoder(r.Body).Decode(&buyerRequestDto); err != nil {
 			response.Error(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		// Validate all fields except id
-		newBuyer := helper.BuyerDtoToBuyer(newBuyerDto)
-		if err := newBuyer.Validate(); err != nil {
+		if err := buyerRequestDto.Validate(); err != nil {
 			response.Error(w, http.StatusUnprocessableEntity, err.Error())
 			return
 		}
+		newBuyer := helper.BuyerRequestDTOToBuyer(buyerRequestDto)
 
 		// Call service
-		buyer, err := b.sv.Create(newBuyer)
+		data, err := b.sv.Create(newBuyer)
 		if err != nil {
 			if errors.Is(err, error_handler.CardNumberIdAlreadyInUse) {
 				response.Error(w, http.StatusConflict, err.Error())
@@ -57,7 +57,9 @@ func (b *BuyerHandler) Create() http.HandlerFunc {
 		}
 
 		// Return response
-		response.JSON(w, http.StatusCreated, buyer)
+		response.JSON(w, http.StatusCreated, map[string]any{
+			"data": data,
+		})
 	}
 }
 
@@ -65,18 +67,21 @@ func (b *BuyerHandler) Create() http.HandlerFunc {
 func (b *BuyerHandler) GetAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Call service
-		buyers, err := b.sv.GetAll()
+		allBuyers, err := b.sv.GetAll()
 		if err != nil {
 			response.Error(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		// Convert to DTO
-		data := make(map[int]dto.BuyerDTO)
-		for key, value := range buyers {
-			data[key] = helper.BuyerToBuyerDto(value)
+
+		// Convert to Response format
+		var data []dto.BuyerResponseDTO
+		for _, value := range allBuyers {
+			data = append(data, helper.BuyerToBuyerResponseDTO(value))
 		}
 
 		// Return response
-		response.JSON(w, http.StatusOK, data)
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data": data,
+		})
 	}
 }
