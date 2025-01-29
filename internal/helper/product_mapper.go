@@ -5,10 +5,10 @@ import (
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 )
 
-func MapProductToProductDTO(employees map[int]model.Product) map[int]dto.ProductDTO {
-	data := make(map[int]dto.ProductDTO)
+func ProductToProductResponseDTO(employees map[int]model.Product) map[int]dto.ProductResponseDTO {
+	data := make(map[int]dto.ProductResponseDTO)
 	for _, value := range employees {
-		data[value.ID] = dto.ProductDTO{
+		data[value.ID] = dto.ProductResponseDTO{
 			ID:                             value.ID,
 			ProductCode:                    value.ProductAtrributes.ProductCode,
 			Description:                    value.ProductAtrributes.Description,
@@ -26,22 +26,19 @@ func MapProductToProductDTO(employees map[int]model.Product) map[int]dto.Product
 	return data
 }
 
-func MapProductDTOToProduct(employees dto.ProductDTO) model.Product {
-	data := model.Product{
-		ID: employees.ID,
-		ProductAtrributes: model.ProductAtrributes{
-			ProductCode:                    employees.ProductCode,
-			Description:                    employees.Description,
-			Width:                          employees.Width,
-			Height:                         employees.Height,
-			Length:                         employees.Length,
-			NetWeight:                      employees.NetWeight,
-			ExpirationRate:                 employees.ExpirationRate,
-			RecommendedFreezingTemperature: employees.RecommendedFreezingTemperature,
-			FreezingRate:                   employees.FreezingRate,
-			ProductTypeId:                  employees.ProductTypeId,
-			SellerId:                       employees.SellerId,
-		},
+func ProductRequestDTOToProduct(employees dto.ProductRequestDTO) model.ProductAtrributes {
+	data := model.ProductAtrributes{
+		ProductCode:                    employees.ProductCode,
+		Description:                    employees.Description,
+		Width:                          employees.Width,
+		Height:                         employees.Height,
+		Length:                         employees.Length,
+		NetWeight:                      employees.NetWeight,
+		ExpirationRate:                 employees.ExpirationRate,
+		RecommendedFreezingTemperature: employees.RecommendedFreezingTemperature,
+		FreezingRate:                   employees.FreezingRate,
+		ProductTypeId:                  employees.ProductTypeId,
+		SellerId:                       employees.SellerId,
 	}
 	return data
 }

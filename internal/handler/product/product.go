@@ -20,14 +20,14 @@ type ProductHandler struct {
 	sv service.IProduct
 }
 
-func (p *ProductHandler) GetProductsHTTP() http.HandlerFunc {
+func (productHandler *ProductHandler) GetProductsHTTP() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// request
 		// ...
 
 		// process
 		// - get all vehicles
-		v, err := p.sv.GetProduct()
+		v, err := productHandler.sv.GetProduct()
 		if err != nil {
 			response.JSON(w, http.StatusInternalServerError, err.Error())
 			return
@@ -41,7 +41,7 @@ func (p *ProductHandler) GetProductsHTTP() http.HandlerFunc {
 	}
 }
 
-func (p *ProductHandler) GetProductByIdHTTP() http.HandlerFunc {
+func (productHandler *ProductHandler) GetById() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// request
 		// ...
@@ -57,7 +57,7 @@ func (p *ProductHandler) GetProductByIdHTTP() http.HandlerFunc {
 		}
 		// process
 		// - get all vehicles
-		v, err := p.sv.GetProductById(idInt)
+		v, err := productHandler.sv.GetProductById(idInt)
 		if err != nil {
 			response.JSON(w, http.StatusNotFound, err.Error())
 			return
@@ -70,20 +70,20 @@ func (p *ProductHandler) GetProductByIdHTTP() http.HandlerFunc {
 		})
 	}
 }
-func (p *ProductHandler) CreateProductHTTP() http.HandlerFunc {
+func (productHandler *ProductHandler) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// request
 		// ...
-		var requestDTO dto.ProductDTO
+		var requestDTO dto.ProductRequestDTO
 		if err := json.NewDecoder(r.Body).Decode(&requestDTO); err != nil {
 			response.JSON(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		request := helper.MapProductDTOToProduct(requestDTO)
+		request := helper.ProductRequestDTOToProduct(requestDTO)
 		// process
 		// - get all vehicles
-		v, err := p.sv.CreateProduct(&request)
+		err := productHandler.sv.CreateProduct(&request)
 		if err != nil {
 			response.JSON(w, http.StatusUnprocessableEntity, err.Error())
 			return
@@ -92,7 +92,6 @@ func (p *ProductHandler) CreateProductHTTP() http.HandlerFunc {
 		// response
 		response.JSON(w, http.StatusCreated, map[string]any{
 			"message": "success",
-			"data":    v,
 		})
 	}
 }
