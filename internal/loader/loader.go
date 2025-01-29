@@ -32,6 +32,12 @@ func Load() (*DB, error) {
 		return nil, err
 	}
 
+	// load products
+	sellerDB, err := LoadSellers()
+	if err != nil {
+		return nil, err
+	}
+
 	// load buyers
 	buyersDb, err := LoadBuyers()
 	if err != nil {
@@ -54,12 +60,12 @@ func Load() (*DB, error) {
 		Employees:  employeesDb,
 		Products:   productDb,
 		Sections:   sectionDb,
-		Sellers:    map[int]model.Seller{},
+		Sellers:    sellerDB,
 		Warehouses: warehousesDb,
 	}, nil
 }
 
-func LoadEmployees() (map[int]model.Employee, error) {
+func LoadEmployees() (e map[int]model.Employee, err error) {
 	// open file
 	file, err := os.Open("./infrastructure/json/employees.json") //TODO static path
 	if err != nil {
@@ -68,24 +74,16 @@ func LoadEmployees() (map[int]model.Employee, error) {
 	defer file.Close()
 
 	// decode file
-	var employeesJSON []dto.EmployeeDTO
+	var employeesJSON []dto.EmployeeResponseDTO
 	err = json.NewDecoder(file).Decode(&employeesJSON)
 	if err != nil {
 		return nil, errors.New("Error decoding Employees file")
 	}
 
+	e = make(map[int]model.Employee)
 	// serialize Employees
-	e := make(map[int]model.Employee)
 	for _, emp := range employeesJSON {
-		e[emp.Id] = model.Employee{
-			Id: emp.Id,
-			EmployeeAttributes: model.EmployeeAttributes{
-				CardNumberId: emp.CardNumberId,
-				FirstName:    emp.FirstName,
-				LastName:     emp.LastName,
-				WarehouseId:  emp.WarehouseId,
-			},
-		}
+		e[emp.ID] = helper.EmployeeResponseDTOToEmployee(emp)
 	}
 
 	return e, nil
@@ -100,7 +98,7 @@ func LoadProducts() (p map[int]model.Product, err error) {
 	defer file.Close()
 
 	// decode file
-	var productsJSON []dto.ProductDTO
+	var productsJSON []dto.ProductResponseDTO
 	err = json.NewDecoder(file).Decode(&productsJSON)
 	if err != nil {
 		return
@@ -121,8 +119,8 @@ func LoadProducts() (p map[int]model.Product, err error) {
 				ExpirationRate:                 pr.ExpirationRate,
 				RecommendedFreezingTemperature: pr.RecommendedFreezingTemperature,
 				FreezingRate:                   pr.FreezingRate,
-				ProductTypeId:                  pr.ProductTypeId,
-				SellerId:                       pr.SellerId,
+				ProductTypeID:                  pr.ProductTypeId,
+				SellerID:                       pr.SellerId,
 			},
 		}
 	}
@@ -201,4 +199,27 @@ func LoadWarehouses() (w map[int]model.Warehouse, err error) {
 		w[key+1] = warehouse
 	}
 	return
+}
+
+func LoadSellers() (map[int]model.Seller, error) {
+	// open file
+	file, err := os.Open("./infrastructure/json/sellers.json")
+	if err != nil {
+		return nil, err
+	}
+	var sellersJSON []dto.SellerRequestDTO
+	err = json.NewDecoder(file).Decode(&sellersJSON)
+	if err != nil {
+		return nil, err
+	}
+
+	// serialize sellers
+	data := make(map[int]model.Seller)
+	for key, value := range sellersJSON {
+		seller := helper.SellerRequestDTOToSeller(value)
+		seller.ID = key + 1
+		data[key+1] = seller
+	}
+
+	return data, nil
 }

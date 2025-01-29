@@ -81,12 +81,12 @@ func (a *ServerChi) Run() (err error) {
 	warehouseSv := warehouseService.NewWarehouseService(warehouseRp)
 
 	// - handler
-	buyerHd := buyerHandler.NewBuyerHandler(buyerSv)             // buyerHd
-	employeeHd := employeeHandler.NewEmployeeHandler(employeeSv) // employeeHd
-	productHd := productHandler.NewProductHandler(productSv)     // productHd
-	sectionHd := sectionHandler.NewSectionHandler(sectionSv)     // sectionHd
-	_ = sellerHandler.NewSellerHandler(sellerSv)                 // sellerHd
-	warehouseHd := warehouseHandler.NewWarehouseHandler(warehouseSv)        // warehouseHd
+	buyerHd := buyerHandler.NewBuyerHandler(buyerSv)                 // buyerHd
+	employeeHd := employeeHandler.NewEmployeeHandler(employeeSv)     // employeeHd
+	productHd := productHandler.NewProductHandler(productSv)         // productHd
+	sectionHd := sectionHandler.NewSectionHandler(sectionSv)         // sectionHd
+	sellerHd := sellerHandler.NewSellerHandler(sellerSv)             // sellerHd
+	warehouseHd := warehouseHandler.NewWarehouseHandler(warehouseSv) // warehouseHd
 
 	// router
 	rt := chi.NewRouter()
@@ -105,26 +105,32 @@ func (a *ServerChi) Run() (err error) {
 
 		})
 		rt.Route("/employees", func(rt chi.Router) {
-			// - GET /
+			// - GET /api/v1/employees
 			rt.Get("/", employeeHd.GetAll())
 			rt.Get("/{id}", employeeHd.GetByID())
-			// - POST /
-			rt.Post("/", employeeHd.Save())
+			// - POST /api/v1/employees
+			rt.Post("/", employeeHd.Create())
+			// - DELETE /api/v1/employees/{id}
+			rt.Delete("/{id}", employeeHd.Delete())
 		})
 		rt.Route("/products", func(rt chi.Router) {
-			// - GET /
-			rt.Get("/", productHd.GetProductsHTTP())
-			rt.Get("/{id}", productHd.GetProductByIdHTTP())
-			// - POST /
-			rt.Post("/", productHd.CreateProductHTTP())
+			// - GET /api/v1/products /
+			rt.Get("/", productHd.GetAll())
+			rt.Get("/{id}", productHd.GetByID())
+			// - POST /api/v1/products /
+			rt.Post("/", productHd.Create())
+			// - DELETE /api/v1/products /
+			rt.Delete("/{id}", productHd.Delete())
+			// - PATCH /api/v1/products /
+			rt.Patch("/{id}", productHd.Update())
 		})
 		rt.Route("/sections", func(rt chi.Router) {
 			// - GET /
 			rt.Get("/", sectionHd.GetAll())
 		})
 		rt.Route("/sellers", func(rt chi.Router) {
-			// - GET /
-			// rt.Get("/", )
+			// - GET /api/v1/sellers
+			rt.Get("/", sellerHd.GetAll() )
 		})
 		rt.Route("/warehouses", func(rt chi.Router) {
 			// - GET /

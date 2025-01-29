@@ -7,53 +7,67 @@ import (
 	repository "github.com/luisantonisu/wave15-grupo4/internal/repository/product"
 )
 
-func NewProductService(rp repository.IProduct) *ProductService {
-	return &ProductService{rp: rp}
+func NewProductService(repository repository.IProduct) *ProductService {
+	return &ProductService{repository: repository}
 }
 
 type ProductService struct {
-	rp repository.IProduct
+	repository repository.IProduct
 }
 
-func (pr *ProductService) GetProduct() (prMap map[int]model.Product, err error) {
-	return pr.rp.GetProduct()
+func (productService *ProductService) GetProduct() (productMap map[int]model.Product, err error) {
+	return productService.repository.GetProduct()
 }
 
-func (pr *ProductService) GetProductById(id int) (p model.Product, err error) {
-	return pr.rp.GetProductById(id)
+func (productService *ProductService) GetProductByID(id int) (product model.Product, err error) {
+	return productService.repository.GetProductByID(id)
 }
 
-func (pr *ProductService) CreateProduct(p *model.Product) (prod *model.Product, err error) {
+func ValueCheck(productAtrributes model.ProductAtrributes) (err error) {
+	if productAtrributes.ProductCode == "" {
+		return errors.New("ProductCode is invalid")
+	}
+	if productAtrributes.Description == "" {
+		return errors.New("Description is invalid")
+	}
+	if productAtrributes.Width <= 0 {
+		return errors.New("Width is invalid")
+	}
+	if productAtrributes.Height <= 0 {
+		return errors.New("Height is invalid")
+	}
+	if productAtrributes.Length <= 0 {
+		return errors.New("Length is invalid")
+	}
+	if productAtrributes.NetWeight <= 0 {
+		return errors.New("NetWeight is invalid")
+	}
+	if productAtrributes.ExpirationRate <= 0 {
+		return errors.New("ExpirationRate is invalid")
+	}
+	if productAtrributes.RecommendedFreezingTemperature <= 0 {
+		return errors.New("RecommendedFreezingTemperature is invalid")
+	}
+	if productAtrributes.FreezingRate <= 0 {
+		return errors.New("FreezingRate is invalid")
+	}
+	if productAtrributes.ProductTypeID <= 0 {
+		return errors.New("ProductTypeId is invalid")
+	}
+	return
+}
 
-	if p.ProductCode == "" {
-		return nil, errors.New("ProductCode is invalid")
+func (productService *ProductService) CreateProduct(productAttributes *model.ProductAtrributes) (err error) {
+	if err = ValueCheck(*productAttributes); err != nil {
+		return err
 	}
-	if p.Description == "" {
-		return nil, errors.New("Description is invalid")
-	}
-	if p.Width <= 0 {
-		return nil, errors.New("Width is invalid")
-	}
-	if p.Height <= 0 {
-		return nil, errors.New("Height is invalid")
-	}
-	if p.Length <= 0 {
-		return nil, errors.New("Length is invalid")
-	}
-	if p.NetWeight <= 0 {
-		return nil, errors.New("NetWeight is invalid")
-	}
-	if p.ExpirationRate <= 0 {
-		return nil, errors.New("ExpirationRate is invalid")
-	}
-	if p.RecommendedFreezingTemperature <= 0 {
-		return nil, errors.New("RecommendedFreezingTemperature is invalid")
-	}
-	if p.FreezingRate <= 0 {
-		return nil, errors.New("FreezingRate is invalid")
-	}
-	if p.ProductTypeId <= 0 {
-		return nil, errors.New("ProductTypeId is invalid")
-	}
-	return pr.rp.CreateProduct(p)
+	return productService.repository.CreateProduct(productAttributes)
+}
+
+func (productService *ProductService) DeleteProduct(id int) (err error) {
+	return productService.repository.DeleteProduct(id)
+}
+
+func (productService *ProductService) UpdateProduct(id int, productAttributes *model.ProductAtrributes) (producto *model.Product, err error) {
+	return productService.repository.UpdateProduct(id, productAttributes)
 }
