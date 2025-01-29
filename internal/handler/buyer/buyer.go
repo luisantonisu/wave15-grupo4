@@ -60,3 +60,23 @@ func (b *BuyerHandler) Create() http.HandlerFunc {
 		response.JSON(w, http.StatusCreated, buyer)
 	}
 }
+
+// List all buyers
+func (b *BuyerHandler) GetAll() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Call service
+		buyers, err := b.sv.GetAll()
+		if err != nil {
+			response.Error(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		// Convert to DTO
+		data := make(map[int]dto.BuyerDTO)
+		for key, value := range buyers {
+			data[key] = helper.BuyerToBuyerDto(value)
+		}
+
+		// Return response
+		response.JSON(w, http.StatusOK, data)
+	}
+}

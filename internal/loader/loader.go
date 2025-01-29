@@ -7,6 +7,7 @@ import (
 
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/dto"
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
+	"github.com/luisantonisu/wave15-grupo4/internal/helper"
 )
 
 type DB struct {
@@ -21,7 +22,6 @@ type DB struct {
 func Load() (*DB, error) {
 	// load employees
 	employeesDb, err := LoadEmployees()
-
 	if err != nil {
 		return nil, err
 	}
@@ -30,13 +30,8 @@ func Load() (*DB, error) {
 		return nil, err
 	}
 
-	sectionDb, err := LoadSections()
-	if err != nil {
-		return nil, err
-	}
-
 	return &DB{
-		Buyers:     map[int]model.Buyer{},
+		Buyers:     buyersDb,
 		Employees:  employeesDb,
 		Products:   productDb,
 		Sections:   sectionDb,
@@ -116,39 +111,25 @@ func LoadProducts() (p map[int]model.Product, err error) {
 	return
 }
 
-func LoadSections() (map[int]model.Section, error) {
+func LoadBuyers() (b map[int]model.Buyer, err error) {
 	// open file
-	file, err := os.Open("../infrastructure/json/section.json")
+	file, err := os.Open("./infrastructure/json/buyers.json")
 	if err != nil {
-		return nil, errors.New("Error opening Sections file")
+		return
 	}
 	defer file.Close()
 
 	// decode file
-	var sectionsJSON []dto.SectionDTO
-	err = json.NewDecoder(file).Decode(&sectionsJSON)
+	var buyersJSON []dto.BuyerDTO
+	err = json.NewDecoder(file).Decode(&buyersJSON)
 	if err != nil {
-		return nil, errors.New("Error decoding Sections file")
+		return
 	}
 
-	// serialize sections
-	s := make(map[int]model.Section)
-	for _, sec := range sectionsJSON {
-		s[sec.Id] = model.Section{
-			Id: sec.Id,
-			SectionAttributes: model.SectionAttributes{
-				SectionNumber:      sec.SectionNumber,
-				CurrentTemperature: sec.CurrentTemperature,
-				MinimumTemperature: sec.MinimumTemperature,
-				CurrentCapacity:    sec.CurrentCapacity,
-				MinimumCapacity:    sec.MinimumCapacity,
-				MaximumCapacity:    sec.MaximumCapacity,
-				WarehouseId:        sec.WarehouseId,
-				ProductTypeId:      sec.ProductTypeId,
-				ProductBatchId:     sec.ProductBatchId,
-			},
-		}
+	// serialize buyers
+	b = make(map[int]model.Buyer)
+	for _, buyer := range buyersJSON {
+		b[buyer.Id] = helper.BuyerDtoToBuyer(buyer)
 	}
-
-	return s, nil
+	return
 }
