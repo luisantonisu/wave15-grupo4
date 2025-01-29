@@ -100,6 +100,7 @@ func (a *ServerChi) Run() (err error) {
 		rt.Route("/buyers", func(rt chi.Router) {
 			// - GET /
 			rt.Get("/", buyerHd.Ping())
+			rt.Post("/", buyerHd.Create())
 		})
 		rt.Route("/employees", func(rt chi.Router) {
 			// - GET /

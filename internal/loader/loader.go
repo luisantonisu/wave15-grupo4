@@ -24,8 +24,7 @@ func Load() (*DB, error) {
 
 	if err != nil {
 		return nil, err
-	}
-    
+	} 
   productDb, err := LoadProducts()
 	if err != nil {
 		return nil, err
@@ -72,7 +71,7 @@ func LoadEmployees() (map[int]model.Employee, error) {
 
 	return e, nil
 }
-   
+
 func LoadProducts() (p map[int]model.Product, err error) {
 	// open file
 	file, err := os.Open("./infrastructure/json/product.json")
@@ -111,4 +110,3 @@ func LoadProducts() (p map[int]model.Product, err error) {
 
 	return
 }
-
