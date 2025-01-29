@@ -67,13 +67,14 @@ func (productRepository *ProductRepository) UpdateProduct(id int, productAtrribu
 	if _, ok := productRepository.db[id]; !ok {
 		return nil, errors.New("Product not found")
 	}
+
+	if productAtrributes == nil {
+		return nil, errors.New("Product is nil")
+	}
 	for _, prod := range productRepository.db {
 		if prod.ProductAtrributes.ProductCode == productAtrributes.ProductCode {
 			return nil, errors.New("Product code already exists")
 		}
-	}
-	if productAtrributes == nil {
-		return nil, errors.New("Product is nil")
 	}
 	patchedProduct := productRepository.db[id]
 
