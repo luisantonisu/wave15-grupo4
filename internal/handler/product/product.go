@@ -120,7 +120,7 @@ func (productHandler *ProductHandler) Delete() http.HandlerFunc {
 		}
 
 		// response
-		response.JSON(w, http.StatusOK, map[string]any{
+		response.JSON(w, http.StatusNoContent, map[string]any{
 			"message": "Product deleted",
 		})
 	}
