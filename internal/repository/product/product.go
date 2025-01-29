@@ -36,3 +36,16 @@ func (pr *ProductRepository) GetProductById(id int) (p model.Product, err error)
 	}
 	return model.Product{}, errors.New("Product not found")
 }
+
+func (pr *ProductRepository) CreateProduct(p *model.Product) (prod *model.Product, err error) {
+	_, ok := pr.db[p.ID]
+	if ok {
+		return nil, errors.New("Product already exists")
+	}
+	pr.db[len(pr.db)+1] = *p
+	if p == nil {
+		return nil, errors.New("Product is nil")
+	}
+	prod = p
+	return p, nil
+}

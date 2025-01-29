@@ -110,6 +110,8 @@ func (a *ServerChi) Run() (err error) {
 			// - GET /
 			rt.Get("/", productHd.GetProductsHTTP())
 			rt.Get("/{id}", productHd.GetProductByIdHTTP())
+			// - POST /
+			rt.Post("/", productHd.CreateProductHTTP())
 		})
 		rt.Route("/sections", func(rt chi.Router) {
 			// - GET /
