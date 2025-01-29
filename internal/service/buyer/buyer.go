@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 	repository "github.com/luisantonisu/wave15-grupo4/internal/repository/buyer"
 )
 
@@ -10,4 +11,13 @@ func NewBuyerService(rp repository.IBuyer) *BuyerService {
 
 type BuyerService struct {
 	rp repository.IBuyer
+}
+
+// Create a new buyer
+func (s *BuyerService) Create(buyer model.Buyer) (model.Buyer, error) {
+	newBuyer, err := s.rp.Create(buyer)
+	if err != nil {
+		return model.Buyer{}, err
+	}
+	return newBuyer, nil
 }
