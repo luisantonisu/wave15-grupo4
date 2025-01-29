@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"errors"
+
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 )
 
@@ -16,11 +18,14 @@ type SectionRepository struct {
 	db map[int]model.Section
 }
 
-func (s *SectionRepository) sectionExists(id int) bool {
-	_, exists := s.db[id]
-	return exists
-}
-
 func (s *SectionRepository) GetAll() (map[int]model.Section, error) {
 	return s.db, nil
+}
+
+func (s *SectionRepository) GetByID(id int) (model.Section, error) {
+	section, exists := s.db[id]
+	if !exists {
+		return model.Section{}, errors.New("not exist")
+	}
+	return section, nil
 }

@@ -26,7 +26,7 @@ func (productHandler *ProductHandler) GetAll() http.HandlerFunc {
 		// ...
 
 		// process
-		// - get all vehicles
+		// - get all products
 		v, err := productHandler.service.GetProduct()
 		if err != nil {
 			response.JSON(w, http.StatusInternalServerError, err.Error())
@@ -41,7 +41,7 @@ func (productHandler *ProductHandler) GetAll() http.HandlerFunc {
 	}
 }
 
-func (productHandler *ProductHandler) GetById() http.HandlerFunc {
+func (productHandler *ProductHandler) GetByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// request
 		// ...
@@ -56,8 +56,8 @@ func (productHandler *ProductHandler) GetById() http.HandlerFunc {
 			response.JSON(w, http.StatusBadRequest, err.Error())
 		}
 		// process
-		// - get all vehicles
-		v, err := productHandler.service.GetProductById(idInt)
+		// - get product by id
+		v, err := productHandler.service.GetProductByID(idInt)
 		if err != nil {
 			response.JSON(w, http.StatusNotFound, err.Error())
 			return
@@ -83,7 +83,7 @@ func (productHandler *ProductHandler) Create() http.HandlerFunc {
 
 		request := helper.ProductRequestDTOToProduct(requestDTO)
 		// process
-		// - get all vehicles
+		// - create product
 		err := productHandler.service.CreateProduct(&request)
 		if err != nil {
 			response.JSON(w, http.StatusUnprocessableEntity, err.Error())
@@ -112,7 +112,7 @@ func (productHandler *ProductHandler) Delete() http.HandlerFunc {
 			response.JSON(w, http.StatusBadRequest, err.Error())
 		}
 		// process
-		// - get all vehicles
+		// - delete product
 		err = productHandler.service.DeleteProduct(idInt)
 		if err != nil {
 			response.JSON(w, http.StatusNotFound, err.Error())
@@ -122,6 +122,43 @@ func (productHandler *ProductHandler) Delete() http.HandlerFunc {
 		// response
 		response.JSON(w, http.StatusOK, map[string]any{
 			"message": "Product deleted",
+		})
+	}
+}
+
+func (productHandler *ProductHandler) Update() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// request
+		// ...
+		id := chi.URLParam(r, "id")
+		if id == "" || id == "0" {
+			response.JSON(w, http.StatusBadRequest, "ID cant be empty or 0")
+			return
+		}
+		var requestDTO dto.ProductRequestDTO
+		if err := json.NewDecoder(r.Body).Decode(&requestDTO); err != nil {
+			response.JSON(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		request := helper.ProductRequestDTOToProduct(requestDTO)
+
+		idInt, err := strconv.Atoi(id)
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, err.Error())
+		}
+		// process
+		// - update product
+		product, err := productHandler.service.UpdateProduct(idInt, &request)
+		if err != nil {
+			response.JSON(w, http.StatusNotFound, err.Error())
+			return
+		}
+
+		// response
+		response.JSON(w, http.StatusOK, map[string]any{
+			"message": "Product updated",
+			"data":    product,
 		})
 	}
 }

@@ -98,41 +98,50 @@ func (a *ServerChi) Run() (err error) {
 	// - endpoints
 	rt.Route("/api/v1", func(rt chi.Router) {
 		rt.Route("/buyers", func(rt chi.Router) {
-			// - GET /
-			rt.Get("/ping", buyerHd.Ping())
+			// - GET /api/v1/buyers
 			rt.Get("/", buyerHd.GetAll())
+			rt.Get("/{id}", buyerHd.GetByID())
 			rt.Post("/", buyerHd.Create())
 
 		})
 		rt.Route("/employees", func(rt chi.Router) {
-			// - GET /
+			// - GET /api/v1/employees
 			rt.Get("/", employeeHd.GetAll())
 			rt.Get("/{id}", employeeHd.GetByID())
-			// - POST /
-			rt.Post("/", employeeHd.Save())
+			// - POST /api/v1/employees
+			rt.Post("/", employeeHd.Create())
+			// - PUT /api/v1/employees/{id}
+			rt.Patch("/{id}", employeeHd.Update())
+			// - DELETE /api/v1/employees/{id}
+			rt.Delete("/{id}", employeeHd.Delete())
 		})
 		rt.Route("/products", func(rt chi.Router) {
 			// - GET /api/v1/products /
 			rt.Get("/", productHd.GetAll())
-			rt.Get("/{id}", productHd.GetById())
+			rt.Get("/{id}", productHd.GetByID())
 			// - POST /api/v1/products /
 			rt.Post("/", productHd.Create())
 			// - DELETE /api/v1/products /
 			rt.Delete("/{id}", productHd.Delete())
+			// - PATCH /api/v1/products /
+			rt.Patch("/{id}", productHd.Update())
 		})
 		rt.Route("/sections", func(rt chi.Router) {
-			// - GET /
+			// - GET /api/v1/sections
 			rt.Get("/", sectionHd.GetAll())
+			rt.Get("/{id}", sectionHd.GetByID())
 		})
 		rt.Route("/sellers", func(rt chi.Router) {
 			// - GET /api/v1/sellers
-			rt.Get("/", sellerHd.GetAll() )
+			rt.Get("/", sellerHd.GetAll())
 			// -GET /api/v1/sellers/{id}
 			rt.Get("/{id}", sellerHd.GetByID())
 		})
 		rt.Route("/warehouses", func(rt chi.Router) {
-			// - GET /
+			// - GET /api/v1/warehouses
 			rt.Get("/", warehouseHd.GetAll())
+			// - GET /api/v1/warehouses/{id}
+			rt.Get("/{id}", warehouseHd.GetByID())
 		})
 	})
 

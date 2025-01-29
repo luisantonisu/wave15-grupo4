@@ -5,27 +5,35 @@ import (
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 )
 
-func MapEmployeeToEmployeeDTO(employees map[int]model.Employee) []dto.EmployeeDTO {
-	data := []dto.EmployeeDTO{}
-	for _, value := range employees {
-		data = append(data, dto.EmployeeDTO{
-			Id:           value.Id,
-			CardNumberId: value.CardNumberId,
-			FirstName:    value.FirstName,
-			LastName:     value.LastName,
-			WarehouseId:  value.WarehouseId,
-		})
-	}
-	return data
-}
-
-func EmployeeToEmployeeDTO(employee model.Employee) dto.EmployeeDTO {
-	data := dto.EmployeeDTO{
-		Id:           employee.Id,
-		CardNumberId: employee.CardNumberId,
+func EmployeeToEmployeeResponseDTO(employee model.Employee) dto.EmployeeResponseDTO {
+	return dto.EmployeeResponseDTO{
+		ID:           employee.ID,
+		CardNumberID: employee.CardNumberID,
 		FirstName:    employee.FirstName,
 		LastName:     employee.LastName,
-		WarehouseId:  employee.WarehouseId,
+		WarehouseID:  employee.WarehouseID,
 	}
-	return data
+}
+
+func EmployeeRequestDTOToEmployee(employee dto.EmployeeRequestDTO) model.Employee {
+	return model.Employee{
+		EmployeeAttributes: model.EmployeeAttributes{
+			CardNumberID: employee.CardNumberID,
+			FirstName:    employee.FirstName,
+			LastName:     employee.LastName,
+			WarehouseID:  employee.WarehouseID,
+		},
+	}
+}
+
+func EmployeeResponseDTOToEmployee(employee dto.EmployeeResponseDTO) model.Employee {
+	return model.Employee{
+		ID: employee.ID,
+		EmployeeAttributes: model.EmployeeAttributes{
+			CardNumberID: employee.CardNumberID,
+			FirstName:    employee.FirstName,
+			LastName:     employee.LastName,
+			WarehouseID:  employee.WarehouseID,
+		},
+	}
 }

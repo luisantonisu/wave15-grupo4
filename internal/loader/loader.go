@@ -65,7 +65,7 @@ func Load() (*DB, error) {
 	}, nil
 }
 
-func LoadEmployees() (map[int]model.Employee, error) {
+func LoadEmployees() (e map[int]model.Employee, err error) {
 	// open file
 	file, err := os.Open("./infrastructure/json/employees.json") //TODO static path
 	if err != nil {
@@ -74,24 +74,16 @@ func LoadEmployees() (map[int]model.Employee, error) {
 	defer file.Close()
 
 	// decode file
-	var employeesJSON []dto.EmployeeDTO
+	var employeesJSON []dto.EmployeeResponseDTO
 	err = json.NewDecoder(file).Decode(&employeesJSON)
 	if err != nil {
 		return nil, errors.New("Error decoding Employees file")
 	}
 
+	e = make(map[int]model.Employee)
 	// serialize Employees
-	e := make(map[int]model.Employee)
 	for _, emp := range employeesJSON {
-		e[emp.Id] = model.Employee{
-			Id: emp.Id,
-			EmployeeAttributes: model.EmployeeAttributes{
-				CardNumberId: emp.CardNumberId,
-				FirstName:    emp.FirstName,
-				LastName:     emp.LastName,
-				WarehouseId:  emp.WarehouseId,
-			},
-		}
+		e[emp.ID] = helper.EmployeeResponseDTOToEmployee(emp)
 	}
 
 	return e, nil
@@ -127,8 +119,8 @@ func LoadProducts() (p map[int]model.Product, err error) {
 				ExpirationRate:                 pr.ExpirationRate,
 				RecommendedFreezingTemperature: pr.RecommendedFreezingTemperature,
 				FreezingRate:                   pr.FreezingRate,
-				ProductTypeId:                  pr.ProductTypeId,
-				SellerId:                       pr.SellerId,
+				ProductTypeID:                  pr.ProductTypeId,
+				SellerID:                       pr.SellerId,
 			},
 		}
 	}
@@ -145,7 +137,7 @@ func LoadBuyers() (b map[int]model.Buyer, err error) {
 	defer file.Close()
 
 	// decode file
-	var buyersJSON []dto.BuyerDTO
+	var buyersJSON []dto.BuyerRequestDTO
 	err = json.NewDecoder(file).Decode(&buyersJSON)
 	if err != nil {
 		return
@@ -153,13 +145,15 @@ func LoadBuyers() (b map[int]model.Buyer, err error) {
 
 	// serialize buyers
 	b = make(map[int]model.Buyer)
-	for _, buyer := range buyersJSON {
-		b[buyer.Id] = helper.BuyerDtoToBuyer(buyer)
+	for index, value := range buyersJSON {
+		buyer := helper.BuyerRequestDTOToBuyer(value)
+		buyer.ID = index + 1
+		b[buyer.ID] = buyer
 	}
 	return
 }
 
-func LoadSections() (map[int]model.Section, error) {
+func LoadSections() (s map[int]model.Section, err error) {
 	// open file
 	file, err := os.Open("./infrastructure/json/section.json")
 	if err != nil {
@@ -168,32 +162,21 @@ func LoadSections() (map[int]model.Section, error) {
 	defer file.Close()
 
 	// decode file
-	var sectionsJSON []dto.SectionDTO
+	var sectionsJSON []dto.SectionRequestDTO
 	err = json.NewDecoder(file).Decode(&sectionsJSON)
 	if err != nil {
 		return nil, errors.New("Error decoding Sections file")
 	}
 
 	// serialize sections
-	s := make(map[int]model.Section)
-	for _, sec := range sectionsJSON {
-		s[sec.Id] = model.Section{
-			Id: sec.Id,
-			SectionAttributes: model.SectionAttributes{
-				SectionNumber:      sec.SectionNumber,
-				CurrentTemperature: sec.CurrentTemperature,
-				MinimumTemperature: sec.MinimumTemperature,
-				CurrentCapacity:    sec.CurrentCapacity,
-				MinimumCapacity:    sec.MinimumCapacity,
-				MaximumCapacity:    sec.MaximumCapacity,
-				WarehouseId:        sec.WarehouseId,
-				ProductTypeId:      sec.ProductTypeId,
-				ProductBatchId:     sec.ProductBatchId,
-			},
-		}
+	s = make(map[int]model.Section)
+	for key, value := range sectionsJSON {
+		section := helper.SectionRequestDTOToSection(value)
+		section.Id = key + 1
+		s[key+1] = section
 	}
 
-	return s, nil
+	return
 }
 
 func LoadWarehouses() (w map[int]model.Warehouse, err error) {
@@ -214,8 +197,8 @@ func LoadWarehouses() (w map[int]model.Warehouse, err error) {
 	w = make(map[int]model.Warehouse)
 	for key, value := range warehousesJSON {
 		warehouse := helper.WarehouseRequestDTOToWarehouse(value)
-		warehouse.Id = key + 1
-		w[key+1] = warehouse
+		warehouse.ID = key + 1
+		w[warehouse.ID] = warehouse
 	}
 	return
 }

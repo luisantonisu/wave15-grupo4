@@ -19,8 +19,8 @@ func ProductToProductResponseDTO(employees map[int]model.Product) map[int]dto.Pr
 			ExpirationRate:                 value.ProductAtrributes.ExpirationRate,
 			RecommendedFreezingTemperature: value.ProductAtrributes.RecommendedFreezingTemperature,
 			FreezingRate:                   value.ProductAtrributes.FreezingRate,
-			ProductTypeId:                  value.ProductAtrributes.ProductTypeId,
-			SellerId:                       value.ProductAtrributes.SellerId,
+			ProductTypeId:                  value.ProductAtrributes.ProductTypeID,
+			SellerId:                       value.ProductAtrributes.SellerID,
 		}
 	}
 	return data
@@ -37,8 +37,8 @@ func ProductRequestDTOToProduct(employees dto.ProductRequestDTO) model.ProductAt
 		ExpirationRate:                 employees.ExpirationRate,
 		RecommendedFreezingTemperature: employees.RecommendedFreezingTemperature,
 		FreezingRate:                   employees.FreezingRate,
-		ProductTypeId:                  employees.ProductTypeId,
-		SellerId:                       employees.SellerId,
+		ProductTypeID:                  employees.ProductTypeId,
+		SellerID:                       employees.SellerId,
 	}
 	return data
 }
