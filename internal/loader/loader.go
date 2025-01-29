@@ -233,12 +233,12 @@ func LoadSellers() (map[int]model.Seller, error) {
 	}
 
 	// serialize sellers
-	s := make(map[int]model.Seller)
+	data := make(map[int]model.Seller)
 	for key, value := range sellersJSON {
 		seller := helper.SellerRequestDTOToSeller(value)
 		seller.ID = key + 1
-		s[key+1] = seller
+		data[key+1] = seller
 	}
 
-	return s, nil
+	return data, nil
 }
