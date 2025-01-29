@@ -85,7 +85,7 @@ func (a *ServerChi) Run() (err error) {
 	employeeHd := employeeHandler.NewEmployeeHandler(employeeSv) // employeeHd
 	productHd := productHandler.NewProductHandler(productSv)     // productHd
 	_ = sectionHandler.NewSectionHandler(sectionSv)              // sectionHd
-	_ = sellerHandler.NewSellerHandler(sellerSv)                 // sellerHd
+	sellerHd := sellerHandler.NewSellerHandler(sellerSv)         // sellerHd
 	_ = warehouseHandler.NewWarehouseHandler(warehouseSv)        // warehouseHd
 
 	// router
@@ -119,8 +119,8 @@ func (a *ServerChi) Run() (err error) {
 			// rt.Get("/", )
 		})
 		rt.Route("/sellers", func(rt chi.Router) {
-			// - GET /
-			// rt.Get("/", )
+			// - GET /api/v1/sellers
+			rt.Get("/", sellerHd.GetAll() )
 		})
 		rt.Route("/warehouses", func(rt chi.Router) {
 			// - GET /

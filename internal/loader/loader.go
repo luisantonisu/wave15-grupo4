@@ -7,6 +7,7 @@ import (
 
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/dto"
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
+	"github.com/luisantonisu/wave15-grupo4/internal/helper"
 )
 
 type DB struct {
@@ -29,13 +30,17 @@ func Load() (*DB, error) {
 	if err != nil {
 		return nil, err
 	}
+	sellerDB, err := LoadSellers()
+	if err != nil {
+		return nil, err
+	}
 
 	return &DB{
 		Buyers:     map[int]model.Buyer{},
 		Employees:  employeesDb,
 		Products:   productDb,
 		Sections:   map[int]model.Section{},
-		Sellers:    map[int]model.Seller{},
+		Sellers:    sellerDB,
 		Warehouses: map[int]model.Warehouse{},
 	}, nil
 }
@@ -111,34 +116,29 @@ func LoadProducts() (p map[int]model.Product, err error) {
 	return
 }
 
-func LoadSellers() (s map[int]model.Seller, err error) {
+func LoadSellers() (map[int]model.Seller, error) {
 	// open file
 	file, err := os.Open("./infrastructure/json/sellers.json")
 	if err != nil {
-		return
+		return nil, err
 	}
 	defer file.Close()
 
 	// decode file
-	var sellersJSON []dto.SellerDTO
+	var sellersJSON []dto.SellerRequestDTO
 	err = json.NewDecoder(file).Decode(&sellersJSON)
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	// serialize sellers
-	s = make(map[int]model.Seller)
-	for _, seller := range sellersJSON {
-		s[seller.Id] = model.Seller{
-			Id: seller.Id,
-			SellerAtrributes: model.SellerAtrributes{
-				CompanyId:   seller.CompanyId,
-				CompanyName: seller.CompanyName,
-				Address:     seller.Address,
-				Telephone:   seller.Telephone,
-			},
-		}
+	s := make(map[int]model.Seller)
+	for key, value := range sellersJSON {
+		seller := helper.SellerRequestDTOToSeller(value)
+		seller.ID = key + 1
+		s[key+1] = seller
 	}
 
-	return
+	return s, nil
+
 }
