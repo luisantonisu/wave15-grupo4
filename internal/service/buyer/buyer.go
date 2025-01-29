@@ -39,3 +39,12 @@ func (s *BuyerService) GetByID(id int) (model.Buyer, error) {
 	}
 	return buyer, nil
 }
+
+// Delete a buyer by id
+func (s *BuyerService) Delete(id int) error {
+	err := s.rp.Delete(id)
+	if err != nil {
+		return err
+	}
+	return nil
+}

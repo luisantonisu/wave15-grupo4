@@ -107,3 +107,30 @@ func (h *BuyerHandler) GetByID() http.HandlerFunc {
 		})
 	}
 }
+
+// Delete a buyer by id
+func (h *BuyerHandler) Delete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Get id from url
+		idStr := chi.URLParam(r, "id")
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			response.Error(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		// Call service
+		err = h.sv.Delete(id)
+		if err != nil {
+			if errors.Is(err, error_handler.IDNotFound) {
+				response.Error(w, http.StatusNotFound, "Buyer not found")
+				return
+			}
+			response.Error(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		// Return response
+		response.JSON(w, http.StatusNoContent, nil)
+	}
+}

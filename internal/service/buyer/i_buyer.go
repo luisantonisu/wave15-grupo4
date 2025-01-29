@@ -6,4 +6,5 @@ type IBuyer interface {
 	Create(model.Buyer) (model.Buyer, error)
 	GetAll() (map[int]model.Buyer, error)
 	GetByID(int) (model.Buyer, error)
+	Delete(int) error
 }
