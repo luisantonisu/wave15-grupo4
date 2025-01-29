@@ -87,7 +87,7 @@ func LoadEmployees() (map[int]model.Employee, error) {
 
 func LoadProducts() (p map[int]model.Product, err error) {
 	// open file
-	file, err := os.Open("../infrastructure/json/product.json")
+	file, err := os.Open("./infrastructure/json/product.json")
 	if err != nil {
 		return
 	}
