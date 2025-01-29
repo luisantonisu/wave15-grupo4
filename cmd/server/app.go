@@ -125,12 +125,13 @@ func (a *ServerChi) Run() (err error) {
 			rt.Patch("/{id}", productHd.Update())
 		})
 		rt.Route("/sections", func(rt chi.Router) {
-			// - GET /
+			// - GET /api/v1/sections
 			rt.Get("/", sectionHd.GetAll())
+			rt.Get("/{id}", sectionHd.GetByID())
 		})
 		rt.Route("/sellers", func(rt chi.Router) {
 			// - GET /api/v1/sellers
-			rt.Get("/", sellerHd.GetAll() )
+			rt.Get("/", sellerHd.GetAll())
 		})
 		rt.Route("/warehouses", func(rt chi.Router) {
 			// - GET /
