@@ -134,8 +134,10 @@ func (a *ServerChi) Run() (err error) {
 			rt.Get("/", sellerHd.GetAll())
 		})
 		rt.Route("/warehouses", func(rt chi.Router) {
-			// - GET /
+			// - GET /api/v1/warehouses
 			rt.Get("/", warehouseHd.GetAll())
+			// - GET /api/v1/warehouses/{id}
+			rt.Get("/{id}", warehouseHd.GetByID())
 		})
 	})
 

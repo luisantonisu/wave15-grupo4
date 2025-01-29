@@ -195,8 +195,8 @@ func LoadWarehouses() (w map[int]model.Warehouse, err error) {
 	w = make(map[int]model.Warehouse)
 	for key, value := range warehousesJSON {
 		warehouse := helper.WarehouseRequestDTOToWarehouse(value)
-		warehouse.Id = key + 1
-		w[key+1] = warehouse
+		warehouse.ID = key + 1
+		w[warehouse.ID] = warehouse
 	}
 	return
 }

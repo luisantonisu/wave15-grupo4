@@ -7,7 +7,7 @@ import (
 
 func WarehouseToWarehouseResponseDTO(warehouse model.Warehouse) dto.WarehouseResponseDTO {
 	data := dto.WarehouseResponseDTO{
-		Id:                 warehouse.Id,
+		ID:                 warehouse.ID,
 		WarehouseCode:      warehouse.WarehouseCode,
 		Address:            warehouse.Address,
 		Telephone:          warehouse.Telephone,
