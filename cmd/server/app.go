@@ -81,12 +81,12 @@ func (a *ServerChi) Run() (err error) {
 	warehouseSv := warehouseService.NewWarehouseService(warehouseRp)
 
 	// - handler
-	buyerHd := buyerHandler.NewBuyerHandler(buyerSv)             // buyerHd
-	employeeHd := employeeHandler.NewEmployeeHandler(employeeSv) // employeeHd
-	productHd := productHandler.NewProductHandler(productSv)     // productHd
-	sectionHd := sectionHandler.NewSectionHandler(sectionSv)     // sectionHd
-	_ = sellerHandler.NewSellerHandler(sellerSv)                 // sellerHd
-	warehouseHd := warehouseHandler.NewWarehouseHandler(warehouseSv)        // warehouseHd
+	buyerHd := buyerHandler.NewBuyerHandler(buyerSv)                 // buyerHd
+	employeeHd := employeeHandler.NewEmployeeHandler(employeeSv)     // employeeHd
+	productHd := productHandler.NewProductHandler(productSv)         // productHd
+	sectionHd := sectionHandler.NewSectionHandler(sectionSv)         // sectionHd
+	_ = sellerHandler.NewSellerHandler(sellerSv)                     // sellerHd
+	warehouseHd := warehouseHandler.NewWarehouseHandler(warehouseSv) // warehouseHd
 
 	// router
 	rt := chi.NewRouter()
@@ -99,7 +99,6 @@ func (a *ServerChi) Run() (err error) {
 	rt.Route("/api/v1", func(rt chi.Router) {
 		rt.Route("/buyers", func(rt chi.Router) {
 			// - GET /
-			rt.Get("/ping", buyerHd.Ping())
 			rt.Get("/", buyerHd.GetAll())
 			rt.Post("/", buyerHd.Create())
 

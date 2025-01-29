@@ -20,14 +20,6 @@ type BuyerHandler struct {
 	sv service.IBuyer
 }
 
-// Ping to check handler status
-func (b *BuyerHandler) Ping() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("pong"))
-	}
-}
-
 // Create a new buyer
 func (b *BuyerHandler) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
