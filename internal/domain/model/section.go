@@ -1,18 +1,18 @@
 package model
 
 type Section struct {
-	Id int
+	Id int `json:"id"`
 	SectionAttributes
 }
 
 type SectionAttributes struct {
-	SectionNumber      string
-	CurrentTemperature float64
-	MinimumTemperature float64
-	CurrentCapacity    int
-	MinimumCapacity    int
-	MaximumCapacity    int
-	WarehouseId        int
-	ProductTypeId      int
-	ProductBatchId     []int
+	SectionNumber      string  `json:"section_number"`
+	CurrentTemperature float64 `json:"current_temperature"`
+	MinimumTemperature float64 `json:"minimum_temperature"`
+	CurrentCapacity    int     `json:"current_capacity"`
+	MinimumCapacity    int     `json:"minimum_capacity"`
+	MaximumCapacity    int     `json:"maximum_capacity"`
+	WarehouseId        int     `json:"warehouse_id"`
+	ProductTypeId      int     `json:"product_type_id"`
+	ProductBatchId     []int   `json:"product_batch_id"`
 }
