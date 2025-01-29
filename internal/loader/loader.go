@@ -22,26 +22,46 @@ type DB struct {
 func Load() (*DB, error) {
 	// load employees
 	employeesDb, err := LoadEmployees()
-
 	if err != nil {
 		return nil, err
 	}
+
+	// load products
 	productDb, err := LoadProducts()
 	if err != nil {
 		return nil, err
 	}
+
+	// load products
 	sellerDB, err := LoadSellers()
 	if err != nil {
 		return nil, err
 	}
 
+	// load buyers
+	buyersDb, err := LoadBuyers()
+	if err != nil {
+		return nil, err
+	}
+
+	sectionDb, err := LoadSections()
+	if err != nil {
+		return nil, err
+	}
+
+	// load warehouses
+	warehousesDb, err := LoadWarehouses()
+	if err != nil {
+		return nil, err
+	}
+
 	return &DB{
-		Buyers:     map[int]model.Buyer{},
+		Buyers:     buyersDb,
 		Employees:  employeesDb,
 		Products:   productDb,
-		Sections:   map[int]model.Section{},
+		Sections:   sectionDb,
 		Sellers:    sellerDB,
-		Warehouses: map[int]model.Warehouse{},
+		Warehouses: warehousesDb,
 	}, nil
 }
 
@@ -116,15 +136,96 @@ func LoadProducts() (p map[int]model.Product, err error) {
 	return
 }
 
+func LoadBuyers() (b map[int]model.Buyer, err error) {
+	// open file
+	file, err := os.Open("./infrastructure/json/buyers.json")
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	// decode file
+	var buyersJSON []dto.BuyerDTO
+	err = json.NewDecoder(file).Decode(&buyersJSON)
+	if err != nil {
+		return
+	}
+
+	// serialize buyers
+	b = make(map[int]model.Buyer)
+	for _, buyer := range buyersJSON {
+		b[buyer.Id] = helper.BuyerDtoToBuyer(buyer)
+	}
+	return
+}
+
+func LoadSections() (map[int]model.Section, error) {
+	// open file
+	file, err := os.Open("./infrastructure/json/section.json")
+	if err != nil {
+		return nil, errors.New("Error opening Sections file")
+	}
+	defer file.Close()
+
+	// decode file
+	var sectionsJSON []dto.SectionDTO
+	err = json.NewDecoder(file).Decode(&sectionsJSON)
+	if err != nil {
+		return nil, errors.New("Error decoding Sections file")
+	}
+
+	// serialize sections
+	s := make(map[int]model.Section)
+	for _, sec := range sectionsJSON {
+		s[sec.Id] = model.Section{
+			Id: sec.Id,
+			SectionAttributes: model.SectionAttributes{
+				SectionNumber:      sec.SectionNumber,
+				CurrentTemperature: sec.CurrentTemperature,
+				MinimumTemperature: sec.MinimumTemperature,
+				CurrentCapacity:    sec.CurrentCapacity,
+				MinimumCapacity:    sec.MinimumCapacity,
+				MaximumCapacity:    sec.MaximumCapacity,
+				WarehouseId:        sec.WarehouseId,
+				ProductTypeId:      sec.ProductTypeId,
+				ProductBatchId:     sec.ProductBatchId,
+			},
+		}
+	}
+
+	return s, nil
+}
+
+func LoadWarehouses() (w map[int]model.Warehouse, err error) {
+	// open file
+	file, err := os.Open("./infrastructure/json/warehouses.json")
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	var warehousesJSON []dto.WarehouseRequestDTO
+	err = json.NewDecoder(file).Decode(&warehousesJSON)
+	if err != nil {
+		return
+	}
+
+	// serialize warehouses
+	w = make(map[int]model.Warehouse)
+	for key, value := range warehousesJSON {
+		warehouse := helper.WarehouseRequestDTOToWarehouse(value)
+		warehouse.Id = key + 1
+		w[key+1] = warehouse
+	}
+	return
+}
+
 func LoadSellers() (map[int]model.Seller, error) {
 	// open file
 	file, err := os.Open("./infrastructure/json/sellers.json")
 	if err != nil {
 		return nil, err
 	}
-	defer file.Close()
-
-	// decode file
 	var sellersJSON []dto.SellerRequestDTO
 	err = json.NewDecoder(file).Decode(&sellersJSON)
 	if err != nil {
@@ -140,5 +241,4 @@ func LoadSellers() (map[int]model.Seller, error) {
 	}
 
 	return s, nil
-
 }

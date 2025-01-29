@@ -29,6 +29,11 @@ func (r *BuyerRepository) Create(buyer model.Buyer) (model.Buyer, error) {
 	return buyer, nil
 }
 
+// List all buyers
+func (r *BuyerRepository) GetAll() (map[int]model.Buyer, error) {
+	return r.db, nil
+}
+
 // Get the nex available id for a new buyer
 func (r *BuyerRepository) getNextId() int {
 	newId := len(r.db) + 1

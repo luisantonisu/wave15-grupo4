@@ -21,3 +21,12 @@ func (s *BuyerService) Create(buyer model.Buyer) (model.Buyer, error) {
 	}
 	return newBuyer, nil
 }
+
+// List all buyers
+func (s *BuyerService) GetAll() (map[int]model.Buyer, error) {
+	allBuyers, err := s.rp.GetAll()
+	if err != nil {
+		return nil, err
+	}
+	return allBuyers, nil
+}
