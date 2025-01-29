@@ -110,6 +110,8 @@ func (a *ServerChi) Run() (err error) {
 			rt.Get("/{id}", employeeHd.GetByID())
 			// - POST /api/v1/employees
 			rt.Post("/", employeeHd.Create())
+			// - PUT /api/v1/employees/{id}
+			rt.Patch("/{id}", employeeHd.Update())
 			// - DELETE /api/v1/employees/{id}
 			rt.Delete("/{id}", employeeHd.Delete())
 		})
@@ -130,7 +132,7 @@ func (a *ServerChi) Run() (err error) {
 		})
 		rt.Route("/sellers", func(rt chi.Router) {
 			// - GET /api/v1/sellers
-			rt.Get("/", sellerHd.GetAll() )
+			rt.Get("/", sellerHd.GetAll())
 		})
 		rt.Route("/warehouses", func(rt chi.Router) {
 			// - GET /api/v1/warehouses
