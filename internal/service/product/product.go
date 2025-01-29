@@ -19,45 +19,55 @@ func (productService *ProductService) GetProduct() (productMap map[int]model.Pro
 	return productService.repository.GetProduct()
 }
 
-func (productService *ProductService) GetProductById(id int) (product model.Product, err error) {
-	return productService.repository.GetProductById(id)
+func (productService *ProductService) GetProductByID(id int) (product model.Product, err error) {
+	return productService.repository.GetProductByID(id)
 }
 
-func (productService *ProductService) CreateProduct(product *model.ProductAtrributes) (err error) {
-
-	if product.ProductCode == "" {
+func ValueCheck(productAtrributes model.ProductAtrributes) (err error) {
+	if productAtrributes.ProductCode == "" {
 		return errors.New("ProductCode is invalid")
 	}
-	if product.Description == "" {
+	if productAtrributes.Description == "" {
 		return errors.New("Description is invalid")
 	}
-	if product.Width <= 0 {
+	if productAtrributes.Width <= 0 {
 		return errors.New("Width is invalid")
 	}
-	if product.Height <= 0 {
+	if productAtrributes.Height <= 0 {
 		return errors.New("Height is invalid")
 	}
-	if product.Length <= 0 {
+	if productAtrributes.Length <= 0 {
 		return errors.New("Length is invalid")
 	}
-	if product.NetWeight <= 0 {
+	if productAtrributes.NetWeight <= 0 {
 		return errors.New("NetWeight is invalid")
 	}
-	if product.ExpirationRate <= 0 {
+	if productAtrributes.ExpirationRate <= 0 {
 		return errors.New("ExpirationRate is invalid")
 	}
-	if product.RecommendedFreezingTemperature <= 0 {
+	if productAtrributes.RecommendedFreezingTemperature <= 0 {
 		return errors.New("RecommendedFreezingTemperature is invalid")
 	}
-	if product.FreezingRate <= 0 {
+	if productAtrributes.FreezingRate <= 0 {
 		return errors.New("FreezingRate is invalid")
 	}
-	if product.ProductTypeId <= 0 {
+	if productAtrributes.ProductTypeId <= 0 {
 		return errors.New("ProductTypeId is invalid")
 	}
-	return productService.repository.CreateProduct(product)
+	return
+}
+
+func (productService *ProductService) CreateProduct(productAttributes *model.ProductAtrributes) (err error) {
+	if err = ValueCheck(*productAttributes); err != nil {
+		return err
+	}
+	return productService.repository.CreateProduct(productAttributes)
 }
 
 func (productService *ProductService) DeleteProduct(id int) (err error) {
 	return productService.repository.DeleteProduct(id)
+}
+
+func (productService *ProductService) UpdateProduct(id int, productAttributes *model.ProductAtrributes) (producto *model.Product, err error) {
+	return productService.repository.UpdateProduct(id, productAttributes)
 }
