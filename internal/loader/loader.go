@@ -65,7 +65,7 @@ func Load() (*DB, error) {
 	}, nil
 }
 
-func LoadEmployees() (map[int]model.Employee, error) {
+func LoadEmployees() (e map[int]model.Employee, err error) {
 	// open file
 	file, err := os.Open("./infrastructure/json/employees.json") //TODO static path
 	if err != nil {
@@ -74,24 +74,16 @@ func LoadEmployees() (map[int]model.Employee, error) {
 	defer file.Close()
 
 	// decode file
-	var employeesJSON []dto.EmployeeDTO
+	var employeesJSON []dto.EmployeeResponseDTO
 	err = json.NewDecoder(file).Decode(&employeesJSON)
 	if err != nil {
 		return nil, errors.New("Error decoding Employees file")
 	}
 
+	e = make(map[int]model.Employee)
 	// serialize Employees
-	e := make(map[int]model.Employee)
 	for _, emp := range employeesJSON {
-		e[emp.Id] = model.Employee{
-			Id: emp.Id,
-			EmployeeAttributes: model.EmployeeAttributes{
-				CardNumberId: emp.CardNumberId,
-				FirstName:    emp.FirstName,
-				LastName:     emp.LastName,
-				WarehouseId:  emp.WarehouseId,
-			},
-		}
+		e[emp.ID] = helper.EmployeeResponseDTOToEmployee(emp)
 	}
 
 	return e, nil

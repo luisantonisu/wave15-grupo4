@@ -1,13 +1,13 @@
 package model
 
 type Employee struct {
-	Id int
+	ID int
 	EmployeeAttributes
 }
 
 type EmployeeAttributes struct {
-	CardNumberId int
+	CardNumberID int
 	FirstName    string
 	LastName     string
-	WarehouseId  int
+	WarehouseID  int
 }
