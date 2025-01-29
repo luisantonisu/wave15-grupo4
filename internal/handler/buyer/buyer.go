@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/bootcamp-go/web/response"
+	"github.com/go-chi/chi/v5"
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/dto"
 	"github.com/luisantonisu/wave15-grupo4/internal/helper"
 	service "github.com/luisantonisu/wave15-grupo4/internal/service/buyer"
@@ -83,7 +84,7 @@ func (h *BuyerHandler) GetAll() http.HandlerFunc {
 func (h *BuyerHandler) GetByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Get id from url
-		idStr := r.URL.Query().Get("id")
+		idStr := chi.URLParam(r, "id")
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
 			response.Error(w, http.StatusBadRequest, err.Error())
