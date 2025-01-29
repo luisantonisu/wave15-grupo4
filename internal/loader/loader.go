@@ -213,3 +213,35 @@ func LoadWarehouses() (w map[int]model.Warehouse, err error) {
 	}
 	return
 }
+
+func LoadSellers() (s map[int]model.Seller, err error) {
+	// open file
+	file, err := os.Open("./infrastructure/json/sellers.json")
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	// decode file
+	var sellersJSON []dto.SellerDTO
+	err = json.NewDecoder(file).Decode(&sellersJSON)
+	if err != nil {
+		return
+	}
+
+	// serialize sellers
+	s = make(map[int]model.Seller)
+	for _, seller := range sellersJSON {
+		s[seller.Id] = model.Seller{
+			Id: seller.Id,
+			SellerAtrributes: model.SellerAtrributes{
+				CompanyId:   seller.CompanyId,
+				CompanyName: seller.CompanyName,
+				Address:     seller.Address,
+				Telephone:   seller.Telephone,
+			},
+		}
+	}
+
+	return
+}
