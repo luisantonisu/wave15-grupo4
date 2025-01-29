@@ -51,7 +51,7 @@ func ValueCheck(productAtrributes model.ProductAtrributes) (err error) {
 	if productAtrributes.FreezingRate <= 0 {
 		return errors.New("FreezingRate is invalid")
 	}
-	if productAtrributes.ProductTypeId <= 0 {
+	if productAtrributes.ProductTypeID <= 0 {
 		return errors.New("ProductTypeId is invalid")
 	}
 	return

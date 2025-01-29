@@ -122,9 +122,9 @@ func (productRepository *ProductRepository) UpdateProduct(id int, productAtrribu
 			patchedProduct.ProductAtrributes.FreezingRate = productAtrributes.FreezingRate
 			productRepository.db[id] = patchedProduct
 		}
-		if productAtrributes.ProductTypeId != 0 {
+		if productAtrributes.ProductTypeID != 0 {
 			patchedProduct := productRepository.db[id]
-			patchedProduct.ProductAtrributes.ProductTypeId = productAtrributes.ProductTypeId
+			patchedProduct.ProductAtrributes.ProductTypeID = productAtrributes.ProductTypeID
 			productRepository.db[id] = patchedProduct
 		}
 		product, _ := productRepository.db[id]
