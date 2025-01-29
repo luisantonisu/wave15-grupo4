@@ -16,3 +16,7 @@ type WarehouseService struct {
 func (ws *WarehouseService) GetAll() (map[int]model.Warehouse, error) {
 	return ws.rp.GetAll()
 }
+
+func (ws *WarehouseService) GetByID(id int) (model.Warehouse, error) {
+	return ws.rp.GetByID(id)
+}

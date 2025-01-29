@@ -1,7 +1,7 @@
 package model
 
 type Warehouse struct {
-	Id                 int     `json:"id"`
+	ID                 int     `json:"id"`
 	WarehouseAttributes
 }
 
