@@ -5,16 +5,28 @@ import (
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 )
 
-func AdaptSellersListToSellerListDTO(sellers map[int]model.Seller) map[int]dto.SellerDTO {
-	adapted := make(map[int]dto.SellerDTO)
-	for _, value := range sellers {
-		adapted[value.Id] = dto.SellerDTO{
-			Id : value.Id,
-			CompanyId: value.CompanyId,
-			CompanyName: value.CompanyName,
-			Address: value.Address,
-			Telephone: value.Telephone,
-		}
+func SellerToSellerResponseDTO(seller model.Seller) dto.SellerResponseDTO {
+
+	data := dto.SellerResponseDTO{
+		ID:          seller.ID,
+		CompanyID:   seller.CompanyID,
+		CompanyName: seller.CompanyName,
+		Address:     seller.Address,
+		Telephone:   seller.Telephone,
 	}
-	return adapted
+
+	return data
+}
+
+func  SellerRequestDTOToSeller(sellerRequestDTO dto.SellerRequestDTO) model.Seller {
+	data := model.Seller {
+		SellerAtrributes: model.SellerAtrributes{
+			CompanyID: sellerRequestDTO.CompanyID,
+			CompanyName: sellerRequestDTO.CompanyName,
+			Address: sellerRequestDTO.Address,
+			Telephone: sellerRequestDTO.Telephone,
+		},
+	}
+
+	return data
 }

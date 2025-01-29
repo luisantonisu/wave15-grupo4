@@ -16,12 +16,12 @@ type SellerRepository struct {
 	db map[int]model.Seller
 }
 
-func (s *SellerRepository) GetAll() (sellers map[int]model.Seller, err error) {
-	sellers = make(map[int]model.Seller)
+func (r *SellerRepository) GetAll() (map[int]model.Seller, error) {
+	sellers := make(map[int]model.Seller)
 
-	for key, seller := range s.db {
+	for key, seller := range r.db {
 		sellers[key] = seller
 	}
 	
-	return
+	return sellers, nil
 }

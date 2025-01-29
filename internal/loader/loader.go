@@ -31,6 +31,10 @@ func Load() (*DB, error) {
 	if err != nil {
 		return nil, err
 	}
+	sellerDB, err := LoadSellers()
+	if err != nil {
+		return nil, err
+	}
 
 	// load buyers
 	buyersDb, err := LoadBuyers()
@@ -54,7 +58,7 @@ func Load() (*DB, error) {
 		Employees:  employeesDb,
 		Products:   productDb,
 		Sections:   sectionDb,
-		Sellers:    map[int]model.Seller{},
+		Sellers:    sellerDB,
 		Warehouses: warehousesDb,
 	}, nil
 }
@@ -214,34 +218,29 @@ func LoadWarehouses() (w map[int]model.Warehouse, err error) {
 	return
 }
 
-func LoadSellers() (s map[int]model.Seller, err error) {
+func LoadSellers() (map[int]model.Seller, error) {
 	// open file
 	file, err := os.Open("./infrastructure/json/sellers.json")
 	if err != nil {
-		return
+		return nil, err
 	}
 	defer file.Close()
 
 	// decode file
-	var sellersJSON []dto.SellerDTO
+	var sellersJSON []dto.SellerRequestDTO
 	err = json.NewDecoder(file).Decode(&sellersJSON)
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	// serialize sellers
-	s = make(map[int]model.Seller)
-	for _, seller := range sellersJSON {
-		s[seller.Id] = model.Seller{
-			Id: seller.Id,
-			SellerAtrributes: model.SellerAtrributes{
-				CompanyId:   seller.CompanyId,
-				CompanyName: seller.CompanyName,
-				Address:     seller.Address,
-				Telephone:   seller.Telephone,
-			},
-		}
+	s := make(map[int]model.Seller)
+	for key, value := range sellersJSON {
+		seller := helper.SellerRequestDTOToSeller(value)
+		seller.ID = key + 1
+		s[key+1] = seller
 	}
 
-	return
+	return s, nil
+
 }
