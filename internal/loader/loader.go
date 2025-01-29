@@ -119,8 +119,8 @@ func LoadProducts() (p map[int]model.Product, err error) {
 				ExpirationRate:                 pr.ExpirationRate,
 				RecommendedFreezingTemperature: pr.RecommendedFreezingTemperature,
 				FreezingRate:                   pr.FreezingRate,
-				ProductTypeId:                  pr.ProductTypeId,
-				SellerId:                       pr.SellerId,
+				ProductTypeID:                  pr.ProductTypeId,
+				SellerID:                       pr.SellerId,
 			},
 		}
 	}

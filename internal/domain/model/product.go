@@ -15,6 +15,6 @@ type ProductAtrributes struct {
 	ExpirationRate                 int
 	RecommendedFreezingTemperature float64
 	FreezingRate                   int
-	ProductTypeId                  int
-	SellerId                       int
+	ProductTypeID                  int
+	SellerID                       int
 }
