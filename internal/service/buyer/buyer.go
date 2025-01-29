@@ -30,3 +30,12 @@ func (s *BuyerService) GetAll() (map[int]model.Buyer, error) {
 	}
 	return allBuyers, nil
 }
+
+// Get a buyer by id
+func (s *BuyerService) GetByID(id int) (model.Buyer, error) {
+	buyer, err := s.rp.GetByID(id)
+	if err != nil {
+		return model.Buyer{}, err
+	}
+	return buyer, nil
+}

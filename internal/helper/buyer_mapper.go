@@ -5,21 +5,20 @@ import (
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 )
 
-func BuyerDtoToBuyer(buyerDto dto.BuyerDTO) model.Buyer {
+func BuyerRequestDTOToBuyer(buyerRequestDto dto.BuyerRequestDTO) model.Buyer {
 	data := model.Buyer{
-		Id: buyerDto.Id,
 		BuyerAttributes: model.BuyerAttributes{
-			CardNumberId: buyerDto.CardNumberId,
-			FirstName:    buyerDto.FirstName,
-			LastName:     buyerDto.LastName,
+			CardNumberId: buyerRequestDto.CardNumberId,
+			FirstName:    buyerRequestDto.FirstName,
+			LastName:     buyerRequestDto.LastName,
 		},
 	}
 	return data
 }
 
-func BuyerToBuyerDto(buyer model.Buyer) dto.BuyerDTO {
-	data := dto.BuyerDTO{
-		Id:           buyer.Id,
+func BuyerToBuyerResponseDTO(buyer model.Buyer) dto.BuyerResponseDTO {
+	data := dto.BuyerResponseDTO{
+		ID:           buyer.ID,
 		CardNumberId: buyer.CardNumberId,
 		FirstName:    buyer.FirstName,
 		LastName:     buyer.LastName,

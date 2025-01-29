@@ -98,9 +98,9 @@ func (a *ServerChi) Run() (err error) {
 	// - endpoints
 	rt.Route("/api/v1", func(rt chi.Router) {
 		rt.Route("/buyers", func(rt chi.Router) {
-			// - GET /
-			rt.Get("/ping", buyerHd.Ping())
+			// - GET /api/v1/buyers
 			rt.Get("/", buyerHd.GetAll())
+			rt.Get("/{id}", buyerHd.GetByID())
 			rt.Post("/", buyerHd.Create())
 
 		})
