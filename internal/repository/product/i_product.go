@@ -6,4 +6,5 @@ type IProduct interface {
 	GetProduct() (productMap map[int]model.Product, err error)
 	GetProductById(id int) (product model.Product, err error)
 	CreateProduct(productAtrributes *model.ProductAtrributes) (err error)
+	DeleteProduct(id int) (err error)
 }

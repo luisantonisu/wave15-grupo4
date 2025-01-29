@@ -7,53 +7,57 @@ import (
 	repository "github.com/luisantonisu/wave15-grupo4/internal/repository/product"
 )
 
-func NewProductService(rp repository.IProduct) *ProductService {
-	return &ProductService{rp: rp}
+func NewProductService(repository repository.IProduct) *ProductService {
+	return &ProductService{repository: repository}
 }
 
 type ProductService struct {
-	rp repository.IProduct
+	repository repository.IProduct
 }
 
-func (pr *ProductService) GetProduct() (prMap map[int]model.Product, err error) {
-	return pr.rp.GetProduct()
+func (productService *ProductService) GetProduct() (productMap map[int]model.Product, err error) {
+	return productService.repository.GetProduct()
 }
 
-func (pr *ProductService) GetProductById(id int) (p model.Product, err error) {
-	return pr.rp.GetProductById(id)
+func (productService *ProductService) GetProductById(id int) (product model.Product, err error) {
+	return productService.repository.GetProductById(id)
 }
 
-func (pr *ProductService) CreateProduct(p *model.ProductAtrributes) (err error) {
+func (productService *ProductService) CreateProduct(product *model.ProductAtrributes) (err error) {
 
-	if p.ProductCode == "" {
+	if product.ProductCode == "" {
 		return errors.New("ProductCode is invalid")
 	}
-	if p.Description == "" {
+	if product.Description == "" {
 		return errors.New("Description is invalid")
 	}
-	if p.Width <= 0 {
+	if product.Width <= 0 {
 		return errors.New("Width is invalid")
 	}
-	if p.Height <= 0 {
+	if product.Height <= 0 {
 		return errors.New("Height is invalid")
 	}
-	if p.Length <= 0 {
+	if product.Length <= 0 {
 		return errors.New("Length is invalid")
 	}
-	if p.NetWeight <= 0 {
+	if product.NetWeight <= 0 {
 		return errors.New("NetWeight is invalid")
 	}
-	if p.ExpirationRate <= 0 {
+	if product.ExpirationRate <= 0 {
 		return errors.New("ExpirationRate is invalid")
 	}
-	if p.RecommendedFreezingTemperature <= 0 {
+	if product.RecommendedFreezingTemperature <= 0 {
 		return errors.New("RecommendedFreezingTemperature is invalid")
 	}
-	if p.FreezingRate <= 0 {
+	if product.FreezingRate <= 0 {
 		return errors.New("FreezingRate is invalid")
 	}
-	if p.ProductTypeId <= 0 {
+	if product.ProductTypeId <= 0 {
 		return errors.New("ProductTypeId is invalid")
 	}
-	return pr.rp.CreateProduct(p)
+	return productService.repository.CreateProduct(product)
+}
+
+func (productService *ProductService) DeleteProduct(id int) (err error) {
+	return productService.repository.DeleteProduct(id)
 }
