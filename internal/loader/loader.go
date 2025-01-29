@@ -153,7 +153,7 @@ func LoadBuyers() (b map[int]model.Buyer, err error) {
 	return
 }
 
-func LoadSections() (map[int]model.Section, error) {
+func LoadSections() (s map[int]model.Section, err error) {
 	// open file
 	file, err := os.Open("./infrastructure/json/section.json")
 	if err != nil {
@@ -162,32 +162,21 @@ func LoadSections() (map[int]model.Section, error) {
 	defer file.Close()
 
 	// decode file
-	var sectionsJSON []dto.SectionDTO
+	var sectionsJSON []dto.SectionRequestDTO
 	err = json.NewDecoder(file).Decode(&sectionsJSON)
 	if err != nil {
 		return nil, errors.New("Error decoding Sections file")
 	}
 
 	// serialize sections
-	s := make(map[int]model.Section)
-	for _, sec := range sectionsJSON {
-		s[sec.Id] = model.Section{
-			Id: sec.Id,
-			SectionAttributes: model.SectionAttributes{
-				SectionNumber:      sec.SectionNumber,
-				CurrentTemperature: sec.CurrentTemperature,
-				MinimumTemperature: sec.MinimumTemperature,
-				CurrentCapacity:    sec.CurrentCapacity,
-				MinimumCapacity:    sec.MinimumCapacity,
-				MaximumCapacity:    sec.MaximumCapacity,
-				WarehouseId:        sec.WarehouseId,
-				ProductTypeId:      sec.ProductTypeId,
-				ProductBatchId:     sec.ProductBatchId,
-			},
-		}
+	s = make(map[int]model.Section)
+	for key, value := range sectionsJSON {
+		section := helper.SectionRequestDTOToSection(value)
+		section.Id = key + 1
+		s[key+1] = section
 	}
 
-	return s, nil
+	return
 }
 
 func LoadWarehouses() (w map[int]model.Warehouse, err error) {
