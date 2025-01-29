@@ -19,19 +19,28 @@ type BuyerRepository struct {
 
 // Create a new buyer
 func (r *BuyerRepository) Create(buyer model.Buyer) (model.Buyer, error) {
-	buyer.Id = r.getNextId()
+	buyer.ID = r.getNextId()
 	// Validate card number id doesnt already exist
 	if err := r.validateCardNumberId(buyer.CardNumberId); err != nil {
 		return model.Buyer{}, err
 	}
 	// Create buyer in db
-	r.db[buyer.Id] = buyer
+	r.db[buyer.ID] = buyer
 	return buyer, nil
 }
 
 // List all buyers
 func (r *BuyerRepository) GetAll() (map[int]model.Buyer, error) {
 	return r.db, nil
+}
+
+// Get a buyer by id
+func (r *BuyerRepository) GetByID(id int) (model.Buyer, error) {
+	buyer, ok := r.db[id]
+	if !ok {
+		return model.Buyer{}, error_handler.IDNotFound
+	}
+	return buyer, nil
 }
 
 // Get the nex available id for a new buyer

@@ -143,7 +143,7 @@ func LoadBuyers() (b map[int]model.Buyer, err error) {
 	defer file.Close()
 
 	// decode file
-	var buyersJSON []dto.BuyerDTO
+	var buyersJSON []dto.BuyerRequestDTO
 	err = json.NewDecoder(file).Decode(&buyersJSON)
 	if err != nil {
 		return
@@ -151,8 +151,10 @@ func LoadBuyers() (b map[int]model.Buyer, err error) {
 
 	// serialize buyers
 	b = make(map[int]model.Buyer)
-	for _, buyer := range buyersJSON {
-		b[buyer.Id] = helper.BuyerDtoToBuyer(buyer)
+	for index, value := range buyersJSON {
+		buyer := helper.BuyerRequestDTOToBuyer(value)
+		buyer.ID = index + 1
+		b[buyer.ID] = buyer
 	}
 	return
 }

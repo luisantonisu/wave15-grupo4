@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/bootcamp-go/web/response"
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/dto"
@@ -21,7 +22,7 @@ type BuyerHandler struct {
 }
 
 // Create a new buyer
-func (b *BuyerHandler) Create() http.HandlerFunc {
+func (h *BuyerHandler) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Decode body
 		var buyerRequestDto dto.BuyerRequestDTO
@@ -38,7 +39,7 @@ func (b *BuyerHandler) Create() http.HandlerFunc {
 		newBuyer := helper.BuyerRequestDTOToBuyer(buyerRequestDto)
 
 		// Call service
-		data, err := b.sv.Create(newBuyer)
+		data, err := h.sv.Create(newBuyer)
 		if err != nil {
 			if errors.Is(err, error_handler.CardNumberIdAlreadyInUse) {
 				response.Error(w, http.StatusConflict, err.Error())
@@ -56,10 +57,10 @@ func (b *BuyerHandler) Create() http.HandlerFunc {
 }
 
 // List all buyers
-func (b *BuyerHandler) GetAll() http.HandlerFunc {
+func (h *BuyerHandler) GetAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Call service
-		allBuyers, err := b.sv.GetAll()
+		buyers, err := h.sv.GetAll()
 		if err != nil {
 			response.Error(w, http.StatusInternalServerError, err.Error())
 			return
@@ -67,13 +68,42 @@ func (b *BuyerHandler) GetAll() http.HandlerFunc {
 
 		// Convert to Response format
 		var data []dto.BuyerResponseDTO
-		for _, value := range allBuyers {
+		for _, value := range buyers {
 			data = append(data, helper.BuyerToBuyerResponseDTO(value))
 		}
 
 		// Return response
 		response.JSON(w, http.StatusOK, map[string]any{
 			"data": data,
+		})
+	}
+}
+
+// Get a buyer by id
+func (h *BuyerHandler) GetByID() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Get id from url
+		idStr := r.URL.Query().Get("id")
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			response.Error(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		// Call service
+		data, err := h.sv.GetByID(id)
+		if err != nil {
+			if errors.Is(err, error_handler.IDNotFound) {
+				response.Error(w, http.StatusNotFound, "Buyer not found")
+				return
+			}
+			response.Error(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		// Return response
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data": helper.BuyerToBuyerResponseDTO(data),
 		})
 	}
 }
