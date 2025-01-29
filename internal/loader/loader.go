@@ -92,7 +92,7 @@ func LoadProducts() (p map[int]model.Product, err error) {
 	defer file.Close()
 
 	// decode file
-	var productsJSON []dto.ProductDTO
+	var productsJSON []dto.ProductResponseDTO
 	err = json.NewDecoder(file).Decode(&productsJSON)
 	if err != nil {
 		return
