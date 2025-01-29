@@ -25,7 +25,20 @@ func Load() (*DB, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// load products
 	productDb, err := LoadProducts()
+	if err != nil {
+		return nil, err
+	}
+
+	// load buyers
+	buyersDb, err := LoadBuyers()
+	if err != nil {
+		return nil, err
+	}
+
+	sectionDb, err := LoadSections()
 	if err != nil {
 		return nil, err
 	}
@@ -132,4 +145,41 @@ func LoadBuyers() (b map[int]model.Buyer, err error) {
 		b[buyer.Id] = helper.BuyerDtoToBuyer(buyer)
 	}
 	return
+}
+
+func LoadSections() (map[int]model.Section, error) {
+	// open file
+	file, err := os.Open("../infrastructure/json/section.json")
+	if err != nil {
+		return nil, errors.New("Error opening Sections file")
+	}
+	defer file.Close()
+
+	// decode file
+	var sectionsJSON []dto.SectionDTO
+	err = json.NewDecoder(file).Decode(&sectionsJSON)
+	if err != nil {
+		return nil, errors.New("Error decoding Sections file")
+	}
+
+	// serialize sections
+	s := make(map[int]model.Section)
+	for _, sec := range sectionsJSON {
+		s[sec.Id] = model.Section{
+			Id: sec.Id,
+			SectionAttributes: model.SectionAttributes{
+				SectionNumber:      sec.SectionNumber,
+				CurrentTemperature: sec.CurrentTemperature,
+				MinimumTemperature: sec.MinimumTemperature,
+				CurrentCapacity:    sec.CurrentCapacity,
+				MinimumCapacity:    sec.MinimumCapacity,
+				MaximumCapacity:    sec.MaximumCapacity,
+				WarehouseId:        sec.WarehouseId,
+				ProductTypeId:      sec.ProductTypeId,
+				ProductBatchId:     sec.ProductBatchId,
+			},
+		}
+	}
+
+	return s, nil
 }
