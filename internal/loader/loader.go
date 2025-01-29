@@ -55,7 +55,7 @@ func Load() (*DB, error) {
 
 func LoadEmployees() (map[int]model.Employee, error) {
 	// open file
-	file, err := os.Open("../infrastructure/json/employees.json") //TODO static path
+	file, err := os.Open("./infrastructure/json/employees.json") //TODO static path
 	if err != nil {
 		return nil, errors.New("Error opening Employees file")
 	}
@@ -149,7 +149,7 @@ func LoadBuyers() (b map[int]model.Buyer, err error) {
 
 func LoadSections() (map[int]model.Section, error) {
 	// open file
-	file, err := os.Open("../infrastructure/json/section.json")
+	file, err := os.Open("./infrastructure/json/section.json")
 	if err != nil {
 		return nil, errors.New("Error opening Sections file")
 	}
