@@ -7,6 +7,7 @@ import (
 
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/dto"
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
+	"github.com/luisantonisu/wave15-grupo4/internal/helper"
 )
 
 type DB struct {
@@ -21,17 +22,24 @@ type DB struct {
 func Load() (*DB, error) {
 	// load employees
 	employeesDb, err := LoadEmployees()
-
 	if err != nil {
 		return nil, err
-	} 
-  productDb, err := LoadProducts()
+	}
+
+	// load products
+	productDb, err := LoadProducts()
+	if err != nil {
+		return nil, err
+	}
+
+	// load buyers
+	buyersDb, err := LoadBuyers()
 	if err != nil {
 		return nil, err
 	}
 
 	return &DB{
-		Buyers:     map[int]model.Buyer{},
+		Buyers:     buyersDb,
 		Employees:  employeesDb,
 		Products:   productDb,
 		Sections:   map[int]model.Section{},
@@ -108,5 +116,28 @@ func LoadProducts() (p map[int]model.Product, err error) {
 		}
 	}
 
+	return
+}
+
+func LoadBuyers() (b map[int]model.Buyer, err error) {
+	// open file
+	file, err := os.Open("./infrastructure/json/buyers.json")
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	// decode file
+	var buyersJSON []dto.BuyerDTO
+	err = json.NewDecoder(file).Decode(&buyersJSON)
+	if err != nil {
+		return
+	}
+
+	// serialize buyers
+	b = make(map[int]model.Buyer)
+	for _, buyer := range buyersJSON {
+		b[buyer.Id] = helper.BuyerDtoToBuyer(buyer)
+	}
 	return
 }
