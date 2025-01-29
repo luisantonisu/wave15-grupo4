@@ -15,3 +15,13 @@ func NewSellerRepository(db map[int]model.Seller) *SellerRepository {
 type SellerRepository struct {
 	db map[int]model.Seller
 }
+
+func (s *SellerRepository) GetAll() (sellers map[int]model.Seller, err error) {
+	sellers = make(map[int]model.Seller)
+
+	for key, seller := range s.db {
+		sellers[key] = seller
+	}
+	
+	return
+}
