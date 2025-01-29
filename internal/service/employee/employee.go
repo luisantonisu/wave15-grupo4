@@ -23,9 +23,13 @@ func (h *EmployeeService) GetByID(id int) (model.Employee, error) {
 	return h.rp.GetByID(id)
 }
 
-func (h *EmployeeService) Save(employee model.Employee) (model.Employee, error) {
-	if employee.FirstName == "" || employee.LastName == "" || employee.CardNumberId <= 0 || employee.WarehouseId <= 0 {
+func (h *EmployeeService) Create(employee model.Employee) (model.Employee, error) {
+	if employee.FirstName == "" || employee.LastName == "" || employee.CardNumberID <= 0 || employee.WarehouseID <= 0 {
 		return model.Employee{}, errors.New("Invalid employee data")
 	}
-	return h.rp.Save(employee)
+	return h.rp.Create(employee)
+}
+
+func (h *EmployeeService) Delete(id int) error {
+	return h.rp.Delete(id)
 }

@@ -105,11 +105,13 @@ func (a *ServerChi) Run() (err error) {
 
 		})
 		rt.Route("/employees", func(rt chi.Router) {
-			// - GET /
+			// - GET /api/v1/employees
 			rt.Get("/", employeeHd.GetAll())
 			rt.Get("/{id}", employeeHd.GetByID())
-			// - POST /
-			rt.Post("/", employeeHd.Save())
+			// - POST /api/v1/employees
+			rt.Post("/", employeeHd.Create())
+			// - DELETE /api/v1/employees/{id}
+			rt.Delete("/{id}", employeeHd.Delete())
 		})
 		rt.Route("/products", func(rt chi.Router) {
 			// - GET /api/v1/products /

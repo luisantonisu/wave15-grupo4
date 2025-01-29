@@ -1,16 +1,16 @@
 package dto
 
-type EmployeeDTO struct {
-	Id           int    `json:"id"`
-	CardNumberId int    `json:"card_number_id"`
+type EmployeeResponseDTO struct {
+	ID           int    `json:"id"`
+	CardNumberID int    `json:"card_number_id"`
 	FirstName    string `json:"first_name"`
 	LastName     string `json:"last_name"`
-	WarehouseId  int    `json:"warehouse_id"`
+	WarehouseID  int    `json:"warehouse_id"`
 }
 
-type EmpSaveDTO struct {
-	CardNumberId int    `json:"card_number_id"`
+type EmployeeRequestDTO struct {
+	CardNumberID int    `json:"card_number_id"`
 	FirstName    string `json:"first_name"`
 	LastName     string `json:"last_name"`
-	WarehouseId  int    `json:"warehouse_id"`
+	WarehouseID  int    `json:"warehouse_id"`
 }
