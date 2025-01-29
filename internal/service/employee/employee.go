@@ -30,6 +30,10 @@ func (h *EmployeeService) Create(employee model.Employee) (model.Employee, error
 	return h.rp.Create(employee)
 }
 
+func (h *EmployeeService) Update(id int, employee model.Employee) (model.Employee, error) {
+	return h.rp.Update(id, employee)
+}
+
 func (h *EmployeeService) Delete(id int) error {
 	return h.rp.Delete(id)
 }

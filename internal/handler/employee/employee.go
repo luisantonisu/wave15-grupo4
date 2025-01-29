@@ -75,19 +75,52 @@ func (h *EmployeeHandler) Create() http.HandlerFunc {
 
 		emp, err := h.sv.Create(employee)
 
-		if err != nil && err.Error() == "Card number ID already exists" {
-			response.JSON(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		if err != nil && err.Error() == "Invalid employee data" {
-			response.JSON(w, http.StatusUnprocessableEntity, err.Error())
+		if err != nil {
+			if err.Error() == "Card number ID already exists" {
+				response.JSON(w, http.StatusBadRequest, err.Error())
+			} else if err.Error() == "Invalid employee data" {
+				response.JSON(w, http.StatusUnprocessableEntity, err.Error())
+			}
 			return
 		}
 
 		data := helper.EmployeeToEmployeeResponseDTO(emp)
 
 		response.JSON(w, http.StatusCreated, map[string]any{
+			"data": data,
+		})
+	}
+}
+
+func (h *EmployeeHandler) Update() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id, err := strconv.Atoi(chi.URLParam(r, "id"))
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, "Invalid id")
+			return
+		}
+
+		var empDto dto.EmployeeRequestDTO
+		if err := json.NewDecoder(r.Body).Decode(&empDto); err != nil {
+			response.JSON(w, http.StatusBadRequest, "Invalid request body")
+			return
+		}
+
+		employee := helper.EmployeeRequestDTOToEmployee(empDto)
+
+		empUpdated, err := h.sv.Update(id, employee)
+		if err != nil {
+			if err.Error() == "Employee not found" {
+				response.JSON(w, http.StatusNotFound, err.Error())
+			} else if err.Error() == "Card number ID already exists" {
+				response.JSON(w, http.StatusBadRequest, err.Error())
+			}
+			return
+		}
+
+		data := helper.EmployeeToEmployeeResponseDTO(empUpdated)
+
+		response.JSON(w, http.StatusOK, map[string]any{
 			"data": data,
 		})
 	}
@@ -107,6 +140,8 @@ func (h *EmployeeHandler) Delete() http.HandlerFunc {
 			return
 		}
 
-		response.JSON(w, http.StatusNoContent, "Employee deleted successfully")
+		response.JSON(w, http.StatusNoContent, map[string]any{
+			"message": "Employee deleted successfully",
+		})
 	}
 }
