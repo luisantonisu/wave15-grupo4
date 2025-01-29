@@ -38,6 +38,11 @@ func (productRepository *ProductRepository) GetProductById(id int) (product mode
 }
 
 func (productRepository *ProductRepository) CreateProduct(productAtrributes *model.ProductAtrributes) (err error) {
+	for _, prod := range productRepository.db {
+		if prod.ProductAtrributes.ProductCode == productAtrributes.ProductCode {
+			return errors.New("Product already exists")
+		}
+	}
 	var newProduct model.Product
 	newProduct.ID = len(productRepository.db) + 1
 	newProduct.ProductAtrributes = *productAtrributes
@@ -45,5 +50,14 @@ func (productRepository *ProductRepository) CreateProduct(productAtrributes *mod
 		return errors.New("Product is nil")
 	}
 	productRepository.db[len(productRepository.db)+1] = newProduct
+	return nil
+}
+
+func (productRepository *ProductRepository) DeleteProduct(id int) (err error) {
+	_, ok := productRepository.db[id]
+	if !ok {
+		return errors.New("Product not found")
+	}
+	delete(productRepository.db, id)
 	return nil
 }
