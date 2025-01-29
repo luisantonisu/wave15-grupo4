@@ -118,11 +118,13 @@ func (a *ServerChi) Run() (err error) {
 		rt.Route("/products", func(rt chi.Router) {
 			// - GET /api/v1/products /
 			rt.Get("/", productHd.GetAll())
-			rt.Get("/{id}", productHd.GetById())
+			rt.Get("/{id}", productHd.GetByID())
 			// - POST /api/v1/products /
 			rt.Post("/", productHd.Create())
 			// - DELETE /api/v1/products /
 			rt.Delete("/{id}", productHd.Delete())
+			// - PATCH /api/v1/products /
+			rt.Patch("/{id}", productHd.Update())
 		})
 		rt.Route("/sections", func(rt chi.Router) {
 			// - GET /
@@ -133,8 +135,10 @@ func (a *ServerChi) Run() (err error) {
 			rt.Get("/", sellerHd.GetAll())
 		})
 		rt.Route("/warehouses", func(rt chi.Router) {
-			// - GET /
+			// - GET /api/v1/warehouses
 			rt.Get("/", warehouseHd.GetAll())
+			// - GET /api/v1/warehouses/{id}
+			rt.Get("/{id}", warehouseHd.GetByID())
 		})
 	})
 

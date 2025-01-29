@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 )
@@ -25,7 +26,7 @@ func (productRepository *ProductRepository) GetProduct() (productMap map[int]mod
 	return productRepository.db, nil
 }
 
-func (productRepository *ProductRepository) GetProductById(id int) (product model.Product, err error) {
+func (productRepository *ProductRepository) GetProductByID(id int) (product model.Product, err error) {
 	if len(productRepository.db) == 0 {
 		return model.Product{}, errors.New("No products found")
 	}
@@ -60,4 +61,74 @@ func (productRepository *ProductRepository) DeleteProduct(id int) (err error) {
 	}
 	delete(productRepository.db, id)
 	return nil
+}
+
+func (productRepository *ProductRepository) UpdateProduct(id int, productAtrributes *model.ProductAtrributes) (product *model.Product, err error) {
+
+	if _, ok := productRepository.db[id]; ok {
+		for _, prod := range productRepository.db {
+			if prod.ProductAtrributes.ProductCode == productAtrributes.ProductCode {
+				return nil, errors.New("Product code already exists")
+			}
+		}
+
+		if productAtrributes == nil {
+			return nil, errors.New("Product is nil")
+		}
+
+		if productAtrributes.ProductCode != "" {
+			patchedProduct := productRepository.db[id]
+			patchedProduct.ProductAtrributes.ProductCode = productAtrributes.ProductCode
+			productRepository.db[id] = patchedProduct
+			fmt.Println(patchedProduct)
+		}
+		if productAtrributes.Description != "" {
+			patchedProduct := productRepository.db[id]
+			patchedProduct.ProductAtrributes.Description = productAtrributes.Description
+			productRepository.db[id] = patchedProduct
+		}
+		if productAtrributes.Width != 0 {
+			patchedProduct := productRepository.db[id]
+			patchedProduct.ProductAtrributes.Width = productAtrributes.Width
+			productRepository.db[id] = patchedProduct
+		}
+		if productAtrributes.Height != 0 {
+			patchedProduct := productRepository.db[id]
+			patchedProduct.ProductAtrributes.Height = productAtrributes.Height
+			productRepository.db[id] = patchedProduct
+		}
+		if productAtrributes.Length != 0 {
+			patchedProduct := productRepository.db[id]
+			patchedProduct.ProductAtrributes.Length = productAtrributes.Length
+			productRepository.db[id] = patchedProduct
+		}
+		if productAtrributes.NetWeight != 0 {
+			patchedProduct := productRepository.db[id]
+			patchedProduct.ProductAtrributes.NetWeight = productAtrributes.NetWeight
+			productRepository.db[id] = patchedProduct
+		}
+		if productAtrributes.ExpirationRate != 0 {
+			patchedProduct := productRepository.db[id]
+			patchedProduct.ProductAtrributes.ExpirationRate = productAtrributes.ExpirationRate
+			productRepository.db[id] = patchedProduct
+		}
+		if productAtrributes.RecommendedFreezingTemperature != 0 {
+			patchedProduct := productRepository.db[id]
+			patchedProduct.ProductAtrributes.RecommendedFreezingTemperature = productAtrributes.RecommendedFreezingTemperature
+			productRepository.db[id] = patchedProduct
+		}
+		if productAtrributes.FreezingRate != 0 {
+			patchedProduct := productRepository.db[id]
+			patchedProduct.ProductAtrributes.FreezingRate = productAtrributes.FreezingRate
+			productRepository.db[id] = patchedProduct
+		}
+		if productAtrributes.ProductTypeID != 0 {
+			patchedProduct := productRepository.db[id]
+			patchedProduct.ProductAtrributes.ProductTypeID = productAtrributes.ProductTypeID
+			productRepository.db[id] = patchedProduct
+		}
+		product, _ := productRepository.db[id]
+		return &product, nil
+	}
+	return nil, errors.New("Product not found")
 }

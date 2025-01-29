@@ -1,7 +1,7 @@
 package dto
 
 type WarehouseResponseDTO struct {
-	Id                 int     `json:"id"`
+	ID                 int     `json:"id"`
 	WarehouseCode      string  `json:"warehouse_code"`
 	Address            string  `json:"address"`
 	Telephone          uint    `json:"telephone"`
