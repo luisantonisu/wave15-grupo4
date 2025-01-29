@@ -15,3 +15,7 @@ func NewWarehouseRepository(db map[int]model.Warehouse) *WarehouseRepository {
 type WarehouseRepository struct {
 	db map[int]model.Warehouse
 }
+
+func (wr *WarehouseRepository) GetAll() (map[int]model.Warehouse, error) {
+	return wr.db, nil
+}
