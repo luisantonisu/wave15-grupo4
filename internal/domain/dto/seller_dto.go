@@ -14,3 +14,10 @@ type SellerRequestDTO struct {
 	Address     string `json:"address"`
 	Telephone   string `json:"telephone"`
 }
+
+type SellerRequestDTOPtr struct {
+	CompanyID   *int    `json:"cid"`
+	CompanyName *string `json:"company_name"`
+	Address     *string `json:"address"`
+	Telephone   *string `json:"telephone"`
+}

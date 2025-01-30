@@ -13,8 +13,10 @@ import (
 )
 
 const (
-	sellerExist = "seller alredy exist"
+	sellerAlredyExist = "seller alredy exist"
 	invalidData = "seller data incorrectly formed or incomplete"
+	sellerNotFound = "seller not found"
+	companyIDregistered = "a seller is already registered with this Company id"
 )
 
 func NewSellerHandler(sv service.ISeller) *SellerHandler {
@@ -91,13 +93,13 @@ func (h *SellerHandler) Create() http.HandlerFunc {
 		data, err := h.sv.Create(seller)
 		if err != nil {
 
-			if err.Error() == sellerExist {
+			if err.Error() == sellerAlredyExist {
 				response.JSON(w, http.StatusConflict, map[string]any{
 					"status_code": http.StatusConflict,
 					"message":     err.Error(),
 				})
 				return
-			} 
+			}
 
 			if err.Error() == invalidData {
 				response.JSON(w, http.StatusBadRequest, map[string]any{
@@ -105,16 +107,63 @@ func (h *SellerHandler) Create() http.HandlerFunc {
 					"message":     err.Error(),
 				})
 				return
-			} 
-			
+			}
+
 		}
 
 		//mapping
-		var serializedData = helper.SellerToSellerResponseDTO(data) 
+		var serializedData = helper.SellerToSellerResponseDTO(data)
 
 		//response
 		var resp []dto.SellerResponseDTO
 		response.JSON(w, http.StatusCreated, map[string]any{
+			"data": append(resp, serializedData),
+		})
+	}
+}
+
+func (h *SellerHandler) Update() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		//request
+		id, err := strconv.Atoi(chi.URLParam(r, "id"))
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, nil)
+			return
+		}
+
+		var updateSeller dto.SellerRequestDTOPtr
+		json.NewDecoder(r.Body).Decode(&updateSeller)
+
+		//mapping
+		var seller = helper.SellerRequestDTOPtrToSellerPtr(updateSeller)
+
+		//process
+		data, err := h.sv.Update(id, seller)
+		if err != nil {
+
+			if err.Error() == sellerNotFound {
+				response.JSON(w, http.StatusNotFound, map[string]any{
+					"status_code": http.StatusNotFound,
+					"message":     err.Error(),
+				})
+				return
+			}
+
+			if err.Error() == companyIDregistered {
+				response.JSON(w, http.StatusConflict, map[string]any{
+					"status_code": http.StatusConflict,
+					"message":     err.Error(),
+				})
+				return
+			}
+		}
+
+		//mapping
+		var serializedData = helper.SellerToSellerResponseDTO(data)
+
+		//response
+		var resp []dto.SellerResponseDTO
+		response.JSON(w, http.StatusOK, map[string]any{
 			"data": append(resp, serializedData),
 		})
 	}
