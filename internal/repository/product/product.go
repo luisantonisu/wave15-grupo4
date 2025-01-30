@@ -62,65 +62,56 @@ func (productRepository *ProductRepository) DeleteProduct(id int) (err error) {
 	return nil
 }
 
-func (productRepository *ProductRepository) UpdateProduct(id int, productAtrributes *model.ProductAtrributesPtr) (product *model.Product, err error) {
+func (productRepository *ProductRepository) UpdateProduct(id int, productAtrributesPtr *model.ProductAtrributesPtr) (product *model.Product, err error) {
 
 	if _, ok := productRepository.db[id]; !ok {
 		return nil, errors.New("Product not found")
 	}
 
-	if productAtrributes == nil {
+	if productAtrributesPtr == nil {
 		return nil, errors.New("Product is nil")
 	}
 
 	for _, prod := range productRepository.db {
-		if prod.ProductAtrributes.ProductCode == *productAtrributes.ProductCode {
+		if prod.ProductAtrributes.ProductCode == *productAtrributesPtr.ProductCode {
 			return nil, errors.New("Product code already exists")
 		}
 	}
-
 	patchedProduct := productRepository.db[id]
 
-	if productAtrributes.ProductCode != nil {
-		patchedProduct.ProductAtrributes.ProductCode = *productAtrributes.ProductCode
-		productRepository.db[id] = patchedProduct
+	if productAtrributesPtr.ProductCode != nil {
+		patchedProduct.ProductAtrributes.ProductCode = *productAtrributesPtr.ProductCode
 	}
-	if productAtrributes.Description != nil {
-		patchedProduct.ProductAtrributes.Description = *productAtrributes.Description
-		productRepository.db[id] = patchedProduct
+	if productAtrributesPtr.Description != nil {
+		patchedProduct.ProductAtrributes.Description = *productAtrributesPtr.Description
 	}
-	if productAtrributes.Width != nil {
-		patchedProduct.ProductAtrributes.Width = *productAtrributes.Width
-		productRepository.db[id] = patchedProduct
+	if productAtrributesPtr.Width != nil {
+		patchedProduct.ProductAtrributes.Width = *productAtrributesPtr.Width
 	}
-	if productAtrributes.Height != nil {
-		patchedProduct.ProductAtrributes.Height = *productAtrributes.Height
-		productRepository.db[id] = patchedProduct
+	if productAtrributesPtr.Height != nil {
+		patchedProduct.ProductAtrributes.Height = *productAtrributesPtr.Height
 	}
-	if productAtrributes.Length != nil {
-		patchedProduct.ProductAtrributes.Length = *productAtrributes.Length
-		productRepository.db[id] = patchedProduct
+	if productAtrributesPtr.Length != nil {
+		patchedProduct.ProductAtrributes.Length = *productAtrributesPtr.Length
 	}
-	if productAtrributes.NetWeight != nil {
-		patchedProduct.ProductAtrributes.NetWeight = *productAtrributes.NetWeight
-		productRepository.db[id] = patchedProduct
+	if productAtrributesPtr.NetWeight != nil {
+		patchedProduct.ProductAtrributes.NetWeight = *productAtrributesPtr.NetWeight
 	}
-	if productAtrributes.ExpirationRate != nil {
-		patchedProduct.ProductAtrributes.ExpirationRate = *productAtrributes.ExpirationRate
-		productRepository.db[id] = patchedProduct
+	if productAtrributesPtr.ExpirationRate != nil {
+		patchedProduct.ProductAtrributes.ExpirationRate = *productAtrributesPtr.ExpirationRate
 	}
-	if productAtrributes.RecommendedFreezingTemperature != nil {
-		patchedProduct.ProductAtrributes.RecommendedFreezingTemperature = *productAtrributes.RecommendedFreezingTemperature
-		productRepository.db[id] = patchedProduct
+	if productAtrributesPtr.RecommendedFreezingTemperature != nil {
+		patchedProduct.ProductAtrributes.RecommendedFreezingTemperature = *productAtrributesPtr.RecommendedFreezingTemperature
 	}
-	if productAtrributes.FreezingRate != nil {
-		patchedProduct.ProductAtrributes.FreezingRate = *productAtrributes.FreezingRate
-		productRepository.db[id] = patchedProduct
+	if productAtrributesPtr.FreezingRate != nil {
+		patchedProduct.ProductAtrributes.FreezingRate = *productAtrributesPtr.FreezingRate
 	}
-	if productAtrributes.ProductTypeID != nil {
-		patchedProduct.ProductAtrributes.ProductTypeID = *productAtrributes.ProductTypeID
-		productRepository.db[id] = patchedProduct
+	if productAtrributesPtr.ProductTypeID != nil {
+		patchedProduct.ProductAtrributes.ProductTypeID = *productAtrributesPtr.ProductTypeID
 	}
-	patchedProduct = productRepository.db[id]
+
+	// Update the product in the repository after all fields have been patched
+	productRepository.db[id] = patchedProduct
 	product = &patchedProduct
 	return product, nil
 }
