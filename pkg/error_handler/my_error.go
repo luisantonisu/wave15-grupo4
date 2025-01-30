@@ -7,5 +7,8 @@ type MyError struct {
 	Error error
 }
 
-var CardNumberIdAlreadyInUse = errors.New("Card number id already in use")
-var IDNotFound = errors.New("ID not found")
+var (
+	CardNumberIdAlreadyInUse = errors.New("Card number id already in use")
+	IDNotFound               = errors.New("ID not found")
+	IDAlreadyInUse           = errors.New("ID already in use")
+)
