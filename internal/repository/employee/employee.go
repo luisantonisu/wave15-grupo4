@@ -1,9 +1,8 @@
 package repository
 
 import (
-	"errors"
-
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
+	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
 func NewEmployeeRepository(db map[int]model.Employee) *EmployeeRepository {
@@ -39,7 +38,7 @@ func (r *EmployeeRepository) GetAll() (map[int]model.Employee, error) {
 
 func (r *EmployeeRepository) GetByID(id int) (model.Employee, error) {
 	if !r.employeeExists(id) {
-		return model.Employee{}, errors.New("Employee not found")
+		return model.Employee{}, eh.GetErrNotFound(eh.EMPLOYEE)
 	}
 
 	return r.db[id], nil
@@ -48,7 +47,7 @@ func (r *EmployeeRepository) GetByID(id int) (model.Employee, error) {
 func (r *EmployeeRepository) Create(employee model.Employee) (model.Employee, error) {
 
 	if r.cardNumberIdExists(employee.CardNumberID) {
-		return model.Employee{}, errors.New("Card number ID already exists")
+		return model.Employee{}, eh.GetErrAlreadyExists(eh.CARD_NUMBER)
 	}
 
 	lastId := r.db[len(r.db)].ID + 1
@@ -60,11 +59,11 @@ func (r *EmployeeRepository) Create(employee model.Employee) (model.Employee, er
 
 func (r *EmployeeRepository) Update(id int, employee model.EmployeeAttributesPtr) (model.Employee, error) {
 	if !r.employeeExists(id) {
-		return model.Employee{}, errors.New("Employee not found")
+		return model.Employee{}, eh.GetErrNotFound(eh.EMPLOYEE)
 	}
 
 	if r.cardNumberIdExists(*employee.CardNumberID) {
-		return model.Employee{}, errors.New("Card number ID already exists")
+		return model.Employee{}, eh.GetErrAlreadyExists(eh.CARD_NUMBER)
 	}
 
 	emp := r.db[id]
@@ -91,7 +90,7 @@ func (r *EmployeeRepository) Update(id int, employee model.EmployeeAttributesPtr
 
 func (r *EmployeeRepository) Delete(id int) error {
 	if !r.employeeExists(id) {
-		return errors.New("Employee not found")
+		return eh.GetErrNotFound(eh.EMPLOYEE)
 	}
 
 	delete(r.db, id)

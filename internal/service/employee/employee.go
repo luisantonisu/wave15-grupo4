@@ -1,10 +1,9 @@
 package service
 
 import (
-	"errors"
-
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 	repository "github.com/luisantonisu/wave15-grupo4/internal/repository/employee"
+	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
 func NewEmployeeService(rp repository.IEmployee) *EmployeeService {
@@ -25,7 +24,7 @@ func (h *EmployeeService) GetByID(id int) (model.Employee, error) {
 
 func (h *EmployeeService) Create(employee model.Employee) (model.Employee, error) {
 	if employee.FirstName == "" || employee.LastName == "" || employee.CardNumberID <= 0 || employee.WarehouseID <= 0 {
-		return model.Employee{}, errors.New("Invalid employee data")
+		return model.Employee{}, eh.GetErrInvalidData(eh.EMPLOYEE)
 	}
 	return h.rp.Create(employee)
 }
