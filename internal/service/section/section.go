@@ -20,3 +20,7 @@ func (h *SectionService) GetAll() (map[int]model.Section, error) {
 func (h *SectionService) GetByID(id int) (model.Section, error) {
 	return h.rp.GetByID(id)
 }
+
+func (h *SectionService) Create(section model.Section) (model.Section, error) {
+	return h.rp.Create(section)
+}

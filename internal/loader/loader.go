@@ -172,7 +172,7 @@ func LoadSections() (s map[int]model.Section, err error) {
 	s = make(map[int]model.Section)
 	for key, value := range sectionsJSON {
 		section := helper.SectionRequestDTOToSection(value)
-		section.Id = key + 1
+		section.ID = key + 1
 		s[key+1] = section
 	}
 

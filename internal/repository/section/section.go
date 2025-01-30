@@ -29,3 +29,23 @@ func (s *SectionRepository) GetByID(id int) (model.Section, error) {
 	}
 	return section, nil
 }
+
+func (s *SectionRepository) Create(section model.Section) (model.Section, error) {
+	if s.sectionNumberExist(section.SectionNumber) {
+		return model.Section{}, errors.New("section number already exists")
+	}
+	lastId := s.db[len(s.db)].ID + 1
+	section.ID = lastId
+	s.db[section.ID] = section
+
+	return s.db[lastId], nil
+}
+
+func (s *SectionRepository) sectionNumberExist(sectionNumber int) bool {
+	for _, section := range s.db {
+		if section.SectionNumber == sectionNumber {
+			return true
+		}
+	}
+	return false
+}
