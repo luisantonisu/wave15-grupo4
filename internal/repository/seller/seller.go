@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"errors"
+
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 )
 
@@ -24,4 +26,15 @@ func (r *SellerRepository) GetAll() (map[int]model.Seller, error) {
 	}
 	
 	return sellers, nil
+}
+
+func (r *SellerRepository) GetByID(id int) (model.Seller, error) {
+	
+	for _, seller := range r.db {
+		if seller.ID == id {
+			return seller, nil
+		}
+	}
+
+	return model.Seller{}, errors.New("seller not found")
 }

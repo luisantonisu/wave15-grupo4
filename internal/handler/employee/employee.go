@@ -140,8 +140,6 @@ func (h *EmployeeHandler) Delete() http.HandlerFunc {
 			return
 		}
 
-		response.JSON(w, http.StatusNoContent, map[string]any{
-			"message": "Employee deleted successfully",
-		})
+		response.JSON(w, http.StatusNoContent, nil)
 	}
 }

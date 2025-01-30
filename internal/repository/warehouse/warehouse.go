@@ -11,10 +11,11 @@ func NewWarehouseRepository(db map[int]model.Warehouse) *WarehouseRepository {
 	if db != nil {
 		defaultDb = db
 	}
-	return &WarehouseRepository{db: defaultDb}
+	return &WarehouseRepository{autoIncrement: len(db), db: defaultDb}
 }
 
 type WarehouseRepository struct {
+	autoIncrement int
 	db map[int]model.Warehouse
 }
 
@@ -31,6 +32,24 @@ func (wr *WarehouseRepository) GetByID(id int) (model.Warehouse, error) {
 	if !ok {
 		return model.Warehouse{}, errors.New("warehouse not found")
 	}
+
+	return warehouse, nil
+}
+
+func (wr *WarehouseRepository) Create(warehouse model.Warehouse) (model.Warehouse, error) {
+	if warehouse.WarehouseCode == "" {
+		return model.Warehouse{}, errors.New("warehouse code is required")
+	}
+	
+	for _, w := range wr.db {
+		if w.WarehouseCode == warehouse.WarehouseCode {
+			return model.Warehouse{}, errors.New("warehouse code already exists")
+		}
+	}
+	
+	wr.autoIncrement++
+	warehouse.ID = wr.autoIncrement
+	wr.db[warehouse.ID] = warehouse
 
 	return warehouse, nil
 }

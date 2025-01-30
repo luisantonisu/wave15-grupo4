@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -60,6 +61,39 @@ func (wh *WarehouseHandler) GetByID() http.HandlerFunc {
 		data := helper.WarehouseToWarehouseResponseDTO(warehouse)
 
 		response.JSON(w, http.StatusOK, map[string]any{
+			"data": data,
+		})
+	}
+}
+
+func (wh *WarehouseHandler) Create() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var warehouseRequest dto.WarehouseRequestDTO
+		if err := json.NewDecoder(r.Body).Decode(&warehouseRequest); err != nil {
+			response.JSON(w, http.StatusBadRequest, "Invalid request body")
+			return
+		}
+
+		warehouse := helper.WarehouseRequestDTOToWarehouse(warehouseRequest)
+		createdWarehouse, err := wh.sv.Create(warehouse)
+		if err != nil {
+			if err.Error() == "warehouse code is required" {
+				response.JSON(w, http.StatusUnprocessableEntity, err.Error())
+				return
+			}
+
+			if err.Error() == "warehouse code already exists" {
+				response.JSON(w, http.StatusConflict, err.Error())
+				return
+			}
+
+			response.JSON(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		data := helper.WarehouseToWarehouseResponseDTO(createdWarehouse)
+
+		response.JSON(w, http.StatusCreated, map[string]any{
 			"data": data,
 		})
 	}

@@ -43,6 +43,16 @@ func (r *BuyerRepository) GetByID(id int) (model.Buyer, error) {
 	return buyer, nil
 }
 
+// Delete a buyer by id
+func (r *BuyerRepository) Delete(id int) error {
+	_, ok := r.db[id]
+	if !ok {
+		return error_handler.IDNotFound
+	}
+	delete(r.db, id)
+	return nil
+}
+
 // Get the nex available id for a new buyer
 func (r *BuyerRepository) getNextId() int {
 	newId := len(r.db) + 1

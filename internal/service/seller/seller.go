@@ -23,3 +23,18 @@ func (s *SellerService) GetAll() (sellers map[int]model.Seller, err error) {
 
 	return
 }
+
+func (s *SellerService) GetByID(id int) (model.Seller, error) {
+
+	if id == 0 {
+		return model.Seller{}, errors.New("data not found")
+	}
+	
+	
+	seller, err := s.rp.GetByID(id)
+	if err != nil {
+		return model.Seller{}, err
+	}
+
+	return seller, nil
+}
