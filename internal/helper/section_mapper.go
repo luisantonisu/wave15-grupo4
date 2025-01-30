@@ -7,16 +7,16 @@ import (
 
 func SectionToSectionResponseDTO(section model.Section) dto.SectionResponseDTO {
 	data := dto.SectionResponseDTO{
-		Id:                 section.Id,
+		ID:                 section.ID,
 		SectionNumber:      section.SectionNumber,
 		CurrentTemperature: section.CurrentTemperature,
 		MinimumTemperature: section.MinimumTemperature,
 		CurrentCapacity:    section.CurrentCapacity,
 		MinimumCapacity:    section.MinimumCapacity,
 		MaximumCapacity:    section.MaximumCapacity,
-		WarehouseId:        section.WarehouseId,
-		ProductTypeId:      section.ProductTypeId,
-		ProductBatchId:     section.ProductBatchId,
+		WarehouseID:        section.WarehouseID,
+		ProductTypeID:      section.ProductTypeID,
+		ProductBatchID:     section.ProductBatchID,
 	}
 	return data
 }
@@ -30,9 +30,9 @@ func SectionRequestDTOToSection(sectionRequestDTO dto.SectionRequestDTO) model.S
 			CurrentCapacity:    sectionRequestDTO.CurrentCapacity,
 			MinimumCapacity:    sectionRequestDTO.MinimumCapacity,
 			MaximumCapacity:    sectionRequestDTO.MaximumCapacity,
-			WarehouseId:        sectionRequestDTO.WarehouseId,
-			ProductTypeId:      sectionRequestDTO.ProductTypeId,
-			ProductBatchId:     sectionRequestDTO.ProductBatchId,
+			WarehouseID:        sectionRequestDTO.WarehouseID,
+			ProductTypeID:      sectionRequestDTO.ProductTypeID,
+			ProductBatchID:     sectionRequestDTO.ProductBatchID,
 		},
 	}
 	return data

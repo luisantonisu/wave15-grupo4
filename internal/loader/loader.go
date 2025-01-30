@@ -157,22 +157,21 @@ func LoadSections() (s map[int]model.Section, err error) {
 	// open file
 	file, err := os.Open("./infrastructure/json/section.json")
 	if err != nil {
-		return nil, errors.New("Error opening Sections file")
+		return nil, errors.New("error opening Sections file")
 	}
 	defer file.Close()
 
-	// decode file
 	var sectionsJSON []dto.SectionRequestDTO
 	err = json.NewDecoder(file).Decode(&sectionsJSON)
 	if err != nil {
-		return nil, errors.New("Error decoding Sections file")
+		return nil, errors.New("error decoding Sections file: " + err.Error())
 	}
 
 	// serialize sections
 	s = make(map[int]model.Section)
 	for key, value := range sectionsJSON {
 		section := helper.SectionRequestDTOToSection(value)
-		section.Id = key + 1
+		section.ID = key + 1
 		s[key+1] = section
 	}
 
