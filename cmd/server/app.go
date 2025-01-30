@@ -139,10 +139,12 @@ func (a *ServerChi) Run() (err error) {
 		rt.Route("/sellers", func(rt chi.Router) {
 			// - GET /api/v1/sellers
 			rt.Get("/", sellerHd.GetAll())
-			// -GET /api/v1/sellers/{id}
+			// - GET /api/v1/sellers/{id}
 			rt.Get("/{id}", sellerHd.GetByID())
-			// -POST /api/v1/sellers
+			// - POST /api/v1/sellers
 			rt.Post("/", sellerHd.Create())
+			// - PATCH /api/v1/sellers/{id}
+			rt.Patch("/{id}", sellerHd.Update())
 		})
 		rt.Route("/warehouses", func(rt chi.Router) {
 			// - GET /api/v1/warehouses

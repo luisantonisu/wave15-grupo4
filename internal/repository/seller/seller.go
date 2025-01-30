@@ -58,12 +58,12 @@ func (r *SellerRepository) Create(seller model.Seller) (model.Seller, error) {
 }
 
 func (r *SellerRepository) Update(id int, seller model.Seller) (model.Seller, error) {
-	if _, ok := r .db[id]; !ok {
+	if _, ok := r.db[id]; !ok {
 		return model.Seller{}, errors.New("seller not found")
 	}
 
 	for _, value := range r.db {
-		if value.CompanyID == seller.CompanyID {
+		if value.CompanyID == seller.CompanyID && value.ID != id{
 			return model.Seller{}, errors.New("a seller is already registered with this Company id")
 		}
 	}
@@ -79,7 +79,7 @@ func (r *SellerRepository) Update(id int, seller model.Seller) (model.Seller, er
 	}
 
 	if seller.Address != "" {
-		updateSeller.Address = seller.Address 
+		updateSeller.Address = seller.Address
 	}
 
 	if seller.Telephone != "" {
