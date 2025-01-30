@@ -99,3 +99,25 @@ func (h *SectionHandler) Create() http.HandlerFunc {
 		})
 	}
 }
+
+func (h *SectionHandler) Delete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id, err := strconv.Atoi(chi.URLParam(r, "id"))
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, "Invalid id")
+			return
+		}
+
+		err = h.sv.Delete(id)
+		if err != nil {
+			if err.Error() == "section not found" {
+				response.JSON(w, http.StatusNotFound, "Section not found")
+				return
+			}
+			response.JSON(w, http.StatusInternalServerError, nil)
+			return
+		}
+
+		response.JSON(w, http.StatusNoContent, nil)
+	}
+}

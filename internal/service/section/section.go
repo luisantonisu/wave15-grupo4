@@ -37,3 +37,7 @@ func (h *SectionService) Create(section model.Section) (model.Section, error) {
 	}
 	return h.rp.Create(section)
 }
+
+func (h *SectionService) Delete(id int) error {
+	return h.rp.Delete(id)
+}
