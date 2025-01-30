@@ -141,6 +141,8 @@ func (a *ServerChi) Run() (err error) {
 			rt.Get("/", sellerHd.GetAll())
 			// -GET /api/v1/sellers/{id}
 			rt.Get("/{id}", sellerHd.GetByID())
+			// -POST /api/v1/sellers
+			rt.Post("/", sellerHd.Create())
 		})
 		rt.Route("/warehouses", func(rt chi.Router) {
 			// - GET /api/v1/warehouses
