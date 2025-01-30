@@ -38,7 +38,7 @@ func (r *BuyerRepository) GetAll() (map[int]model.Buyer, error) {
 func (r *BuyerRepository) GetByID(id int) (model.Buyer, error) {
 	buyer, ok := r.db[id]
 	if !ok {
-		return model.Buyer{}, error_handler.IDNotFound
+		return model.Buyer{}, error_handler.ErrNotFound
 	}
 	return buyer, nil
 }
@@ -47,7 +47,7 @@ func (r *BuyerRepository) GetByID(id int) (model.Buyer, error) {
 func (r *BuyerRepository) Delete(id int) error {
 	_, ok := r.db[id]
 	if !ok {
-		return error_handler.IDNotFound
+		return error_handler.ErrNotFound
 	}
 	delete(r.db, id)
 	return nil
@@ -63,7 +63,7 @@ func (r *BuyerRepository) getNextId() int {
 func (r *BuyerRepository) validateCardNumberId(cardNumberId int) error {
 	for _, buyer := range r.db {
 		if buyer.CardNumberId == cardNumberId {
-			return error_handler.CardNumberIdAlreadyInUse
+			return error_handler.ErrAlreadyExists
 		}
 	}
 	return nil
@@ -73,7 +73,7 @@ func (r *BuyerRepository) validateCardNumberId(cardNumberId int) error {
 func (r *BuyerRepository) validateId(id int) error {
 	_, ok := r.db[id]
 	if ok {
-		return error_handler.IDAlreadyInUse
+		return error_handler.ErrAlreadyExists
 	}
 	return nil
 }
@@ -83,7 +83,7 @@ func (r *BuyerRepository) Update(id int, buyer model.BuyerAttributesPtr) (model.
 	// Validate buyer exists
 	buyerOld, ok := r.db[id]
 	if !ok {
-		return model.Buyer{}, error_handler.IDNotFound
+		return model.Buyer{}, error_handler.ErrNotFound
 	}
 
 	// Update buyer in db
