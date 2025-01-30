@@ -134,3 +134,45 @@ func (h *BuyerHandler) Delete() http.HandlerFunc {
 		response.JSON(w, http.StatusNoContent, nil)
 	}
 }
+
+// Update a buyer info by id
+func (h *BuyerHandler) Update() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Get id from url
+		idStr := chi.URLParam(r, "id")
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			response.Error(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		// Decode body
+		var buyerRequestDto dto.BuyerRequestDTO
+		if err := json.NewDecoder(r.Body).Decode(&buyerRequestDto); err != nil {
+			response.Error(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		newBuyer := helper.BuyerRequestDTOToBuyer(buyerRequestDto)
+
+		// Call service
+		data, err := h.sv.Update(id, newBuyer)
+		if err != nil {
+			if errors.Is(err, error_handler.IDNotFound) {
+				response.Error(w, http.StatusNotFound, "Buyer not found")
+				return
+			}
+			if errors.Is(err, error_handler.CardNumberIdAlreadyInUse) {
+				response.Error(w, http.StatusConflict, err.Error())
+				return
+			}
+			response.Error(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		// Return response
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data": helper.BuyerToBuyerResponseDTO(data),
+		})
+	}
+}
