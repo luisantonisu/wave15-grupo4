@@ -92,6 +92,15 @@ func (r *SellerRepository) Update(id int, seller model.SellerAtrributesPtr) (mod
 
 }
 
+func (r *SellerRepository) Delete(id int) (error) {
+	_, ok := r.db[id]
+	if !ok {
+		return errors.New("seller not found")
+	}
+	delete(r.db, id)
+	return nil
+}
+
 func (r *SellerRepository) validateCompanyID(companyID int) error {
 	for _, seller := range r.db {
 		companyExist := seller.CompanyID == companyID

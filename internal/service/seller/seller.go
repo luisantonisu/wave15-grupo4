@@ -67,6 +67,13 @@ func (s *SellerService) Update(id int, seller model.SellerAtrributesPtr) (model.
 
 }
 
+func (s *SellerService) Delete(id int) (error) {
+	if id == 0 {
+		return errors.New("invalid ID")
+	}
+	return s.rp.Delete(id)
+}
+
 func (s *SellerService) validateSeller(seller model.Seller) error {
 	
 	hasCID := seller.CompanyID != 0

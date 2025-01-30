@@ -168,3 +168,24 @@ func (h *SellerHandler) Update() http.HandlerFunc {
 		})
 	}
 }
+
+func (h *SellerHandler) Delete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		//request
+		id, err := strconv.Atoi(chi.URLParam(r, "id"))
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, nil)
+			return
+		}
+
+		//process
+		err = h.sv.Delete(id)
+		if err != nil {
+			response.JSON(w, http.StatusNotFound, err.Error())
+			return
+		}
+
+		//Response
+		response.JSON(w, http.StatusNoContent, nil)
+	}
+}
