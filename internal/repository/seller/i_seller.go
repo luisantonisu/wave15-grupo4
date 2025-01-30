@@ -7,4 +7,5 @@ type ISeller interface {
 	GetByID(id int) (model.Seller, error)
 	Create(seller model.Seller) (model.Seller, error)
 	Update(id int, seller model.SellerAtrributesPtr) (model.Seller, error)
+	Delete(id int) (error)
 }
