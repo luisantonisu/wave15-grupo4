@@ -1,10 +1,9 @@
 package service
 
 import (
-	"errors"
-
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 	repository "github.com/luisantonisu/wave15-grupo4/internal/repository/seller"
+	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
 func NewSellerService(rp repository.ISeller) *SellerService {
@@ -16,9 +15,9 @@ type SellerService struct {
 }
 
 func (s *SellerService) GetAll() (sellers map[int]model.Seller, err error) {
-    sellers, err = s.rp.GetAll()
-    if len(sellers) == 0 {
-		return nil, errors.New("data not found")
+	sellers, err = s.rp.GetAll()
+	if len(sellers) == 0 {
+		return nil, eh.GetErrNotFound(eh.SELLER)
 	}
 
 	return
@@ -27,10 +26,9 @@ func (s *SellerService) GetAll() (sellers map[int]model.Seller, err error) {
 func (s *SellerService) GetByID(id int) (model.Seller, error) {
 
 	if id == 0 {
-		return model.Seller{}, errors.New("data not found")
+		return model.Seller{}, eh.GetErrNotFound(eh.SELLER)
 	}
-	
-	
+
 	seller, err := s.rp.GetByID(id)
 	if err != nil {
 		return model.Seller{}, err
@@ -40,7 +38,7 @@ func (s *SellerService) GetByID(id int) (model.Seller, error) {
 }
 
 func (s *SellerService) Create(seller model.Seller) (model.Seller, error) {
-    
+
 	//validate seller
 	err := s.validateSeller(seller)
 	if err != nil {
@@ -57,7 +55,7 @@ func (s *SellerService) Create(seller model.Seller) (model.Seller, error) {
 }
 
 func (s *SellerService) Update(id int, seller model.SellerAtrributesPtr) (model.Seller, error) {
-	
+
 	updatedSeller, err := s.rp.Update(id, seller)
 	if err != nil {
 		return model.Seller{}, err
@@ -67,24 +65,23 @@ func (s *SellerService) Update(id int, seller model.SellerAtrributesPtr) (model.
 
 }
 
-func (s *SellerService) Delete(id int) (error) {
+func (s *SellerService) Delete(id int) error {
 	if id == 0 {
-		return errors.New("invalid ID")
+		return eh.GetErrNotFound(eh.SELLER)
 	}
 	return s.rp.Delete(id)
 }
 
 func (s *SellerService) validateSeller(seller model.Seller) error {
-	
+
 	hasCID := seller.CompanyID != 0
 	hasCompanyName := seller.CompanyName != ""
 	hasAddress := seller.Address != ""
 	hasTelephone := seller.Telephone != ""
 
 	if !hasCID || !hasCompanyName || !hasAddress || !hasTelephone {
-		return errors.New("seller data incorrectly formed or incomplete")
+		return eh.GetErrInvalidData(eh.SELLER)
 	}
 
 	return nil
 }
-

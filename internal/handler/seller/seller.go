@@ -10,13 +10,7 @@ import (
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/dto"
 	"github.com/luisantonisu/wave15-grupo4/internal/helper"
 	service "github.com/luisantonisu/wave15-grupo4/internal/service/seller"
-)
-
-const (
-	sellerAlredyExist = "seller alredy exist"
-	invalidData = "seller data incorrectly formed or incomplete"
-	sellerNotFound = "seller not found"
-	companyIDregistered = "a seller is already registered with this Company id"
+	eh"github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
 func NewSellerHandler(sv service.ISeller) *SellerHandler {
@@ -32,7 +26,8 @@ func (h *SellerHandler) GetAll() http.HandlerFunc {
 		//process
 		sellers, err := h.sv.GetAll()
 		if err != nil {
-			response.JSON(w, http.StatusInternalServerError, err.Error())
+			code, message := eh.HandleError(err)
+			response.Error(w, code, message)
 			return
 		}
 
@@ -55,17 +50,15 @@ func (h *SellerHandler) GetByID() http.HandlerFunc {
 		//request
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
-			response.JSON(w, http.StatusBadRequest, nil)
+			response.Error(w, http.StatusBadRequest, eh.INVALID_ID)
 			return
 		}
 
 		//process
 		seller, err := h.sv.GetByID(id)
 		if err != nil {
-			response.JSON(w, http.StatusNotFound, map[string]any{
-				"status_code": http.StatusNotFound,
-				"message":     err.Error(),
-			})
+			code, msg := eh.HandleError(err)
+			response.Error(w, code, msg)
 			return
 		}
 
@@ -93,21 +86,9 @@ func (h *SellerHandler) Create() http.HandlerFunc {
 		data, err := h.sv.Create(seller)
 		if err != nil {
 
-			if err.Error() == sellerAlredyExist {
-				response.JSON(w, http.StatusConflict, map[string]any{
-					"status_code": http.StatusConflict,
-					"message":     err.Error(),
-				})
-				return
-			}
-
-			if err.Error() == invalidData {
-				response.JSON(w, http.StatusBadRequest, map[string]any{
-					"status_code": http.StatusBadRequest,
-					"message":     err.Error(),
-				})
-				return
-			}
+			code, msg := eh.HandleError(err)
+			response.Error(w, code, msg)
+			return
 
 		}
 
@@ -127,7 +108,7 @@ func (h *SellerHandler) Update() http.HandlerFunc {
 		//request
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
-			response.JSON(w, http.StatusBadRequest, nil)
+			response.Error(w, http.StatusBadRequest, eh.INVALID_ID)
 			return
 		}
 
@@ -141,21 +122,10 @@ func (h *SellerHandler) Update() http.HandlerFunc {
 		data, err := h.sv.Update(id, seller)
 		if err != nil {
 
-			if err.Error() == sellerNotFound {
-				response.JSON(w, http.StatusNotFound, map[string]any{
-					"status_code": http.StatusNotFound,
-					"message":     err.Error(),
-				})
-				return
-			}
+			code, msg := eh.HandleError(err)
+			response.Error(w, code, msg)
+			return
 
-			if err.Error() == companyIDregistered {
-				response.JSON(w, http.StatusConflict, map[string]any{
-					"status_code": http.StatusConflict,
-					"message":     err.Error(),
-				})
-				return
-			}
 		}
 
 		//mapping
@@ -174,14 +144,15 @@ func (h *SellerHandler) Delete() http.HandlerFunc {
 		//request
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
-			response.JSON(w, http.StatusBadRequest, nil)
+			response.Error(w, http.StatusBadRequest, eh.INVALID_ID)
 			return
 		}
 
 		//process
 		err = h.sv.Delete(id)
 		if err != nil {
-			response.JSON(w, http.StatusNotFound, err.Error())
+			code, message := eh.HandleError(err)
+			response.Error(w, code, message)
 			return
 		}
 
