@@ -86,6 +86,17 @@ func (wr *WarehouseRepository) Update(id int, warehouse model.Warehouse) (model.
 	return updatedWarehouse, nil
 }
 
+func (wr *WarehouseRepository) Delete(id int) error {
+	_, ok := wr.db[id]
+	if !ok {
+		return errors.New("warehouse not found")
+	}
+
+	delete(wr.db, id)
+
+	return nil
+}
+
 func (wr *WarehouseRepository) warehouseCodeExists(warehouseCode string) bool {
 	for _, w := range wr.db {
 		if w.WarehouseCode == warehouseCode {

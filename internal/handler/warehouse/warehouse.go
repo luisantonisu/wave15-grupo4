@@ -137,3 +137,26 @@ func (wh *WarehouseHandler) Update() http.HandlerFunc {
 		})
 	}
 }
+
+func (wh *WarehouseHandler) Delete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id, err := strconv.Atoi(chi.URLParam(r, "id"))
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, "Invalid id")
+			return
+		}
+
+		err = wh.sv.Delete(id)
+		if err != nil {
+			if err.Error() == "warehouse not found" {
+				response.JSON(w, http.StatusNotFound, err.Error())
+				return
+			}
+
+			response.JSON(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		response.JSON(w, http.StatusNoContent, nil)
+	}
+}
