@@ -151,6 +151,8 @@ func (a *ServerChi) Run() (err error) {
 			rt.Post("/", sellerHd.Create())
 			// - PATCH /api/v1/sellers/{id}
 			rt.Patch("/{id}", sellerHd.Update())
+			// - DELETE /api/v1/sellers/{id}
+			rt.Delete("/{id}", sellerHd.Delete())
 		})
 		rt.Route("/warehouses", func(rt chi.Router) {
 			// - GET /api/v1/warehouses
