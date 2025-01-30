@@ -100,6 +100,39 @@ func (h *SectionHandler) Create() http.HandlerFunc {
 	}
 }
 
+func (h *SectionHandler) Patch() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		idStr := chi.URLParam(r, "id")
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, "Invalid section ID")
+			return
+		}
+
+		var sectionRequest dto.SectionRequestDTO
+		err = json.NewDecoder(r.Body).Decode(&sectionRequest)
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, "Invalid request body")
+			return
+		}
+		section := helper.SectionRequestDTOToSection(sectionRequest)
+		updatedSection, err := h.sv.Patch(id, section)
+		if err != nil {
+			if err.Error() == "section not found" {
+				response.JSON(w, http.StatusNotFound, "Section not found")
+				return
+			}
+			response.JSON(w, http.StatusInternalServerError, nil)
+			return
+		}
+
+		data := helper.SectionToSectionResponseDTO(updatedSection)
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data": data,
+		})
+	}
+}
+
 func (h *SectionHandler) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))

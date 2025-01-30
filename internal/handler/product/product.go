@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -120,9 +121,7 @@ func (productHandler *ProductHandler) Delete() http.HandlerFunc {
 		}
 
 		// response
-		response.JSON(w, http.StatusNoContent, map[string]any{
-			"message": "Product deleted",
-		})
+		response.JSON(w, http.StatusNoContent, "")
 	}
 }
 
@@ -135,13 +134,15 @@ func (productHandler *ProductHandler) Update() http.HandlerFunc {
 			response.JSON(w, http.StatusBadRequest, "ID cant be empty or 0")
 			return
 		}
-		var requestDTO dto.ProductRequestDTO
+
+		var requestDTO dto.ProductRequestDTOPtr
 		if err := json.NewDecoder(r.Body).Decode(&requestDTO); err != nil {
 			response.JSON(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		request := helper.ProductRequestDTOToProduct(requestDTO)
+		request := helper.ProductRequestDTOPtrToProductPtr(requestDTO)
+		fmt.Println("description", request.Description)
 
 		idInt, err := strconv.Atoi(id)
 		if err != nil {

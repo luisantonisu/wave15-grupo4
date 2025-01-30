@@ -37,3 +37,12 @@ func EmployeeResponseDTOToEmployee(employee dto.EmployeeResponseDTO) model.Emplo
 		},
 	}
 }
+
+func EmployeeRequestDTOPtrToEmployeePtr(employee dto.EmployeeRequestDTOPtr) model.EmployeeAttributesPtr {
+	return model.EmployeeAttributesPtr{
+		CardNumberID: employee.CardNumberID,
+		FirstName:    employee.FirstName,
+		LastName:     employee.LastName,
+		WarehouseID:  employee.WarehouseID,
+	}
+}

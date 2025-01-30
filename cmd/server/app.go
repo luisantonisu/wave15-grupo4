@@ -101,7 +101,11 @@ func (a *ServerChi) Run() (err error) {
 			// - GET /api/v1/buyers
 			rt.Get("/", buyerHd.GetAll())
 			rt.Get("/{id}", buyerHd.GetByID())
+			// - POST /api/v1/buyers
 			rt.Post("/", buyerHd.Create())
+			// - PUT /api/v1/buyers
+			rt.Patch("/{id}", buyerHd.Update())
+			// - DELETE /api/v1/buyers
 			rt.Delete("/{id}", buyerHd.Delete())
 
 		})
@@ -133,6 +137,8 @@ func (a *ServerChi) Run() (err error) {
 			rt.Get("/{id}", sectionHd.GetByID())
 			// - POST /api/v1/products /
 			rt.Post("/", sectionHd.Create())
+			// - PATCH /api/v1/products /
+			rt.Patch("/{id}", sectionHd.Patch())
 			// - DELETE /api/v1/employees/{id}
 			rt.Delete("/{id}", sectionHd.Delete())
 		})

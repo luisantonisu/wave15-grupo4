@@ -68,3 +68,41 @@ func (r *BuyerRepository) validateCardNumberId(cardNumberId int) error {
 	}
 	return nil
 }
+
+// Validate if a buyer id is already in use
+func (r *BuyerRepository) validateId(id int) error {
+	_, ok := r.db[id]
+	if ok {
+		return error_handler.IDAlreadyInUse
+	}
+	return nil
+}
+
+// Update a buyer by id
+func (r *BuyerRepository) Update(id int, buyer model.Buyer) (model.Buyer, error) {
+	// Validate buyer exists
+	_, ok := r.db[id]
+	if !ok {
+		return model.Buyer{}, error_handler.IDNotFound
+	}
+
+	// Validate card number id doesnt already exist
+	if err := r.validateCardNumberId(buyer.CardNumberId); err != nil {
+		return model.Buyer{}, err
+	}
+
+	// Update buyer in db
+	buyerOld := r.db[id]
+
+	if buyer.FirstName != "" {
+		buyerOld.FirstName = buyer.FirstName
+	}
+	if buyer.LastName != "" {
+		buyerOld.LastName = buyer.LastName
+	}
+	if buyer.CardNumberId != 0 {
+		buyerOld.CardNumberId = buyer.CardNumberId
+	}
+
+	return buyerOld, nil
+}
