@@ -58,31 +58,31 @@ func (r *EmployeeRepository) Create(employee model.Employee) (model.Employee, er
 	return r.db[lastId], nil
 }
 
-func (r *EmployeeRepository) Update(id int, employee model.Employee) (model.Employee, error) {
+func (r *EmployeeRepository) Update(id int, employee model.EmployeeAttributesPtr) (model.Employee, error) {
 	if !r.employeeExists(id) {
 		return model.Employee{}, errors.New("Employee not found")
 	}
 
-	if r.cardNumberIdExists(employee.CardNumberID) {
+	if r.cardNumberIdExists(*employee.CardNumberID) {
 		return model.Employee{}, errors.New("Card number ID already exists")
 	}
 
 	emp := r.db[id]
 
-	if employee.FirstName != "" {
-		emp.FirstName = employee.FirstName
+	if employee.FirstName != nil {
+		emp.FirstName = *employee.FirstName
 	}
 
-	if employee.LastName != "" {
-		emp.LastName = employee.LastName
+	if employee.LastName != nil {
+		emp.LastName = *employee.LastName
 	}
 
-	if employee.CardNumberID > 0 {
-		emp.CardNumberID = employee.CardNumberID
+	if employee.CardNumberID != nil {
+		emp.CardNumberID = *employee.CardNumberID
 	}
 
-	if employee.WarehouseID > 0 {
-		emp.WarehouseID = employee.WarehouseID
+	if employee.WarehouseID != nil {
+		emp.WarehouseID = *employee.WarehouseID
 	}
 
 	r.db[id] = emp

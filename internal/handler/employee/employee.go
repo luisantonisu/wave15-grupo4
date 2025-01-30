@@ -100,13 +100,13 @@ func (h *EmployeeHandler) Update() http.HandlerFunc {
 			return
 		}
 
-		var empDto dto.EmployeeRequestDTO
+		var empDto dto.EmployeeRequestDTOPtr
 		if err := json.NewDecoder(r.Body).Decode(&empDto); err != nil {
 			response.JSON(w, http.StatusBadRequest, "Invalid request body")
 			return
 		}
 
-		employee := helper.EmployeeRequestDTOToEmployee(empDto)
+		employee := helper.EmployeeRequestDTOPtrToEmployeePtr(empDto)
 
 		empUpdated, err := h.sv.Update(id, employee)
 		if err != nil {

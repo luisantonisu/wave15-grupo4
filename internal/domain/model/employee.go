@@ -11,3 +11,10 @@ type EmployeeAttributes struct {
 	LastName     string
 	WarehouseID  int
 }
+
+type EmployeeAttributesPtr struct {
+	CardNumberID *int
+	FirstName    *string
+	LastName     *string
+	WarehouseID  *int
+}
