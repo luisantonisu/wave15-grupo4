@@ -50,6 +50,44 @@ func (s *SectionRepository) Create(section model.Section) (model.Section, error)
 	return s.db[lastId], nil
 }
 
+func (s *SectionRepository) Patch(id int, section model.Section) (model.Section, error) {
+	existingSection, exists := s.db[id]
+	if !exists {
+		return model.Section{}, errors.New("section not found")
+	}
+
+	if section.SectionNumber != 0 {
+		existingSection.SectionNumber = section.SectionNumber
+	}
+	if section.CurrentTemperature != 0 {
+		existingSection.CurrentTemperature = section.CurrentTemperature
+	}
+	if section.MinimumTemperature != 0 {
+		existingSection.MinimumTemperature = section.MinimumTemperature
+	}
+	if section.CurrentCapacity != 0 {
+		existingSection.CurrentCapacity = section.CurrentCapacity
+	}
+	if section.MinimumCapacity != 0 {
+		existingSection.MinimumCapacity = section.MinimumCapacity
+	}
+	if section.MaximumCapacity != 0 {
+		existingSection.MaximumCapacity = section.MaximumCapacity
+	}
+	if section.WarehouseID != 0 {
+		existingSection.WarehouseID = section.WarehouseID
+	}
+	if section.ProductTypeID != 0 {
+		existingSection.ProductTypeID = section.ProductTypeID
+	}
+	if len(section.ProductBatchID) != 0 {
+		existingSection.ProductBatchID = section.ProductBatchID
+	}
+
+	s.db[id] = existingSection
+	return existingSection, nil
+}
+
 func (s *SectionRepository) Delete(id int) error {
 	_, exists := s.db[id]
 	if !exists {
