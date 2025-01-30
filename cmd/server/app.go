@@ -133,6 +133,8 @@ func (a *ServerChi) Run() (err error) {
 			rt.Get("/{id}", sectionHd.GetByID())
 			// - POST /api/v1/products /
 			rt.Post("/", sectionHd.Create())
+			// - PATCH /api/v1/products /
+			rt.Patch("/{id}", sectionHd.Patch())
 			// - DELETE /api/v1/employees/{id}
 			rt.Delete("/{id}", sectionHd.Delete())
 		})
