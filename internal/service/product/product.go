@@ -1,10 +1,9 @@
 package service
 
 import (
-	"errors"
-
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 	repository "github.com/luisantonisu/wave15-grupo4/internal/repository/product"
+	errorHandler "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
 func NewProductService(repository repository.IProduct) *ProductService {
@@ -24,35 +23,8 @@ func (productService *ProductService) GetProductByID(id int) (product model.Prod
 }
 
 func ValueCheck(productAtrributes model.ProductAtrributes) (err error) {
-	if productAtrributes.ProductCode == "" {
-		return errors.New("ProductCode is invalid")
-	}
-	if productAtrributes.Description == "" {
-		return errors.New("Description is invalid")
-	}
-	if productAtrributes.Width <= 0 {
-		return errors.New("Width is invalid")
-	}
-	if productAtrributes.Height <= 0 {
-		return errors.New("Height is invalid")
-	}
-	if productAtrributes.Length <= 0 {
-		return errors.New("Length is invalid")
-	}
-	if productAtrributes.NetWeight <= 0 {
-		return errors.New("NetWeight is invalid")
-	}
-	if productAtrributes.ExpirationRate <= 0 {
-		return errors.New("ExpirationRate is invalid")
-	}
-	if productAtrributes.RecommendedFreezingTemperature <= 0 {
-		return errors.New("RecommendedFreezingTemperature is invalid")
-	}
-	if productAtrributes.FreezingRate <= 0 {
-		return errors.New("FreezingRate is invalid")
-	}
-	if productAtrributes.ProductTypeID <= 0 {
-		return errors.New("ProductTypeId is invalid")
+	if productAtrributes.ProductCode == "" || productAtrributes.Description == "" || productAtrributes.Width <= 0 || productAtrributes.Height <= 0 || productAtrributes.Length <= 0 || productAtrributes.NetWeight <= 0 || productAtrributes.ExpirationRate <= 0 || productAtrributes.RecommendedFreezingTemperature <= 0 || productAtrributes.FreezingRate <= 0 || productAtrributes.ProductTypeID <= 0 {
+		return errorHandler.GetErrInvalidData(errorHandler.PRODUCT)
 	}
 	return
 }

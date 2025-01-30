@@ -6,16 +6,16 @@ import (
 )
 
 const (
-	BUYER        = "buyer"
-	EMPLOYEE     = "employee"
-	PRODUCT      = "product"
-	SECTION      = "section"
-	SELLER       = "seller"
-	WAREHOUSE    = "warehouse"
-	ID           = "id"
-	INVALID_BODY = "invalid request body"
-	INVALID_ID   = "invalid id"
-	CARD_NUMBER  = "card number ID"
+	BUYER          = "buyer"
+	EMPLOYEE       = "employee"
+	PRODUCT        = "product"
+	SECTION        = "section"
+	SELLER         = "seller"
+	WAREHOUSE      = "warehouse"
+	ID             = "id"
+	INVALID_BODY   = "invalid request body"
+	INVALID_ID     = "invalid id"
+	CARD_NUMBER    = "card number ID"
 	WAREHOUSE_CODE = "warehouse code"
 )
 

@@ -1,9 +1,8 @@
 package repository
 
 import (
-	"errors"
-
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
+	errorHandler "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
 func NewProductRepository(db map[int]model.Product) *ProductRepository {
@@ -20,34 +19,34 @@ type ProductRepository struct {
 
 func (productRepository *ProductRepository) GetProduct() (productMap map[int]model.Product, err error) {
 	if len(productRepository.db) == 0 {
-		return nil, errors.New("no products found")
+		return nil, errorHandler.GetErrNotFound(errorHandler.PRODUCT)
 	}
 	return productRepository.db, nil
 }
 
 func (productRepository *ProductRepository) GetProductByID(id int) (product model.Product, err error) {
 	if len(productRepository.db) == 0 {
-		return model.Product{}, errors.New("No products found")
+		return model.Product{}, errorHandler.GetErrNotFound(errorHandler.PRODUCT)
 	}
 	for _, prod := range productRepository.db {
 		if prod.ID == id {
 			return prod, nil
 		}
 	}
-	return model.Product{}, errors.New("Product not found")
+	return model.Product{}, errorHandler.GetErrNotFound(errorHandler.PRODUCT)
 }
 
 func (productRepository *ProductRepository) CreateProduct(productAtrributes *model.ProductAtrributes) (err error) {
 	for _, prod := range productRepository.db {
 		if prod.ProductAtrributes.ProductCode == productAtrributes.ProductCode {
-			return errors.New("Product already exists")
+			return errorHandler.GetErrAlreadyExists(errorHandler.PRODUCT)
 		}
 	}
 	var newProduct model.Product
 	newProduct.ID = len(productRepository.db) + 1
 	newProduct.ProductAtrributes = *productAtrributes
 	if productAtrributes == nil {
-		return errors.New("Product is nil")
+		return errorHandler.GetErrInvalidData(errorHandler.PRODUCT)
 	}
 	productRepository.db[len(productRepository.db)+1] = newProduct
 	return nil
@@ -56,7 +55,7 @@ func (productRepository *ProductRepository) CreateProduct(productAtrributes *mod
 func (productRepository *ProductRepository) DeleteProduct(id int) (err error) {
 	_, ok := productRepository.db[id]
 	if !ok {
-		return errors.New("Product not found")
+		return errorHandler.GetErrNotFound(errorHandler.PRODUCT)
 	}
 	delete(productRepository.db, id)
 	return nil
@@ -65,16 +64,16 @@ func (productRepository *ProductRepository) DeleteProduct(id int) (err error) {
 func (productRepository *ProductRepository) UpdateProduct(id int, productAtrributesPtr *model.ProductAtrributesPtr) (product *model.Product, err error) {
 
 	if _, ok := productRepository.db[id]; !ok {
-		return nil, errors.New("Product not found")
+		return nil, errorHandler.GetErrNotFound(errorHandler.PRODUCT)
 	}
 
 	if productAtrributesPtr == nil {
-		return nil, errors.New("Product is nil")
+		return nil, errorHandler.GetErrInvalidData(errorHandler.PRODUCT)
 	}
 
 	for _, prod := range productRepository.db {
 		if prod.ProductAtrributes.ProductCode == *productAtrributesPtr.ProductCode {
-			return nil, errors.New("Product code already exists")
+			return nil, errorHandler.GetErrAlreadyExists(errorHandler.PRODUCT)
 		}
 	}
 	patchedProduct := productRepository.db[id]

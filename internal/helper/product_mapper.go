@@ -5,9 +5,9 @@ import (
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 )
 
-func ProductToProductResponseDTO(employees map[int]model.Product) map[int]dto.ProductResponseDTO {
+func ProductToProductResponseDTO(product map[int]model.Product) map[int]dto.ProductResponseDTO {
 	data := make(map[int]dto.ProductResponseDTO)
-	for _, value := range employees {
+	for _, value := range product {
 		data[value.ID] = dto.ProductResponseDTO{
 			ID:                             value.ID,
 			ProductCode:                    value.ProductAtrributes.ProductCode,
@@ -26,36 +26,36 @@ func ProductToProductResponseDTO(employees map[int]model.Product) map[int]dto.Pr
 	return data
 }
 
-func ProductRequestDTOToProduct(employees dto.ProductRequestDTO) model.ProductAtrributes {
+func ProductRequestDTOToProduct(product dto.ProductRequestDTO) model.ProductAtrributes {
 	data := model.ProductAtrributes{
-		ProductCode:                    employees.ProductCode,
-		Description:                    employees.Description,
-		Width:                          employees.Width,
-		Height:                         employees.Height,
-		Length:                         employees.Length,
-		NetWeight:                      employees.NetWeight,
-		ExpirationRate:                 employees.ExpirationRate,
-		RecommendedFreezingTemperature: employees.RecommendedFreezingTemperature,
-		FreezingRate:                   employees.FreezingRate,
-		ProductTypeID:                  employees.ProductTypeId,
-		SellerID:                       employees.SellerId,
+		ProductCode:                    product.ProductCode,
+		Description:                    product.Description,
+		Width:                          product.Width,
+		Height:                         product.Height,
+		Length:                         product.Length,
+		NetWeight:                      product.NetWeight,
+		ExpirationRate:                 product.ExpirationRate,
+		RecommendedFreezingTemperature: product.RecommendedFreezingTemperature,
+		FreezingRate:                   product.FreezingRate,
+		ProductTypeID:                  product.ProductTypeId,
+		SellerID:                       product.SellerId,
 	}
 	return data
 }
 
-func ProductRequestDTOPtrToProductPtr(employees dto.ProductRequestDTOPtr) model.ProductAtrributesPtr {
+func ProductRequestDTOPtrToProductPtr(product dto.ProductRequestDTOPtr) model.ProductAtrributesPtr {
 	data := model.ProductAtrributesPtr{
-		ProductCode:                    employees.ProductCode,
-		Description:                    employees.Description,
-		Width:                          employees.Width,
-		Height:                         employees.Height,
-		Length:                         employees.Length,
-		NetWeight:                      employees.NetWeight,
-		ExpirationRate:                 employees.ExpirationRate,
-		RecommendedFreezingTemperature: employees.RecommendedFreezingTemperature,
-		FreezingRate:                   employees.FreezingRate,
-		ProductTypeID:                  employees.ProductTypeId,
-		SellerID:                       employees.SellerId,
+		ProductCode:                    product.ProductCode,
+		Description:                    product.Description,
+		Width:                          product.Width,
+		Height:                         product.Height,
+		Length:                         product.Length,
+		NetWeight:                      product.NetWeight,
+		ExpirationRate:                 product.ExpirationRate,
+		RecommendedFreezingTemperature: product.RecommendedFreezingTemperature,
+		FreezingRate:                   product.FreezingRate,
+		ProductTypeID:                  product.ProductTypeId,
+		SellerID:                       product.SellerId,
 	}
 	return data
 }
