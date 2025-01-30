@@ -18,15 +18,25 @@ func SellerToSellerResponseDTO(seller model.Seller) dto.SellerResponseDTO {
 	return data
 }
 
-func  SellerRequestDTOToSeller(sellerRequestDTO dto.SellerRequestDTO) model.Seller {
-	data := model.Seller {
+func SellerRequestDTOToSeller(sellerRequestDTO dto.SellerRequestDTO) model.Seller {
+	data := model.Seller{
 		SellerAtrributes: model.SellerAtrributes{
-			CompanyID: sellerRequestDTO.CompanyID,
+			CompanyID:   sellerRequestDTO.CompanyID,
 			CompanyName: sellerRequestDTO.CompanyName,
-			Address: sellerRequestDTO.Address,
-			Telephone: sellerRequestDTO.Telephone,
+			Address:     sellerRequestDTO.Address,
+			Telephone:   sellerRequestDTO.Telephone,
 		},
 	}
 
+	return data
+}
+
+func SellerRequestDTOPtrToSellerPtr(seller dto.SellerRequestDTOPtr) model.SellerAtrributesPtr {
+	data := model.SellerAtrributesPtr{
+		CompanyID:   seller.CompanyID,
+		CompanyName: seller.CompanyName,
+		Address:     seller.Address,
+		Telephone:   seller.Telephone,
+	}
 	return data
 }

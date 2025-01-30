@@ -56,7 +56,7 @@ func (s *SellerService) Create(seller model.Seller) (model.Seller, error) {
 	return newSeller, nil
 }
 
-func (s *SellerService) Update(id int, seller model.Seller) (model.Seller, error) {
+func (s *SellerService) Update(id int, seller model.SellerAtrributesPtr) (model.Seller, error) {
 	
 	updatedSeller, err := s.rp.Update(id, seller)
 	if err != nil {

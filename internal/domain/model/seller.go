@@ -11,3 +11,10 @@ type SellerAtrributes struct {
 	Address     string
 	Telephone   string
 }
+
+type SellerAtrributesPtr struct {
+	CompanyID   *int
+	CompanyName *string
+	Address     *string
+	Telephone   *string
+}

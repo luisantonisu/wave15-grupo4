@@ -131,11 +131,11 @@ func (h *SellerHandler) Update() http.HandlerFunc {
 			return
 		}
 
-		var updateSeller dto.SellerRequestDTO
+		var updateSeller dto.SellerRequestDTOPtr
 		json.NewDecoder(r.Body).Decode(&updateSeller)
 
 		//mapping
-		var seller = helper.SellerRequestDTOToSeller(updateSeller)
+		var seller = helper.SellerRequestDTOPtrToSellerPtr(updateSeller)
 
 		//process
 		data, err := h.sv.Update(id, seller)
