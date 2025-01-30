@@ -7,5 +7,5 @@ type IProduct interface {
 	GetProductByID(id int) (product model.Product, err error)
 	CreateProduct(productAtrributes *model.ProductAtrributes) (err error)
 	DeleteProduct(id int) (err error)
-	UpdateProduct(id int, productAtrributes *model.ProductAtrributes) (producto *model.Product, err error)
+	UpdateProduct(id int, productAtrributes *model.ProductAtrributesPtr) (producto *model.Product, err error)
 }

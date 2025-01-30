@@ -68,6 +68,6 @@ func (productService *ProductService) DeleteProduct(id int) (err error) {
 	return productService.repository.DeleteProduct(id)
 }
 
-func (productService *ProductService) UpdateProduct(id int, productAttributes *model.ProductAtrributes) (producto *model.Product, err error) {
+func (productService *ProductService) UpdateProduct(id int, productAttributes *model.ProductAtrributesPtr) (producto *model.Product, err error) {
 	return productService.repository.UpdateProduct(id, productAttributes)
 }
