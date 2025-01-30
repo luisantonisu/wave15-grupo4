@@ -38,3 +38,12 @@ func (s *SellerService) GetByID(id int) (model.Seller, error) {
 
 	return seller, nil
 }
+
+func (s *SellerService) Create(seller model.Seller) (model.Seller, error) {
+	newSeller, err := s.rp.Create(seller)
+	if err != nil {
+		return model.Seller{}, err
+	}
+
+	return newSeller, nil
+}
