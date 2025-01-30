@@ -98,3 +98,65 @@ func (wh *WarehouseHandler) Create() http.HandlerFunc {
 		})
 	}
 }
+
+func (wh *WarehouseHandler) Update() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id, err := strconv.Atoi(chi.URLParam(r, "id"))
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, "Invalid id")
+			return
+		}
+
+		var warehouseRequest dto.WarehouseRequestDTO
+		if err := json.NewDecoder(r.Body).Decode(&warehouseRequest); err != nil {
+			response.JSON(w, http.StatusBadRequest, "Invalid request body")
+			return
+		}
+
+		warehouse := helper.WarehouseRequestDTOToWarehouse(warehouseRequest)
+		updatedWarehouse, err := wh.sv.Update(id, warehouse)
+		if err != nil {
+			if err.Error() == "warehouse not found"{
+				response.JSON(w, http.StatusNotFound, err.Error())
+				return
+			}
+
+			if err.Error() == "warehouse code already exists" {
+				response.JSON(w, http.StatusConflict, err.Error())
+				return
+			}
+
+			response.JSON(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		data := helper.WarehouseToWarehouseResponseDTO(updatedWarehouse)
+
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data": data,
+		})
+	}
+}
+
+func (wh *WarehouseHandler) Delete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id, err := strconv.Atoi(chi.URLParam(r, "id"))
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, "Invalid id")
+			return
+		}
+
+		err = wh.sv.Delete(id)
+		if err != nil {
+			if err.Error() == "warehouse not found" {
+				response.JSON(w, http.StatusNotFound, err.Error())
+				return
+			}
+
+			response.JSON(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		response.JSON(w, http.StatusNoContent, nil)
+	}
+}

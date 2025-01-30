@@ -24,3 +24,11 @@ func (ws *WarehouseService) GetByID(id int) (model.Warehouse, error) {
 func (ws *WarehouseService) Create(warehouse model.Warehouse) (model.Warehouse, error) {
 	return ws.rp.Create(warehouse)
 }
+
+func (ws *WarehouseService) Update(id int, warehouse model.Warehouse) (model.Warehouse, error) {
+	return ws.rp.Update(id, warehouse)
+}
+
+func (ws *WarehouseService) Delete(id int) error {
+	return ws.rp.Delete(id)
+}

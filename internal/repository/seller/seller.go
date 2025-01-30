@@ -24,12 +24,12 @@ func (r *SellerRepository) GetAll() (map[int]model.Seller, error) {
 	for key, seller := range r.db {
 		sellers[key] = seller
 	}
-	
+
 	return sellers, nil
 }
 
 func (r *SellerRepository) GetByID(id int) (model.Seller, error) {
-	
+
 	for _, seller := range r.db {
 		if seller.ID == id {
 			return seller, nil
@@ -37,4 +37,34 @@ func (r *SellerRepository) GetByID(id int) (model.Seller, error) {
 	}
 
 	return model.Seller{}, errors.New("seller not found")
+}
+
+func (r *SellerRepository) Create(seller model.Seller) (model.Seller, error) {
+	//Create id
+	id := len(r.db) + 1
+	seller.ID = id
+
+	//validate
+	err := r.validateCompanyID(seller.CompanyID)
+	if err != nil {
+		return model.Seller{}, err
+	}
+
+	//Add new value
+	r.db[id] = seller
+
+	// return new seller
+	return seller, nil
+}
+
+func (r *SellerRepository) validateCompanyID(companyID int) error {
+	for _, seller := range r.db {
+		companyExist := seller.CompanyID == companyID
+
+		if companyExist {
+			return errors.New("seller alredy exist")
+		}
+	}
+
+	return nil
 }

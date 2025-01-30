@@ -6,4 +6,6 @@ type IWarehouse interface {
 	GetAll() (map[int]model.Warehouse, error)
 	GetByID(id int) (model.Warehouse, error)
 	Create(warehouse model.Warehouse) (model.Warehouse, error)
+	Update(id int, warehouse model.Warehouse) (model.Warehouse, error)
+	Delete(id int) error
 }
