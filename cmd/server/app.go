@@ -153,6 +153,8 @@ func (a *ServerChi) Run() (err error) {
 			rt.Post("/", warehouseHd.Create())
 			// - PATCH /api/v1/warehouses/{id}
 			rt.Patch("/{id}", warehouseHd.Update())
+			// - DELETE /api/v1/warehouses/{id}
+			rt.Delete("/{id}", warehouseHd.Delete())
 		})
 	})
 
