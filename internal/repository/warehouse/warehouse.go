@@ -1,9 +1,8 @@
 package repository
 
 import (
-	"errors"
-
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
+	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
 func NewWarehouseRepository(db map[int]model.Warehouse) *WarehouseRepository {
@@ -25,12 +24,12 @@ func (wr *WarehouseRepository) GetAll() (map[int]model.Warehouse, error) {
 
 func (wr *WarehouseRepository) GetByID(id int) (model.Warehouse, error) {
 	if len(wr.db) == 0 {
-		return model.Warehouse{}, errors.New("no warehouses found")
+		return model.Warehouse{}, eh.GetErrNotFound(eh.WAREHOUSE)
 	}
 
 	warehouse, ok := wr.db[id]
 	if !ok {
-		return model.Warehouse{}, errors.New("warehouse not found")
+		return model.Warehouse{}, eh.GetErrNotFound(eh.WAREHOUSE)
 	}
 
 	return warehouse, nil
@@ -38,11 +37,11 @@ func (wr *WarehouseRepository) GetByID(id int) (model.Warehouse, error) {
 
 func (wr *WarehouseRepository) Create(warehouse model.Warehouse) (model.Warehouse, error) {
 	if warehouse.WarehouseCode == "" {
-		return model.Warehouse{}, errors.New("warehouse code is required")
+		return model.Warehouse{}, eh.GetErrInvalidData(eh.WAREHOUSE_CODE)
 	}
 
 	if wr.warehouseCodeExists(warehouse.WarehouseCode) {
-		return model.Warehouse{}, errors.New("warehouse code already exists")
+		return model.Warehouse{}, eh.GetErrAlreadyExists(eh.WAREHOUSE_CODE)
 	}
 
 	wr.autoIncrement++
@@ -55,12 +54,12 @@ func (wr *WarehouseRepository) Create(warehouse model.Warehouse) (model.Warehous
 func (wr *WarehouseRepository) Update(id int, warehouse model.Warehouse) (model.Warehouse, error) {
 	updatedWarehouse, ok := wr.db[id]
 	if !ok {
-		return model.Warehouse{}, errors.New("warehouse not found")
+		return model.Warehouse{}, eh.GetErrNotFound(eh.WAREHOUSE)
 	}
 
 	if warehouse.WarehouseCode != "" && warehouse.WarehouseCode != updatedWarehouse.WarehouseCode {
 		if wr.warehouseCodeExists(warehouse.WarehouseCode) {
-			return model.Warehouse{}, errors.New("warehouse code already exists")
+			return model.Warehouse{}, eh.GetErrAlreadyExists(eh.WAREHOUSE_CODE)
 		}
 		updatedWarehouse.WarehouseCode = warehouse.WarehouseCode
 	}
@@ -89,7 +88,7 @@ func (wr *WarehouseRepository) Update(id int, warehouse model.Warehouse) (model.
 func (wr *WarehouseRepository) Delete(id int) error {
 	_, ok := wr.db[id]
 	if !ok {
-		return errors.New("warehouse not found")
+		return eh.GetErrNotFound(eh.WAREHOUSE)
 	}
 
 	delete(wr.db, id)
