@@ -1,6 +1,6 @@
 package dto
 
-import "fmt"
+import eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 
 type BuyerRequestDTO struct {
 	CardNumberId int    `json:"card_number_id"`
@@ -24,13 +24,7 @@ type BuyerRequestDTOPtr struct {
 // Validate BuyerRequestDTO fields
 func (e *BuyerRequestDTO) Validate() error {
 	if e.CardNumberId == 0 {
-		return fmt.Errorf("CardNumberId is required")
-	}
-	if e.FirstName == "" {
-		return fmt.Errorf("FirstName is required")
-	}
-	if e.LastName == "" {
-		return fmt.Errorf("LastName is required")
+		return eh.GetErrInvalidData(eh.CARD_NUMBER)
 	}
 	return nil
 }

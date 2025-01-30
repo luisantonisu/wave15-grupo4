@@ -2,7 +2,7 @@ package repository
 
 import (
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
-	"github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
+	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
 func NewBuyerRepository(db map[int]model.Buyer) *BuyerRepository {
@@ -22,7 +22,7 @@ func (r *BuyerRepository) Create(buyer model.Buyer) (model.Buyer, error) {
 	buyer.ID = r.getNextId()
 	// Validate card number id doesnt already exist
 	if err := r.validateCardNumberId(buyer.CardNumberId); err != nil {
-		return model.Buyer{}, err
+		return model.Buyer{}, eh.GetErrAlreadyExists(eh.CARD_NUMBER)
 	}
 	// Create buyer in db
 	r.db[buyer.ID] = buyer
@@ -38,7 +38,7 @@ func (r *BuyerRepository) GetAll() (map[int]model.Buyer, error) {
 func (r *BuyerRepository) GetByID(id int) (model.Buyer, error) {
 	buyer, ok := r.db[id]
 	if !ok {
-		return model.Buyer{}, error_handler.ErrNotFound
+		return model.Buyer{}, eh.GetErrNotFound(eh.BUYER)
 	}
 	return buyer, nil
 }
@@ -47,34 +47,9 @@ func (r *BuyerRepository) GetByID(id int) (model.Buyer, error) {
 func (r *BuyerRepository) Delete(id int) error {
 	_, ok := r.db[id]
 	if !ok {
-		return error_handler.ErrNotFound
+		return eh.GetErrNotFound(eh.BUYER)
 	}
 	delete(r.db, id)
-	return nil
-}
-
-// Get the nex available id for a new buyer
-func (r *BuyerRepository) getNextId() int {
-	newId := len(r.db) + 1
-	return newId
-}
-
-// Validate if card number id is already in use
-func (r *BuyerRepository) validateCardNumberId(cardNumberId int) error {
-	for _, buyer := range r.db {
-		if buyer.CardNumberId == cardNumberId {
-			return error_handler.ErrAlreadyExists
-		}
-	}
-	return nil
-}
-
-// Validate if a buyer id is already in use
-func (r *BuyerRepository) validateId(id int) error {
-	_, ok := r.db[id]
-	if ok {
-		return error_handler.ErrAlreadyExists
-	}
 	return nil
 }
 
@@ -83,7 +58,7 @@ func (r *BuyerRepository) Update(id int, buyer model.BuyerAttributesPtr) (model.
 	// Validate buyer exists
 	buyerOld, ok := r.db[id]
 	if !ok {
-		return model.Buyer{}, error_handler.ErrNotFound
+		return model.Buyer{}, eh.GetErrNotFound(eh.BUYER)
 	}
 
 	// Update buyer in db
@@ -96,11 +71,27 @@ func (r *BuyerRepository) Update(id int, buyer model.BuyerAttributesPtr) (model.
 	if buyer.CardNumberId != nil {
 		// Validate card number id doesnt already exist
 		if err := r.validateCardNumberId(*buyer.CardNumberId); err != nil {
-			return model.Buyer{}, err
+			return model.Buyer{}, eh.GetErrAlreadyExists(eh.CARD_NUMBER)
 		}
 		buyerOld.CardNumberId = *buyer.CardNumberId
 	}
 
 	r.db[id] = buyerOld
 	return buyerOld, nil
+}
+
+// Get the nex available id for a new buyer
+func (r *BuyerRepository) getNextId() int {
+	newId := len(r.db) + 1
+	return newId
+}
+
+// Validate if card number id is already in use
+func (r *BuyerRepository) validateCardNumberId(cardNumberId int) error {
+	for _, buyer := range r.db {
+		if buyer.CardNumberId == cardNumberId {
+			return eh.ErrAlreadyExists
+		}
+	}
+	return nil
 }
