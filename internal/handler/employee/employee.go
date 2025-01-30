@@ -26,7 +26,7 @@ func (h *EmployeeHandler) GetAll() http.HandlerFunc {
 		employees, err := h.sv.GetAll()
 		if err != nil {
 			code, msg := eh.HandleError(err)
-			response.JSON(w, code, msg)
+			response.Error(w, code, msg)
 			return
 		}
 
@@ -46,14 +46,14 @@ func (h *EmployeeHandler) GetByID() http.HandlerFunc {
 
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
-			response.JSON(w, http.StatusBadRequest, eh.INVALID_ID)
+			response.Error(w, http.StatusBadRequest, eh.INVALID_ID)
 			return
 		}
 
 		employee, err := h.sv.GetByID(id)
 		if err != nil {
 			code, msg := eh.HandleError(err)
-			response.JSON(w, code, msg)
+			response.Error(w, code, msg)
 			return
 		}
 
@@ -70,7 +70,7 @@ func (h *EmployeeHandler) Create() http.HandlerFunc {
 		var empDto dto.EmployeeRequestDTO
 
 		if err := json.NewDecoder(r.Body).Decode(&empDto); err != nil {
-			response.JSON(w, http.StatusBadRequest, eh.INVALID_BODY)
+			response.Error(w, http.StatusBadRequest, eh.INVALID_BODY)
 			return
 		}
 
@@ -80,7 +80,7 @@ func (h *EmployeeHandler) Create() http.HandlerFunc {
 
 		if err != nil {
 			code, msg := eh.HandleError(err)
-			response.JSON(w, code, msg)
+			response.Error(w, code, msg)
 			return
 		}
 
@@ -96,13 +96,13 @@ func (h *EmployeeHandler) Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
-			response.JSON(w, http.StatusBadRequest, eh.INVALID_ID)
+			response.Error(w, http.StatusBadRequest, eh.INVALID_ID)
 			return
 		}
 
 		var empDto dto.EmployeeRequestDTOPtr
 		if err := json.NewDecoder(r.Body).Decode(&empDto); err != nil {
-			response.JSON(w, http.StatusBadRequest, eh.INVALID_BODY)
+			response.Error(w, http.StatusBadRequest, eh.INVALID_BODY)
 			return
 		}
 
@@ -111,7 +111,7 @@ func (h *EmployeeHandler) Update() http.HandlerFunc {
 		empUpdated, err := h.sv.Update(id, employee)
 		if err != nil {
 			code, msg := eh.HandleError(err)
-			response.JSON(w, code, msg)
+			response.Error(w, code, msg)
 			return
 		}
 
@@ -127,14 +127,14 @@ func (h *EmployeeHandler) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
-			response.JSON(w, http.StatusBadRequest, eh.INVALID_ID)
+			response.Error(w, http.StatusBadRequest, eh.INVALID_ID)
 			return
 		}
 
 		err = h.sv.Delete(id)
 		if err != nil {
 			code, msg := eh.HandleError(err)
-			response.JSON(w, code, msg)
+			response.Error(w, code, msg)
 			return
 		}
 
