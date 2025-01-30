@@ -141,7 +141,7 @@ func (productHandler *ProductHandler) Update() http.HandlerFunc {
 			return
 		}
 
-		request := helper.ProductRequestDTOToProduct(requestDTO)
+		request := helper.ProductRequestDTOToProductPtr(requestDTO)
 
 		idInt, err := strconv.Atoi(id)
 		if err != nil {

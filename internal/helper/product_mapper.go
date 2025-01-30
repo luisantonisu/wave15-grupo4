@@ -42,3 +42,20 @@ func ProductRequestDTOToProduct(employees dto.ProductRequestDTO) model.ProductAt
 	}
 	return data
 }
+
+func ProductRequestDTOToProductPtr(employees dto.ProductRequestDTO) model.ProductAtrributesPtr {
+	data := model.ProductAtrributesPtr{
+		ProductCode:                    &employees.ProductCode,
+		Description:                    &employees.Description,
+		Width:                          &employees.Width,
+		Height:                         &employees.Height,
+		Length:                         &employees.Length,
+		NetWeight:                      &employees.NetWeight,
+		ExpirationRate:                 &employees.ExpirationRate,
+		RecommendedFreezingTemperature: &employees.RecommendedFreezingTemperature,
+		FreezingRate:                   &employees.FreezingRate,
+		ProductTypeID:                  &employees.ProductTypeId,
+		SellerID:                       &employees.SellerId,
+	}
+	return data
+}
