@@ -10,6 +10,7 @@ import (
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/dto"
 	"github.com/luisantonisu/wave15-grupo4/internal/helper"
 	service "github.com/luisantonisu/wave15-grupo4/internal/service/employee"
+	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
 func NewEmployeeHandler(sv service.IEmployee) *EmployeeHandler {
@@ -24,7 +25,8 @@ func (h *EmployeeHandler) GetAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		employees, err := h.sv.GetAll()
 		if err != nil {
-			response.JSON(w, http.StatusInternalServerError, nil)
+			code, msg := eh.HandleError(err)
+			response.JSON(w, code, msg)
 			return
 		}
 
@@ -44,13 +46,14 @@ func (h *EmployeeHandler) GetByID() http.HandlerFunc {
 
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
-			response.JSON(w, http.StatusBadRequest, "Invalid id")
+			response.JSON(w, http.StatusBadRequest, eh.INVALID_ID)
 			return
 		}
 
 		employee, err := h.sv.GetByID(id)
 		if err != nil {
-			response.JSON(w, http.StatusNotFound, err.Error())
+			code, msg := eh.HandleError(err)
+			response.JSON(w, code, msg)
 			return
 		}
 
@@ -67,7 +70,7 @@ func (h *EmployeeHandler) Create() http.HandlerFunc {
 		var empDto dto.EmployeeRequestDTO
 
 		if err := json.NewDecoder(r.Body).Decode(&empDto); err != nil {
-			response.JSON(w, http.StatusBadRequest, "Invalid request body")
+			response.JSON(w, http.StatusBadRequest, eh.INVALID_BODY)
 			return
 		}
 
@@ -76,11 +79,8 @@ func (h *EmployeeHandler) Create() http.HandlerFunc {
 		emp, err := h.sv.Create(employee)
 
 		if err != nil {
-			if err.Error() == "Card number ID already exists" {
-				response.JSON(w, http.StatusBadRequest, err.Error())
-			} else if err.Error() == "Invalid employee data" {
-				response.JSON(w, http.StatusUnprocessableEntity, err.Error())
-			}
+			code, msg := eh.HandleError(err)
+			response.JSON(w, code, msg)
 			return
 		}
 
@@ -96,13 +96,13 @@ func (h *EmployeeHandler) Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
-			response.JSON(w, http.StatusBadRequest, "Invalid id")
+			response.JSON(w, http.StatusBadRequest, eh.INVALID_ID)
 			return
 		}
 
 		var empDto dto.EmployeeRequestDTOPtr
 		if err := json.NewDecoder(r.Body).Decode(&empDto); err != nil {
-			response.JSON(w, http.StatusBadRequest, "Invalid request body")
+			response.JSON(w, http.StatusBadRequest, eh.INVALID_BODY)
 			return
 		}
 
@@ -110,11 +110,8 @@ func (h *EmployeeHandler) Update() http.HandlerFunc {
 
 		empUpdated, err := h.sv.Update(id, employee)
 		if err != nil {
-			if err.Error() == "Employee not found" {
-				response.JSON(w, http.StatusNotFound, err.Error())
-			} else if err.Error() == "Card number ID already exists" {
-				response.JSON(w, http.StatusBadRequest, err.Error())
-			}
+			code, msg := eh.HandleError(err)
+			response.JSON(w, code, msg)
 			return
 		}
 
@@ -130,13 +127,14 @@ func (h *EmployeeHandler) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
-			response.JSON(w, http.StatusBadRequest, "Invalid id")
+			response.JSON(w, http.StatusBadRequest, eh.INVALID_ID)
 			return
 		}
 
 		err = h.sv.Delete(id)
 		if err != nil {
-			response.JSON(w, http.StatusNotFound, err.Error())
+			code, msg := eh.HandleError(err)
+			response.JSON(w, code, msg)
 			return
 		}
 
