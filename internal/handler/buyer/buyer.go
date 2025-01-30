@@ -147,13 +147,13 @@ func (h *BuyerHandler) Update() http.HandlerFunc {
 		}
 
 		// Decode body
-		var buyerRequestDto dto.BuyerRequestDTO
+		var buyerRequestDto dto.BuyerRequestDTOPtr
 		if err := json.NewDecoder(r.Body).Decode(&buyerRequestDto); err != nil {
 			response.Error(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		newBuyer := helper.BuyerRequestDTOToBuyer(buyerRequestDto)
+		newBuyer := helper.BuyerRequestDTOPtrToBuyerPtr(buyerRequestDto)
 
 		// Call service
 		data, err := h.sv.Update(id, newBuyer)

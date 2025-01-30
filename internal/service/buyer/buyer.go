@@ -50,7 +50,7 @@ func (s *BuyerService) Delete(id int) error {
 }
 
 // Update a buyer by id
-func (s *BuyerService) Update(id int, buyer model.Buyer) (model.Buyer, error) {
+func (s *BuyerService) Update(id int, buyer model.BuyerAttributesPtr) (model.Buyer, error) {
 	updatedBuyer, err := s.rp.Update(id, buyer)
 	if err != nil {
 		return model.Buyer{}, err
