@@ -15,6 +15,12 @@ type BuyerResponseDTO struct {
 	LastName     string `json:"last_name"`
 }
 
+type BuyerRequestDTOPtr struct {
+	CardNumberId *int    `json:"card_number_id"`
+	FirstName    *string `json:"first_name"`
+	LastName     *string `json:"last_name"`
+}
+
 // Validate BuyerRequestDTO fields
 func (e *BuyerRequestDTO) Validate() error {
 	if e.CardNumberId == 0 {

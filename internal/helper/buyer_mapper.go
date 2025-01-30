@@ -25,3 +25,12 @@ func BuyerToBuyerResponseDTO(buyer model.Buyer) dto.BuyerResponseDTO {
 	}
 	return data
 }
+
+func BuyerRequestDTOPtrToBuyerPtr(buyerRequestDto dto.BuyerRequestDTOPtr) model.BuyerAttributesPtr {
+	data := model.BuyerAttributesPtr{
+		CardNumberId: buyerRequestDto.CardNumberId,
+		FirstName:    buyerRequestDto.FirstName,
+		LastName:     buyerRequestDto.LastName,
+	}
+	return data
+}

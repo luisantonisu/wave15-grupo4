@@ -10,3 +10,9 @@ type BuyerAttributes struct {
 	FirstName    string
 	LastName     string
 }
+
+type BuyerAttributesPtr struct {
+	CardNumberId *int
+	FirstName    *string
+	LastName     *string
+}

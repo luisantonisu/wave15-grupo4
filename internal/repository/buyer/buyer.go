@@ -79,30 +79,28 @@ func (r *BuyerRepository) validateId(id int) error {
 }
 
 // Update a buyer by id
-func (r *BuyerRepository) Update(id int, buyer model.Buyer) (model.Buyer, error) {
+func (r *BuyerRepository) Update(id int, buyer model.BuyerAttributesPtr) (model.Buyer, error) {
 	// Validate buyer exists
-	_, ok := r.db[id]
+	buyerOld, ok := r.db[id]
 	if !ok {
 		return model.Buyer{}, error_handler.IDNotFound
 	}
 
-	// Validate card number id doesnt already exist
-	if err := r.validateCardNumberId(buyer.CardNumberId); err != nil {
-		return model.Buyer{}, err
-	}
-
 	// Update buyer in db
-	buyerOld := r.db[id]
+	if buyer.FirstName != nil {
+		buyerOld.FirstName = *buyer.FirstName
+	}
+	if buyer.LastName != nil {
+		buyerOld.LastName = *buyer.LastName
+	}
+	if buyer.CardNumberId != nil {
+		// Validate card number id doesnt already exist
+		if err := r.validateCardNumberId(*buyer.CardNumberId); err != nil {
+			return model.Buyer{}, err
+		}
+		buyerOld.CardNumberId = *buyer.CardNumberId
+	}
 
-	if buyer.FirstName != "" {
-		buyerOld.FirstName = buyer.FirstName
-	}
-	if buyer.LastName != "" {
-		buyerOld.LastName = buyer.LastName
-	}
-	if buyer.CardNumberId != 0 {
-		buyerOld.CardNumberId = buyer.CardNumberId
-	}
-
+	r.db[id] = buyerOld
 	return buyerOld, nil
 }
