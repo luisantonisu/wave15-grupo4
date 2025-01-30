@@ -40,6 +40,14 @@ func (s *SellerService) GetByID(id int) (model.Seller, error) {
 }
 
 func (s *SellerService) Create(seller model.Seller) (model.Seller, error) {
+    
+	//validate seller
+	err := s.validateSeller(seller)
+	if err != nil {
+		return model.Seller{}, err
+	}
+
+	//create seller
 	newSeller, err := s.rp.Create(seller)
 	if err != nil {
 		return model.Seller{}, err
@@ -47,3 +55,18 @@ func (s *SellerService) Create(seller model.Seller) (model.Seller, error) {
 
 	return newSeller, nil
 }
+
+func (s *SellerService) validateSeller(seller model.Seller) error {
+	
+	hasCID := seller.CompanyID != 0
+	hasCompanyName := seller.CompanyName != ""
+	hasAddress := seller.Address != ""
+	hasTelephone := seller.Telephone != ""
+
+	if !hasCID || !hasCompanyName || !hasAddress || !hasTelephone {
+		return errors.New("seller data incorrectly formed or incomplete")
+	}
+
+	return nil
+}
+
