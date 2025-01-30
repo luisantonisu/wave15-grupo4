@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -61,5 +62,95 @@ func (h *SectionHandler) GetByID() http.HandlerFunc {
 		response.JSON(w, http.StatusOK, map[string]any{
 			"data": data,
 		})
+	}
+}
+
+func (h *SectionHandler) Create() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var sectionRequest dto.SectionRequestDTO
+
+		err := json.NewDecoder(r.Body).Decode(&sectionRequest)
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, "Invalid request body")
+			return
+		}
+
+		section := helper.SectionRequestDTOToSection(sectionRequest)
+		section, err = h.sv.Create(section)
+
+		if err != nil {
+			if err.Error() == "section number already exists" {
+				response.JSON(w, http.StatusConflict, "Section number already exists")
+				return
+			}
+
+			if err.Error() == "invalid section data" {
+				response.JSON(w, http.StatusUnprocessableEntity, "Invalid section data")
+				return
+			}
+			response.JSON(w, http.StatusInternalServerError, nil)
+			return
+		}
+
+		data := helper.SectionToSectionResponseDTO(section)
+
+		response.JSON(w, http.StatusCreated, map[string]any{
+			"data": data,
+		})
+	}
+}
+
+func (h *SectionHandler) Patch() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		idStr := chi.URLParam(r, "id")
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, "Invalid section ID")
+			return
+		}
+
+		var sectionRequest dto.SectionRequestDTO
+		err = json.NewDecoder(r.Body).Decode(&sectionRequest)
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, "Invalid request body")
+			return
+		}
+		section := helper.SectionRequestDTOToSection(sectionRequest)
+		updatedSection, err := h.sv.Patch(id, section)
+		if err != nil {
+			if err.Error() == "section not found" {
+				response.JSON(w, http.StatusNotFound, "Section not found")
+				return
+			}
+			response.JSON(w, http.StatusInternalServerError, nil)
+			return
+		}
+
+		data := helper.SectionToSectionResponseDTO(updatedSection)
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data": data,
+		})
+	}
+}
+
+func (h *SectionHandler) Delete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id, err := strconv.Atoi(chi.URLParam(r, "id"))
+		if err != nil {
+			response.JSON(w, http.StatusBadRequest, "Invalid id")
+			return
+		}
+
+		err = h.sv.Delete(id)
+		if err != nil {
+			if err.Error() == "section not found" {
+				response.JSON(w, http.StatusNotFound, "Section not found")
+				return
+			}
+			response.JSON(w, http.StatusInternalServerError, nil)
+			return
+		}
+
+		response.JSON(w, http.StatusNoContent, nil)
 	}
 }

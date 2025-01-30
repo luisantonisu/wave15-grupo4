@@ -16,7 +16,7 @@ func NewWarehouseRepository(db map[int]model.Warehouse) *WarehouseRepository {
 
 type WarehouseRepository struct {
 	autoIncrement int
-	db map[int]model.Warehouse
+	db            map[int]model.Warehouse
 }
 
 func (wr *WarehouseRepository) GetAll() (map[int]model.Warehouse, error) {
@@ -40,16 +40,68 @@ func (wr *WarehouseRepository) Create(warehouse model.Warehouse) (model.Warehous
 	if warehouse.WarehouseCode == "" {
 		return model.Warehouse{}, errors.New("warehouse code is required")
 	}
-	
-	for _, w := range wr.db {
-		if w.WarehouseCode == warehouse.WarehouseCode {
-			return model.Warehouse{}, errors.New("warehouse code already exists")
-		}
+
+	if wr.warehouseCodeExists(warehouse.WarehouseCode) {
+		return model.Warehouse{}, errors.New("warehouse code already exists")
 	}
-	
+
 	wr.autoIncrement++
 	warehouse.ID = wr.autoIncrement
 	wr.db[warehouse.ID] = warehouse
 
 	return warehouse, nil
+}
+
+func (wr *WarehouseRepository) Update(id int, warehouse model.Warehouse) (model.Warehouse, error) {
+	updatedWarehouse, ok := wr.db[id]
+	if !ok {
+		return model.Warehouse{}, errors.New("warehouse not found")
+	}
+
+	if warehouse.WarehouseCode != "" && warehouse.WarehouseCode != updatedWarehouse.WarehouseCode {
+		if wr.warehouseCodeExists(warehouse.WarehouseCode) {
+			return model.Warehouse{}, errors.New("warehouse code already exists")
+		}
+		updatedWarehouse.WarehouseCode = warehouse.WarehouseCode
+	}
+
+	if warehouse.Address != "" {
+		updatedWarehouse.Address = warehouse.Address
+	}
+
+	if warehouse.Telephone > 0 {
+		updatedWarehouse.Telephone = warehouse.Telephone
+	}
+
+	if warehouse.MinimumCapacity > 0 {
+		updatedWarehouse.MinimumCapacity = warehouse.MinimumCapacity
+	}
+
+	if warehouse.MinimumTemperature > -50 && warehouse.MinimumTemperature < 40 {
+		updatedWarehouse.MinimumTemperature = warehouse.MinimumTemperature
+	}
+
+	wr.db[id] = updatedWarehouse
+
+	return updatedWarehouse, nil
+}
+
+func (wr *WarehouseRepository) Delete(id int) error {
+	_, ok := wr.db[id]
+	if !ok {
+		return errors.New("warehouse not found")
+	}
+
+	delete(wr.db, id)
+
+	return nil
+}
+
+func (wr *WarehouseRepository) warehouseCodeExists(warehouseCode string) bool {
+	for _, w := range wr.db {
+		if w.WarehouseCode == warehouseCode {
+			return true
+		}
+	}
+	return false
 }

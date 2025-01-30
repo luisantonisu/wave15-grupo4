@@ -101,7 +101,11 @@ func (a *ServerChi) Run() (err error) {
 			// - GET /api/v1/buyers
 			rt.Get("/", buyerHd.GetAll())
 			rt.Get("/{id}", buyerHd.GetByID())
+			// - POST /api/v1/buyers
 			rt.Post("/", buyerHd.Create())
+			// - PUT /api/v1/buyers
+			rt.Patch("/{id}", buyerHd.Update())
+			// - DELETE /api/v1/buyers
 			rt.Delete("/{id}", buyerHd.Delete())
 
 		})
@@ -131,12 +135,20 @@ func (a *ServerChi) Run() (err error) {
 			// - GET /api/v1/sections
 			rt.Get("/", sectionHd.GetAll())
 			rt.Get("/{id}", sectionHd.GetByID())
+			// - POST /api/v1/products /
+			rt.Post("/", sectionHd.Create())
+			// - PATCH /api/v1/products /
+			rt.Patch("/{id}", sectionHd.Patch())
+			// - DELETE /api/v1/employees/{id}
+			rt.Delete("/{id}", sectionHd.Delete())
 		})
 		rt.Route("/sellers", func(rt chi.Router) {
 			// - GET /api/v1/sellers
 			rt.Get("/", sellerHd.GetAll())
 			// -GET /api/v1/sellers/{id}
 			rt.Get("/{id}", sellerHd.GetByID())
+			// -POST /api/v1/sellers
+			rt.Post("/", sellerHd.Create())
 		})
 		rt.Route("/warehouses", func(rt chi.Router) {
 			// - GET /api/v1/warehouses
@@ -145,6 +157,10 @@ func (a *ServerChi) Run() (err error) {
 			rt.Get("/{id}", warehouseHd.GetByID())
 			// - POST /api/v1/warehouses
 			rt.Post("/", warehouseHd.Create())
+			// - PATCH /api/v1/warehouses/{id}
+			rt.Patch("/{id}", warehouseHd.Update())
+			// - DELETE /api/v1/warehouses/{id}
+			rt.Delete("/{id}", warehouseHd.Delete())
 		})
 	})
 
