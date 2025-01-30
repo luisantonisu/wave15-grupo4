@@ -49,3 +49,12 @@ func (s *SectionRepository) Create(section model.Section) (model.Section, error)
 
 	return s.db[lastId], nil
 }
+
+func (s *SectionRepository) Delete(id int) error {
+	_, exists := s.db[id]
+	if !exists {
+		return errors.New("section not found")
+	}
+	delete(s.db, id)
+	return nil
+}
