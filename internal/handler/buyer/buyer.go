@@ -41,7 +41,7 @@ func (h *BuyerHandler) Create() http.HandlerFunc {
 		// Call service
 		data, err := h.sv.Create(newBuyer)
 		if err != nil {
-			if errors.Is(err, error_handler.CardNumberIdAlreadyInUse) {
+			if errors.Is(err, error_handler.ErrAlreadyExists) {
 				response.Error(w, http.StatusConflict, err.Error())
 				return
 			}
@@ -93,7 +93,7 @@ func (h *BuyerHandler) GetByID() http.HandlerFunc {
 		// Call service
 		data, err := h.sv.GetByID(id)
 		if err != nil {
-			if errors.Is(err, error_handler.IDNotFound) {
+			if errors.Is(err, error_handler.ErrNotFound) {
 				response.Error(w, http.StatusNotFound, "Buyer not found")
 				return
 			}
@@ -122,7 +122,7 @@ func (h *BuyerHandler) Delete() http.HandlerFunc {
 		// Call service
 		err = h.sv.Delete(id)
 		if err != nil {
-			if errors.Is(err, error_handler.IDNotFound) {
+			if errors.Is(err, error_handler.ErrNotFound) {
 				response.Error(w, http.StatusNotFound, "Buyer not found")
 				return
 			}
@@ -158,11 +158,11 @@ func (h *BuyerHandler) Update() http.HandlerFunc {
 		// Call service
 		data, err := h.sv.Update(id, newBuyer)
 		if err != nil {
-			if errors.Is(err, error_handler.IDNotFound) {
+			if errors.Is(err, error_handler.ErrNotFound) {
 				response.Error(w, http.StatusNotFound, "Buyer not found")
 				return
 			}
-			if errors.Is(err, error_handler.CardNumberIdAlreadyInUse) {
+			if errors.Is(err, error_handler.ErrAlreadyExists) {
 				response.Error(w, http.StatusConflict, err.Error())
 				return
 			}
