@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 	"strconv"
 
@@ -11,7 +10,7 @@ import (
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/dto"
 	"github.com/luisantonisu/wave15-grupo4/internal/helper"
 	service "github.com/luisantonisu/wave15-grupo4/internal/service/buyer"
-	"github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
+	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
 func NewBuyerHandler(sv service.IBuyer) *BuyerHandler {
@@ -27,13 +26,14 @@ func (h *BuyerHandler) Create() http.HandlerFunc {
 		// Decode body
 		var buyerRequestDto dto.BuyerRequestDTO
 		if err := json.NewDecoder(r.Body).Decode(&buyerRequestDto); err != nil {
-			response.Error(w, http.StatusBadRequest, err.Error())
+			response.Error(w, http.StatusBadRequest, eh.INVALID_BODY)
 			return
 		}
 
-		// Validate all fields except id
+		// Validate card number id is present
 		if err := buyerRequestDto.Validate(); err != nil {
-			response.Error(w, http.StatusUnprocessableEntity, err.Error())
+			code, message := eh.HandleError(err)
+			response.Error(w, code, message)
 			return
 		}
 		newBuyer := helper.BuyerRequestDTOToBuyer(buyerRequestDto)
@@ -41,17 +41,15 @@ func (h *BuyerHandler) Create() http.HandlerFunc {
 		// Call service
 		data, err := h.sv.Create(newBuyer)
 		if err != nil {
-			if errors.Is(err, error_handler.ErrAlreadyExists) {
-				response.Error(w, http.StatusConflict, err.Error())
-				return
-			}
-			response.Error(w, http.StatusInternalServerError, err.Error())
+			code, message := eh.HandleError(err)
+			response.Error(w, code, message)
 			return
 		}
 
 		// Return response
 		response.JSON(w, http.StatusCreated, map[string]any{
-			"data": data,
+			"message": "Buyer created",
+			"data":    data,
 		})
 	}
 }
@@ -62,7 +60,8 @@ func (h *BuyerHandler) GetAll() http.HandlerFunc {
 		// Call service
 		buyers, err := h.sv.GetAll()
 		if err != nil {
-			response.Error(w, http.StatusInternalServerError, err.Error())
+			code, message := eh.HandleError(err)
+			response.Error(w, code, message)
 			return
 		}
 
@@ -86,24 +85,22 @@ func (h *BuyerHandler) GetByID() http.HandlerFunc {
 		idStr := chi.URLParam(r, "id")
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			response.Error(w, http.StatusBadRequest, err.Error())
+			response.Error(w, http.StatusBadRequest, eh.INVALID_ID)
 			return
 		}
 
 		// Call service
 		data, err := h.sv.GetByID(id)
 		if err != nil {
-			if errors.Is(err, error_handler.ErrNotFound) {
-				response.Error(w, http.StatusNotFound, "Buyer not found")
-				return
-			}
-			response.Error(w, http.StatusInternalServerError, err.Error())
+			code, message := eh.HandleError(err)
+			response.Error(w, code, message)
 			return
 		}
 
 		// Return response
 		response.JSON(w, http.StatusOK, map[string]any{
-			"data": helper.BuyerToBuyerResponseDTO(data),
+			"message": "success",
+			"data":    helper.BuyerToBuyerResponseDTO(data),
 		})
 	}
 }
@@ -115,18 +112,15 @@ func (h *BuyerHandler) Delete() http.HandlerFunc {
 		idStr := chi.URLParam(r, "id")
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			response.Error(w, http.StatusBadRequest, err.Error())
+			response.Error(w, http.StatusBadRequest, eh.INVALID_ID)
 			return
 		}
 
 		// Call service
 		err = h.sv.Delete(id)
 		if err != nil {
-			if errors.Is(err, error_handler.ErrNotFound) {
-				response.Error(w, http.StatusNotFound, "Buyer not found")
-				return
-			}
-			response.Error(w, http.StatusInternalServerError, err.Error())
+			code, message := eh.HandleError(err)
+			response.Error(w, code, message)
 			return
 		}
 
@@ -142,37 +136,30 @@ func (h *BuyerHandler) Update() http.HandlerFunc {
 		idStr := chi.URLParam(r, "id")
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			response.Error(w, http.StatusBadRequest, err.Error())
+			response.Error(w, http.StatusBadRequest, eh.INVALID_ID)
 			return
 		}
 
 		// Decode body
 		var buyerRequestDto dto.BuyerRequestDTOPtr
 		if err := json.NewDecoder(r.Body).Decode(&buyerRequestDto); err != nil {
-			response.Error(w, http.StatusBadRequest, err.Error())
+			response.Error(w, http.StatusBadRequest, eh.INVALID_BODY)
 			return
 		}
-
 		newBuyer := helper.BuyerRequestDTOPtrToBuyerPtr(buyerRequestDto)
 
 		// Call service
 		data, err := h.sv.Update(id, newBuyer)
 		if err != nil {
-			if errors.Is(err, error_handler.ErrNotFound) {
-				response.Error(w, http.StatusNotFound, "Buyer not found")
-				return
-			}
-			if errors.Is(err, error_handler.ErrAlreadyExists) {
-				response.Error(w, http.StatusConflict, err.Error())
-				return
-			}
-			response.Error(w, http.StatusInternalServerError, err.Error())
+			code, message := eh.HandleError(err)
+			response.Error(w, code, message)
 			return
 		}
 
 		// Return response
 		response.JSON(w, http.StatusOK, map[string]any{
-			"data": helper.BuyerToBuyerResponseDTO(data),
+			"message": "success",
+			"data":    helper.BuyerToBuyerResponseDTO(data),
 		})
 	}
 }
