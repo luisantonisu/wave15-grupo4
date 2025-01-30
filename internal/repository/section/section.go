@@ -18,6 +18,15 @@ type SectionRepository struct {
 	db map[int]model.Section
 }
 
+func (s *SectionRepository) sectionNumberExist(sectionNumber int) bool {
+	for _, section := range s.db {
+		if section.SectionNumber == sectionNumber {
+			return true
+		}
+	}
+	return false
+}
+
 func (s *SectionRepository) GetAll() (map[int]model.Section, error) {
 	return s.db, nil
 }
@@ -39,13 +48,4 @@ func (s *SectionRepository) Create(section model.Section) (model.Section, error)
 	s.db[section.ID] = section
 
 	return s.db[lastId], nil
-}
-
-func (s *SectionRepository) sectionNumberExist(sectionNumber int) bool {
-	for _, section := range s.db {
-		if section.SectionNumber == sectionNumber {
-			return true
-		}
-	}
-	return false
 }
