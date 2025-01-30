@@ -1,14 +1,14 @@
 package model
 
 type Warehouse struct {
-	ID                 int     `json:"id"`
+	ID int
 	WarehouseAttributes
 }
 
 type WarehouseAttributes struct {
-	WarehouseCode      string     `json:"warehouse_code"`
-	Address            string  `json:"address"`
-	Telephone          uint    `json:"telephone"`
-	MinimumCapacity    int     `json:"minimum_capacity"`
-	MinimumTemperature float32 `json:"minimum_temperature"`
+	WarehouseCode      string
+	Address            string
+	Telephone          uint
+	MinimumCapacity    int
+	MinimumTemperature float32
 }
