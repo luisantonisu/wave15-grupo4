@@ -30,7 +30,7 @@ func (h *EmployeeService) Create(employee model.Employee) (model.Employee, error
 	return h.rp.Create(employee)
 }
 
-func (h *EmployeeService) Update(id int, employee model.Employee) (model.Employee, error) {
+func (h *EmployeeService) Update(id int, employee model.EmployeeAttributesPtr) (model.Employee, error) {
 	return h.rp.Update(id, employee)
 }
 
