@@ -4,7 +4,7 @@
 ### DAY 1
 | Name | Did | Will do | Blockers |
 | -------- | -------- | -------- | -------- |
-| Diana | | | |
+| Diana | Meet with the team to create the project infrastructure | Get all and get by id methods for warehouses | None |
 | Giovanny | | | |
 | Heyling | Collaborate with my team to define the project structure| Develop GET methods for retrieving all employees and fetching an employee by their ID | Nothing |
 | Ibzan | Define project structure | Develop GetAll for section | Nothing |
@@ -14,7 +14,7 @@
 ### DAY 2
 | Name | Did | Will do | Blockers |
 | -------- | -------- | -------- | -------- |
-| Diana | | | |
+| Diana | Get all, get by id and create method for warehouses | Update and delete warehouse | None |
 | Giovanny | | | |
 | Heyling | GET: employees and employees by id | Create, update and delete an employe | Pull requests that have not been approved by my team |
 | Ibzan | GetAll for section | Develop GetById for section | Nothing |
@@ -24,7 +24,7 @@
 ### DAY 3
 | Name | Did | Will do | Blockers |
 | -------- | -------- | -------- | -------- |
-| Diana | | | |
+| Diana | Update and delete warehouse | Refactor errors and add validations | None |
 | Giovanny | | | |
 | Heyling | Create, update and delete an employee | Change the structure of errors and define how to validate the fields in the request when PATCH is called | Nothing|
 | Ibzan | GetById for section | Develop Create, Delete and Patch for section | Nothing |
