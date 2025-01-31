@@ -1,9 +1,8 @@
 package repository
 
 import (
-	"errors"
-
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
+	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
 func NewSellerRepository(db map[int]model.Seller) *SellerRepository {
@@ -36,7 +35,7 @@ func (r *SellerRepository) GetByID(id int) (model.Seller, error) {
 		}
 	}
 
-	return model.Seller{}, errors.New("seller not found")
+	return model.Seller{}, eh.GetErrNotFound(eh.SELLER)
 }
 
 func (r *SellerRepository) Create(seller model.Seller) (model.Seller, error) {
@@ -59,12 +58,12 @@ func (r *SellerRepository) Create(seller model.Seller) (model.Seller, error) {
 
 func (r *SellerRepository) Update(id int, seller model.SellerAtrributesPtr) (model.Seller, error) {
 	if _, ok := r.db[id]; !ok {
-		return model.Seller{}, errors.New("seller not found")
+		return model.Seller{}, eh.GetErrNotFound(eh.SELLER)
 	}
 
 	for _, value := range r.db {
 		if value.CompanyID == *seller.CompanyID && value.ID != id {
-			return model.Seller{}, errors.New("a seller is already registered with this Company id")
+			return model.Seller{}, eh.ErrAlreadyExists
 		}
 	}
 
@@ -92,10 +91,10 @@ func (r *SellerRepository) Update(id int, seller model.SellerAtrributesPtr) (mod
 
 }
 
-func (r *SellerRepository) Delete(id int) (error) {
+func (r *SellerRepository) Delete(id int) error {
 	_, ok := r.db[id]
 	if !ok {
-		return errors.New("seller not found")
+		return eh.GetErrNotFound(eh.SELLER)
 	}
 	delete(r.db, id)
 	return nil
@@ -106,7 +105,7 @@ func (r *SellerRepository) validateCompanyID(companyID int) error {
 		companyExist := seller.CompanyID == companyID
 
 		if companyExist {
-			return errors.New("seller alredy exist")
+			return eh.GetErrAlreadyExists(eh.SELLER)
 		}
 	}
 
