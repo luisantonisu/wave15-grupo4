@@ -6,7 +6,7 @@ import (
 )
 
 func SectionToSectionResponseDTO(section model.Section) dto.SectionResponseDTO {
-	data := dto.SectionResponseDTO{
+	return dto.SectionResponseDTO{
 		ID:                 section.ID,
 		SectionNumber:      section.SectionNumber,
 		CurrentTemperature: section.CurrentTemperature,
@@ -18,22 +18,51 @@ func SectionToSectionResponseDTO(section model.Section) dto.SectionResponseDTO {
 		ProductTypeID:      section.ProductTypeID,
 		ProductBatchID:     section.ProductBatchID,
 	}
-	return data
 }
 
-func SectionRequestDTOToSection(sectionRequestDTO dto.SectionRequestDTO) model.Section {
-	data := model.Section{
+func SectionRequestDTOToSection(section dto.SectionRequestDTO) model.Section {
+	return model.Section{
 		SectionAttributes: model.SectionAttributes{
-			SectionNumber:      sectionRequestDTO.SectionNumber,
-			CurrentTemperature: sectionRequestDTO.CurrentTemperature,
-			MinimumTemperature: sectionRequestDTO.MinimumTemperature,
-			CurrentCapacity:    sectionRequestDTO.CurrentCapacity,
-			MinimumCapacity:    sectionRequestDTO.MinimumCapacity,
-			MaximumCapacity:    sectionRequestDTO.MaximumCapacity,
-			WarehouseID:        sectionRequestDTO.WarehouseID,
-			ProductTypeID:      sectionRequestDTO.ProductTypeID,
-			ProductBatchID:     sectionRequestDTO.ProductBatchID,
+			SectionNumber:      section.SectionNumber,
+			CurrentTemperature: section.CurrentTemperature,
+			MinimumTemperature: section.MinimumTemperature,
+			CurrentCapacity:    section.CurrentCapacity,
+			MinimumCapacity:    section.MinimumCapacity,
+			MaximumCapacity:    section.MaximumCapacity,
+			WarehouseID:        section.WarehouseID,
+			ProductTypeID:      section.ProductTypeID,
+			ProductBatchID:     section.ProductBatchID,
 		},
 	}
-	return data
+}
+
+func SectionResponseDTOToSection(section dto.SectionResponseDTO) model.Section {
+	return model.Section{
+		ID: section.ID,
+		SectionAttributes: model.SectionAttributes{
+			SectionNumber:      section.SectionNumber,
+			CurrentTemperature: section.CurrentTemperature,
+			MinimumTemperature: section.MinimumTemperature,
+			CurrentCapacity:    section.CurrentCapacity,
+			MinimumCapacity:    section.MinimumCapacity,
+			MaximumCapacity:    section.MaximumCapacity,
+			WarehouseID:        section.WarehouseID,
+			ProductTypeID:      section.ProductTypeID,
+			ProductBatchID:     section.ProductBatchID,
+		},
+	}
+}
+
+func SectionRequestDTOPtrToSectionPtr(section dto.SectionRequestDTOPtr) model.SectionAttributesPtr {
+	return model.SectionAttributesPtr{
+		SectionNumber:      section.SectionNumber,
+		CurrentTemperature: section.CurrentTemperature,
+		MinimumTemperature: section.MinimumTemperature,
+		CurrentCapacity:    section.CurrentCapacity,
+		MinimumCapacity:    section.MinimumCapacity,
+		MaximumCapacity:    section.MaximumCapacity,
+		WarehouseID:        section.WarehouseID,
+		ProductTypeID:      section.ProductTypeID,
+		ProductBatchID:     section.ProductBatchID,
+	}
 }

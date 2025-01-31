@@ -1,9 +1,8 @@
 package repository
 
 import (
-	"errors"
-
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
+	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
 func NewSectionRepository(db map[int]model.Section) *SectionRepository {
@@ -16,6 +15,11 @@ func NewSectionRepository(db map[int]model.Section) *SectionRepository {
 
 type SectionRepository struct {
 	db map[int]model.Section
+}
+
+func (s *SectionRepository) sectionExists(id int) bool {
+	_, exists := s.db[id]
+	return exists
 }
 
 func (s *SectionRepository) sectionNumberExist(sectionNumber int) bool {
@@ -32,16 +36,15 @@ func (s *SectionRepository) GetAll() (map[int]model.Section, error) {
 }
 
 func (s *SectionRepository) GetByID(id int) (model.Section, error) {
-	section, exists := s.db[id]
-	if !exists {
-		return model.Section{}, errors.New("not exist")
+	if !s.sectionExists(id) {
+		return model.Section{}, eh.GetErrNotFound(eh.SECTION)
 	}
-	return section, nil
+	return s.db[id], nil
 }
 
 func (s *SectionRepository) Create(section model.Section) (model.Section, error) {
 	if s.sectionNumberExist(section.SectionNumber) {
-		return model.Section{}, errors.New("section number already exists")
+		return model.Section{}, eh.GetErrAlreadyExists(eh.SECTION_NUMBER)
 	}
 	lastId := s.db[len(s.db)].ID + 1
 	section.ID = lastId
@@ -50,48 +53,52 @@ func (s *SectionRepository) Create(section model.Section) (model.Section, error)
 	return s.db[lastId], nil
 }
 
-func (s *SectionRepository) Patch(id int, section model.Section) (model.Section, error) {
-	existingSection, exists := s.db[id]
-	if !exists {
-		return model.Section{}, errors.New("section not found")
+func (s *SectionRepository) Patch(id int, section model.SectionAttributesPtr) (model.Section, error) {
+	if !s.sectionExists(id) {
+		return model.Section{}, eh.GetErrNotFound(eh.SECTION)
 	}
 
-	if section.SectionNumber != 0 {
-		existingSection.SectionNumber = section.SectionNumber
-	}
-	if section.CurrentTemperature != 0 {
-		existingSection.CurrentTemperature = section.CurrentTemperature
-	}
-	if section.MinimumTemperature != 0 {
-		existingSection.MinimumTemperature = section.MinimumTemperature
-	}
-	if section.CurrentCapacity != 0 {
-		existingSection.CurrentCapacity = section.CurrentCapacity
-	}
-	if section.MinimumCapacity != 0 {
-		existingSection.MinimumCapacity = section.MinimumCapacity
-	}
-	if section.MaximumCapacity != 0 {
-		existingSection.MaximumCapacity = section.MaximumCapacity
-	}
-	if section.WarehouseID != 0 {
-		existingSection.WarehouseID = section.WarehouseID
-	}
-	if section.ProductTypeID != 0 {
-		existingSection.ProductTypeID = section.ProductTypeID
-	}
-	if len(section.ProductBatchID) != 0 {
-		existingSection.ProductBatchID = section.ProductBatchID
+	if section.SectionNumber != nil && s.sectionNumberExist(*section.SectionNumber) {
+		return model.Section{}, eh.GetErrAlreadyExists(eh.SECTION_NUMBER)
 	}
 
-	s.db[id] = existingSection
-	return existingSection, nil
+	sec := s.db[id]
+
+	if section.SectionNumber != nil {
+		sec.SectionNumber = *section.SectionNumber
+	}
+	if section.CurrentTemperature != nil {
+		sec.CurrentTemperature = *section.CurrentTemperature
+	}
+	if section.MinimumTemperature != nil {
+		sec.MinimumTemperature = *section.MinimumTemperature
+	}
+	if section.CurrentCapacity != nil {
+		sec.CurrentCapacity = *section.CurrentCapacity
+	}
+	if section.MinimumCapacity != nil {
+		sec.MinimumCapacity = *section.MinimumCapacity
+	}
+	if section.MaximumCapacity != nil {
+		sec.MaximumCapacity = *section.MaximumCapacity
+	}
+	if section.WarehouseID != nil {
+		sec.WarehouseID = *section.WarehouseID
+	}
+	if section.ProductTypeID != nil {
+		sec.ProductTypeID = *section.ProductTypeID
+	}
+	if section.ProductBatchID != nil {
+		sec.ProductBatchID = *section.ProductBatchID
+	}
+
+	s.db[id] = sec
+	return sec, nil
 }
 
 func (s *SectionRepository) Delete(id int) error {
-	_, exists := s.db[id]
-	if !exists {
-		return errors.New("section not found")
+	if !s.sectionExists(id) {
+		return eh.GetErrNotFound(eh.SECTION)
 	}
 	delete(s.db, id)
 	return nil

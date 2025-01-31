@@ -18,6 +18,7 @@ const (
 	INVALID_ID     = "invalid id"
 	CARD_NUMBER    = "card number ID"
 	WAREHOUSE_CODE = "warehouse code"
+	SECTION_NUMBER = "section number"
 )
 
 var (
