@@ -37,7 +37,7 @@ func (wh *WarehouseHandler) GetAll() http.HandlerFunc {
 
 		response.JSON(w, http.StatusOK, map[string]any{
 			"message": "success",
-			"data": data,
+			"data":    data,
 		})
 	}
 }
@@ -61,7 +61,7 @@ func (wh *WarehouseHandler) GetByID() http.HandlerFunc {
 
 		response.JSON(w, http.StatusOK, map[string]any{
 			"message": "success",
-			"data": data,
+			"data":    data,
 		})
 	}
 }
@@ -86,7 +86,7 @@ func (wh *WarehouseHandler) Create() http.HandlerFunc {
 
 		response.JSON(w, http.StatusCreated, map[string]any{
 			"message": "warehouse created",
-			"data": data,
+			"data":    data,
 		})
 	}
 }
@@ -117,7 +117,7 @@ func (wh *WarehouseHandler) Update() http.HandlerFunc {
 
 		response.JSON(w, http.StatusOK, map[string]any{
 			"message": "warehouse updated",
-			"data": data,
+			"data":    data,
 		})
 	}
 }
