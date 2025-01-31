@@ -8,7 +8,7 @@
 | Giovanny | | | |
 | Heyling | Collaborate with my team to define the project structure| Develop GET methods for retrieving all employees and fetching an employee by their ID | Nothing |
 | Ibzan | Define project structure | Develop GetAll for section | Nothing |
-| Juan | | | |
+| Juan | Define project structure standarizing code development | Develop GetAll and GetByID | nothing |
 | Luis | Define project structure with the team | Develop GetAll and Create methods for buyer | Nothing |
 
 ### DAY 2
@@ -18,7 +18,7 @@
 | Giovanny | | | |
 | Heyling | GET: employees and employees by id | Create, update and delete an employe | Pull requests that have not been approved by my team |
 | Ibzan | GetAll for section | Develop GetById for section | Nothing |
-| Juan | | | |
+| Juan | GetAll and GetByID | Create, Delete and Update methods | VSCode was acting up and wasnt allowing me to neither save files nor work on em properly |
 | Luis | GetAll and Create buyers | Update, Delete and Get buyer by Id methods  | Nothing |
 	
 ### DAY 3
@@ -28,7 +28,7 @@
 | Giovanny | | | |
 | Heyling | Create, update and delete an employee | Change the structure of errors and define how to validate the fields in the request when PATCH is called | Nothing|
 | Ibzan | GetById for section | Develop Create, Delete and Patch for section | Nothing |
-| Juan | | | |
+| Juan | Create, Delete and Update methods | Iron out the Update method to allow for zero values to be introduced, and also standarizing error handling accross the application | Nothing |
 | Luis | Update, delete and get buyer by Id methods | Define a standard structure for error handling with the team and fixing the validation on PATCH method | Nothing |
 
 ## SPRINT 2
