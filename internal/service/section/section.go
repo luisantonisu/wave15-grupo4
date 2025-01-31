@@ -1,10 +1,9 @@
 package service
 
 import (
-	"errors"
-
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 	repository "github.com/luisantonisu/wave15-grupo4/internal/repository/section"
+	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
 func NewSectionService(rp repository.ISection) *SectionService {
@@ -33,7 +32,7 @@ func (h *SectionService) Create(section model.Section) (model.Section, error) {
 		section.WarehouseID <= 0 ||
 		section.ProductTypeID <= 0 ||
 		len(section.ProductBatchID) == 0 {
-		return model.Section{}, errors.New("invalid section data")
+		return model.Section{}, eh.GetErrInvalidData(eh.SECTION)
 	}
 	return h.rp.Create(section)
 }

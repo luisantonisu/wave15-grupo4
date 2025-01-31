@@ -10,6 +10,7 @@ import (
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/dto"
 	"github.com/luisantonisu/wave15-grupo4/internal/helper"
 	service "github.com/luisantonisu/wave15-grupo4/internal/service/section"
+	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
 func NewSectionHandler(sv service.ISection) *SectionHandler {
@@ -24,7 +25,8 @@ func (h *SectionHandler) GetAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		sections, err := h.sv.GetAll()
 		if err != nil {
-			response.JSON(w, http.StatusInternalServerError, nil)
+			code, msg := eh.HandleError(err)
+			response.Error(w, code, msg)
 			return
 		}
 
@@ -43,17 +45,14 @@ func (h *SectionHandler) GetByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
-			response.JSON(w, http.StatusBadRequest, "invalid Id")
+			response.Error(w, http.StatusBadRequest, eh.INVALID_ID)
 			return
 		}
 
 		section, err := h.sv.GetByID(id)
 		if err != nil {
-			if err.Error() == "not exist" {
-				response.JSON(w, http.StatusNotFound, "ID not found")
-				return
-			}
-			response.JSON(w, http.StatusInternalServerError, nil)
+			code, msg := eh.HandleError(err)
+			response.Error(w, code, msg)
 			return
 		}
 
@@ -71,7 +70,7 @@ func (h *SectionHandler) Create() http.HandlerFunc {
 
 		err := json.NewDecoder(r.Body).Decode(&sectionRequest)
 		if err != nil {
-			response.JSON(w, http.StatusBadRequest, "Invalid request body")
+			response.Error(w, http.StatusBadRequest, eh.INVALID_BODY)
 			return
 		}
 
@@ -79,16 +78,8 @@ func (h *SectionHandler) Create() http.HandlerFunc {
 		section, err = h.sv.Create(section)
 
 		if err != nil {
-			if err.Error() == "section number already exists" {
-				response.JSON(w, http.StatusConflict, "Section number already exists")
-				return
-			}
-
-			if err.Error() == "invalid section data" {
-				response.JSON(w, http.StatusUnprocessableEntity, "Invalid section data")
-				return
-			}
-			response.JSON(w, http.StatusInternalServerError, nil)
+			code, msg := eh.HandleError(err)
+			response.Error(w, code, msg)
 			return
 		}
 
@@ -105,25 +96,22 @@ func (h *SectionHandler) Patch() http.HandlerFunc {
 		idStr := chi.URLParam(r, "id")
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			response.JSON(w, http.StatusBadRequest, "Invalid section ID")
+			response.Error(w, http.StatusBadRequest, eh.INVALID_ID)
 			return
 		}
 
 		var secDto dto.SectionRequestDTOPtr
 		err = json.NewDecoder(r.Body).Decode(&secDto)
 		if err != nil {
-			response.JSON(w, http.StatusBadRequest, "Invalid request body")
+			response.Error(w, http.StatusBadRequest, eh.INVALID_BODY)
 			return
 		}
 		section := helper.SectionRequestDTOPtrToSectionPtr(secDto)
 
 		updatedSection, err := h.sv.Patch(id, section)
 		if err != nil {
-			if err.Error() == "section not found" {
-				response.JSON(w, http.StatusNotFound, "Section not found")
-				return
-			}
-			response.JSON(w, http.StatusInternalServerError, nil)
+			code, msg := eh.HandleError(err)
+			response.Error(w, code, msg)
 			return
 		}
 
@@ -138,17 +126,14 @@ func (h *SectionHandler) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
-			response.JSON(w, http.StatusBadRequest, "Invalid id")
+			response.Error(w, http.StatusBadRequest, eh.INVALID_ID)
 			return
 		}
 
 		err = h.sv.Delete(id)
 		if err != nil {
-			if err.Error() == "section not found" {
-				response.JSON(w, http.StatusNotFound, "Section not found")
-				return
-			}
-			response.JSON(w, http.StatusInternalServerError, nil)
+			code, msg := eh.HandleError(err)
+			response.Error(w, code, msg)
 			return
 		}
 

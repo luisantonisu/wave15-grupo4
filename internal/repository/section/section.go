@@ -1,9 +1,8 @@
 package repository
 
 import (
-	"errors"
-
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
+	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
 func NewSectionRepository(db map[int]model.Section) *SectionRepository {
@@ -16,6 +15,11 @@ func NewSectionRepository(db map[int]model.Section) *SectionRepository {
 
 type SectionRepository struct {
 	db map[int]model.Section
+}
+
+func (s *SectionRepository) sectionExists(id int) bool {
+	_, exists := s.db[id]
+	return exists
 }
 
 func (s *SectionRepository) sectionNumberExist(sectionNumber int) bool {
@@ -32,16 +36,15 @@ func (s *SectionRepository) GetAll() (map[int]model.Section, error) {
 }
 
 func (s *SectionRepository) GetByID(id int) (model.Section, error) {
-	section, exists := s.db[id]
-	if !exists {
-		return model.Section{}, errors.New("not exist")
+	if !s.sectionExists(id) {
+		return model.Section{}, eh.GetErrNotFound(eh.SECTION)
 	}
-	return section, nil
+	return s.db[id], nil
 }
 
 func (s *SectionRepository) Create(section model.Section) (model.Section, error) {
 	if s.sectionNumberExist(section.SectionNumber) {
-		return model.Section{}, errors.New("section number already exists")
+		return model.Section{}, eh.GetErrAlreadyExists(eh.SECTION_NUMBER)
 	}
 	lastId := s.db[len(s.db)].ID + 1
 	section.ID = lastId
@@ -51,10 +54,15 @@ func (s *SectionRepository) Create(section model.Section) (model.Section, error)
 }
 
 func (s *SectionRepository) Patch(id int, section model.SectionAttributesPtr) (model.Section, error) {
-	sec, exists := s.db[id]
-	if !exists {
-		return model.Section{}, errors.New("section not found")
+	if !s.sectionExists(id) {
+		return model.Section{}, eh.GetErrNotFound(eh.SECTION)
 	}
+
+	if section.SectionNumber != nil && s.sectionNumberExist(*section.SectionNumber) {
+		return model.Section{}, eh.GetErrAlreadyExists(eh.SECTION_NUMBER)
+	}
+
+	sec := s.db[id]
 
 	if section.SectionNumber != nil {
 		sec.SectionNumber = *section.SectionNumber
@@ -89,9 +97,8 @@ func (s *SectionRepository) Patch(id int, section model.SectionAttributesPtr) (m
 }
 
 func (s *SectionRepository) Delete(id int) error {
-	_, exists := s.db[id]
-	if !exists {
-		return errors.New("section not found")
+	if !s.sectionExists(id) {
+		return eh.GetErrNotFound(eh.SECTION)
 	}
 	delete(s.db, id)
 	return nil
