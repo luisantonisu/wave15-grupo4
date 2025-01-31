@@ -99,13 +99,13 @@ func (wh *WarehouseHandler) Update() http.HandlerFunc {
 			return
 		}
 
-		var warehouseRequest dto.WarehouseRequestDTO
+		var warehouseRequest dto.WarehouseRequestDTOPtr
 		if err := json.NewDecoder(r.Body).Decode(&warehouseRequest); err != nil {
 			response.Error(w, http.StatusBadRequest, eh.INVALID_BODY)
 			return
 		}
 
-		warehouse := helper.WarehouseRequestDTOToWarehouse(warehouseRequest)
+		warehouse := helper.WarehouseRequestDTOPtrToWarehouseAttributesPtr(warehouseRequest)
 		updatedWarehouse, err := wh.sv.Update(id, warehouse)
 		if err != nil {
 			code, msg := eh.HandleError(err)

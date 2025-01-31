@@ -29,3 +29,14 @@ func WarehouseRequestDTOToWarehouse(warehouseRequestDTO dto.WarehouseRequestDTO)
 	}
 	return data
 }
+
+func WarehouseRequestDTOPtrToWarehouseAttributesPtr(warehouseRequestDTOPtr dto.WarehouseRequestDTOPtr) model.WarehouseAttributesPtr {
+	data := model.WarehouseAttributesPtr{
+			WarehouseCode:      warehouseRequestDTOPtr.WarehouseCode,
+			Address:            warehouseRequestDTOPtr.Address,
+			Telephone:          warehouseRequestDTOPtr.Telephone,
+			MinimumCapacity:    warehouseRequestDTOPtr.MinimumCapacity,
+			MinimumTemperature: warehouseRequestDTOPtr.MinimumTemperature,
+		}
+	return data
+}
