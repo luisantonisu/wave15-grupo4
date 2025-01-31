@@ -51,33 +51,33 @@ func (wr *WarehouseRepository) Create(warehouse model.Warehouse) (model.Warehous
 	return warehouse, nil
 }
 
-func (wr *WarehouseRepository) Update(id int, warehouse model.Warehouse) (model.Warehouse, error) {
+func (wr *WarehouseRepository) Update(id int, warehouse model.WarehouseAttributesPtr) (model.Warehouse, error) {
 	updatedWarehouse, ok := wr.db[id]
 	if !ok {
 		return model.Warehouse{}, eh.GetErrNotFound(eh.WAREHOUSE)
 	}
 
-	if warehouse.WarehouseCode != "" && warehouse.WarehouseCode != updatedWarehouse.WarehouseCode {
-		if wr.warehouseCodeExists(warehouse.WarehouseCode) {
+	if warehouse.WarehouseCode != nil && *warehouse.WarehouseCode != updatedWarehouse.WarehouseCode {
+		if wr.warehouseCodeExists(*warehouse.WarehouseCode) {
 			return model.Warehouse{}, eh.GetErrAlreadyExists(eh.WAREHOUSE_CODE)
 		}
-		updatedWarehouse.WarehouseCode = warehouse.WarehouseCode
+		updatedWarehouse.WarehouseCode = *warehouse.WarehouseCode
 	}
 
-	if warehouse.Address != "" {
-		updatedWarehouse.Address = warehouse.Address
+	if warehouse.Address != nil {
+		updatedWarehouse.Address = *warehouse.Address
 	}
 
-	if warehouse.Telephone > 0 {
-		updatedWarehouse.Telephone = warehouse.Telephone
+	if warehouse.Telephone != nil {
+		updatedWarehouse.Telephone = *warehouse.Telephone
 	}
 
-	if warehouse.MinimumCapacity > 0 {
-		updatedWarehouse.MinimumCapacity = warehouse.MinimumCapacity
+	if warehouse.MinimumCapacity != nil {
+		updatedWarehouse.MinimumCapacity = *warehouse.MinimumCapacity
 	}
 
-	if warehouse.MinimumTemperature > -50 && warehouse.MinimumTemperature < 40 {
-		updatedWarehouse.MinimumTemperature = warehouse.MinimumTemperature
+	if warehouse.MinimumTemperature != nil {
+		updatedWarehouse.MinimumTemperature = *warehouse.MinimumTemperature
 	}
 
 	wr.db[id] = updatedWarehouse
