@@ -38,7 +38,7 @@ func (h *SectionService) Create(section model.Section) (model.Section, error) {
 	return h.rp.Create(section)
 }
 
-func (h *SectionService) Patch(id int, section model.Section) (model.Section, error) {
+func (h *SectionService) Patch(id int, section model.SectionAttributesPtr) (model.Section, error) {
 	return h.rp.Patch(id, section)
 }
 

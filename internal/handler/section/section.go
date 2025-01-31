@@ -109,13 +109,14 @@ func (h *SectionHandler) Patch() http.HandlerFunc {
 			return
 		}
 
-		var sectionRequest dto.SectionRequestDTO
-		err = json.NewDecoder(r.Body).Decode(&sectionRequest)
+		var secDto dto.SectionRequestDTOPtr
+		err = json.NewDecoder(r.Body).Decode(&secDto)
 		if err != nil {
 			response.JSON(w, http.StatusBadRequest, "Invalid request body")
 			return
 		}
-		section := helper.SectionRequestDTOToSection(sectionRequest)
+		section := helper.SectionRequestDTOPtrToSectionPtr(secDto)
+
 		updatedSection, err := h.sv.Patch(id, section)
 		if err != nil {
 			if err.Error() == "section not found" {
