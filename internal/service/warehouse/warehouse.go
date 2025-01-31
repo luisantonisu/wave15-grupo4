@@ -48,10 +48,8 @@ func (ws *WarehouseService) Create(warehouse model.Warehouse) (model.Warehouse, 
 		}
 	}
 
-	if warehouse.MinimumTemperature != 0 {
-		if err := validateTemperature(warehouse.MinimumTemperature); err != nil {
-			return model.Warehouse{}, err
-		}
+	if err := validateTemperature(warehouse.MinimumTemperature); err != nil {
+		return model.Warehouse{}, err
 	}
 	return ws.rp.Create(warehouse)
 }
