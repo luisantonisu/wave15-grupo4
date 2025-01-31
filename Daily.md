@@ -7,7 +7,7 @@
 | Diana | | | |
 | Giovanny | | | |
 | Heyling | Collaborate with my team to define the project structure| Develop GET methods for retrieving all employees and fetching an employee by their ID | Nothing |
-| Izban | | | |
+| Ibzan | Define project structure | Develop GetAll for section | Nothing |
 | Juan | | | |
 | Luis | Define project structure with the team | Develop GetAll and Create methods for buyer | Nothing |
 
@@ -17,7 +17,7 @@
 | Diana | | | |
 | Giovanny | | | |
 | Heyling | GET: employees and employees by id | Create, update and delete an employe | Pull requests that have not been approved by my team |
-| Izban | | | |
+| Ibzan | GetAll for section | Develop GetById for section | Nothing |
 | Juan | | | |
 | Luis | GetAll and Create buyers | Update, Delete and Get buyer by Id methods  | Nothing |
 	
@@ -27,7 +27,7 @@
 | Diana | | | |
 | Giovanny | | | |
 | Heyling | Create, update and delete an employee | Change the structure of errors and define how to validate the fields in the request when PATCH is called | Nothing|
-| Izban | | | |
+| Ibzan | GetById for section | Develop Create, Delete and Patch for section | Nothing |
 | Juan | | | |
 | Luis | Update, delete and get buyer by Id methods | Define a standard structure for error handling with the team and fixing the validation on PATCH method | Nothing |
 
@@ -38,7 +38,7 @@
 | Diana | | | |
 | Giovanny | | | |
 | Heyling | | | |
-| Izban | | | |
+| Ibzan | | | |
 | Juan | | | |
 | Luis | | | |
 
@@ -48,7 +48,7 @@
 | Diana | | | |
 | Giovanny | | | |
 | Heyling | | | |
-| Izban | | | |
+| Ibzan | | | |
 | Juan | | | |
 | Luis | | | |
 	
@@ -58,7 +58,7 @@
 | Diana | | | |
 | Giovanny | | | |
 | Heyling | | | |
-| Izban | | | |
+| Ibzan | | | |
 | Juan | | | |
 | Luis | | | |
 
@@ -69,7 +69,7 @@
 | Diana | | | |
 | Giovanny | | | |
 | Heyling | | | |
-| Izban | | | |
+| Ibzan | | | |
 | Juan | | | |
 | Luis | | | |
 
@@ -79,7 +79,7 @@
 | Diana | | | |
 | Giovanny | | | |
 | Heyling | | | |
-| Izban | | | |
+| Ibzan | | | |
 | Juan | | | |
 | Luis | | | |
 	
@@ -89,7 +89,7 @@
 | Diana | | | |
 | Giovanny | | | |
 | Heyling | | | |
-| Izban | | | |
+| Ibzan | | | |
 | Juan | | | |
 | Luis | | | |
 
@@ -100,7 +100,7 @@
 | Diana | | | |
 | Giovanny | | | |
 | Heyling | | | |
-| Izban | | | |
+| Ibzan | | | |
 | Juan | | | |
 | Luis | | | |
 
@@ -110,7 +110,7 @@
 | Diana | | | |
 | Giovanny | | | |
 | Heyling | | | |
-| Izban | | | |
+| Ibzan | | | |
 | Juan | | | |
 | Luis | | | |
 	
@@ -120,6 +120,6 @@
 | Diana | | | |
 | Giovanny | | | |
 | Heyling | | | |
-| Izban | | | |
+| Ibzan | | | |
 | Juan | | | |
 | Luis | | | |
