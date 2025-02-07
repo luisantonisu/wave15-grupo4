@@ -1,116 +1,153 @@
 package repository
 
 import (
+	"database/sql"
+
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 	errorHandler "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
-func NewProductRepository(db map[int]model.Product) *ProductRepository {
-	defaultDb := make(map[int]model.Product)
-	if db != nil {
-		defaultDb = db
+func NewProductRepository(db *sql.DB) *ProductRepository {
+	defaultDb := &ProductRepository{
+		db: db,
 	}
-	return &ProductRepository{db: defaultDb}
+	return defaultDb
 }
 
 type ProductRepository struct {
-	db map[int]model.Product
+	db *sql.DB
 }
 
 func (productRepository *ProductRepository) GetProduct() (productMap map[int]model.Product, err error) {
-	if len(productRepository.db) == 0 {
+	rows, err := productRepository.db.Query("SELECT id, product_code, description, width, height, net_weight, expiration_rate, recommended_freezing_temperature, product_type_id, seller_id FROM product")
+	if err != nil {
 		return nil, errorHandler.GetErrNotFound(errorHandler.PRODUCT)
 	}
-	return productRepository.db, nil
+	productMap = make(map[int]model.Product)
+	for rows.Next() {
+		var product model.Product
+		err := rows.Scan(&product.ID, &product.ProductAtrributes.ProductCode, &product.ProductAtrributes.Description, &product.ProductAtrributes.Width, &product.ProductAtrributes.Height, &product.ProductAtrributes.NetWeight, &product.ProductAtrributes.ExpirationRate, &product.ProductAtrributes.RecommendedFreezingTemperature, &product.ProductAtrributes.ProductTypeID, &product.ProductAtrributes.SellerID)
+		if err != nil {
+			return nil, errorHandler.GetErrNotFound(errorHandler.PRODUCT)
+		}
+		productMap[product.ID] = product
+	}
+	return
 }
 
 func (productRepository *ProductRepository) GetProductByID(id int) (product model.Product, err error) {
-	if len(productRepository.db) == 0 {
+	row := productRepository.db.QueryRow("SELECT id, product_code, description, width, height, net_weight, expiration_rate, recommended_freezing_temperature, product_type_id, seller_id FROM product WHERE id = ?", id)
+	err = row.Scan(&product.ID, &product.ProductAtrributes.ProductCode, &product.ProductAtrributes.Description, &product.ProductAtrributes.Width, &product.ProductAtrributes.Height, &product.ProductAtrributes.NetWeight, &product.ProductAtrributes.ExpirationRate, &product.ProductAtrributes.RecommendedFreezingTemperature, &product.ProductAtrributes.ProductTypeID, &product.ProductAtrributes.SellerID)
+	if err != nil {
 		return model.Product{}, errorHandler.GetErrNotFound(errorHandler.PRODUCT)
 	}
-	for _, prod := range productRepository.db {
-		if prod.ID == id {
-			return prod, nil
-		}
+	return product, nil
+}
+
+func (ProductRepository *ProductRepository) productCodeExists(productCode string) bool {
+	row := ProductRepository.db.QueryRow("SELECT COUNT(*) FROM product WHERE product_code = ?", productCode)
+	var count int
+	err := row.Scan(&count)
+	if err != nil {
+		return false
 	}
-	return model.Product{}, errorHandler.GetErrNotFound(errorHandler.PRODUCT)
+	return count > 0
 }
 
 func (productRepository *ProductRepository) CreateProduct(productAtrributes *model.ProductAtrributes) (err error) {
-	for _, prod := range productRepository.db {
-		if prod.ProductAtrributes.ProductCode == productAtrributes.ProductCode {
-			return errorHandler.GetErrAlreadyExists(errorHandler.PRODUCT)
-		}
+
+	if productRepository.productCodeExists(productAtrributes.ProductCode) {
+		return errorHandler.GetErrAlreadyExists(errorHandler.PRODUCT)
 	}
-	var newProduct model.Product
-	newProduct.ID = len(productRepository.db) + 1
-	newProduct.ProductAtrributes = *productAtrributes
-	if productAtrributes == nil {
+	_, err = productRepository.db.Exec("INSERT INTO product (product_code, description, width, height, net_weight, expiration_rate, recommended_freezing_temperature, product_type_id, seller_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", productAtrributes.ProductCode, productAtrributes.Description, productAtrributes.Width, productAtrributes.Height, productAtrributes.NetWeight, productAtrributes.ExpirationRate, productAtrributes.RecommendedFreezingTemperature, productAtrributes.ProductTypeID, productAtrributes.SellerID)
+
+	if err != nil {
 		return errorHandler.GetErrInvalidData(errorHandler.PRODUCT)
 	}
-	productRepository.db[len(productRepository.db)+1] = newProduct
 	return nil
 }
 
 func (productRepository *ProductRepository) DeleteProduct(id int) (err error) {
-	_, ok := productRepository.db[id]
-	if !ok {
+	_, err = productRepository.registerExists(id)
+	if err != nil {
+		return err
+	}
+	_, err = productRepository.db.Exec("DELETE FROM product WHERE id = ?", id)
+	if err != nil {
 		return errorHandler.GetErrNotFound(errorHandler.PRODUCT)
 	}
-	delete(productRepository.db, id)
 	return nil
 }
 
 func (productRepository *ProductRepository) UpdateProduct(id int, productAtrributesPtr *model.ProductAtrributesPtr) (product *model.Product, err error) {
 
-	if _, ok := productRepository.db[id]; !ok {
-		return nil, errorHandler.GetErrNotFound(errorHandler.PRODUCT)
+	_, err = productRepository.registerExists(id)
+	if err != nil {
+		return nil, err
 	}
 
 	if productAtrributesPtr == nil {
 		return nil, errorHandler.GetErrInvalidData(errorHandler.PRODUCT)
 	}
 
-	for _, prod := range productRepository.db {
-		if prod.ProductAtrributes.ProductCode == *productAtrributesPtr.ProductCode {
-			return nil, errorHandler.GetErrAlreadyExists(errorHandler.PRODUCT)
-		}
+	if productRepository.productCodeExists(*productAtrributesPtr.ProductCode) {
+		return nil, errorHandler.GetErrAlreadyExists(errorHandler.PRODUCT)
 	}
-	patchedProduct := productRepository.db[id]
+	var patchedProduct model.ProductAtrributes
+	product = &model.Product{}
+	err = productRepository.db.QueryRow("SELECT product_code, description, width, height, net_weight, expiration_rate, recommended_freezing_temperature, product_type_id, seller_id FROM product WHERE id = ?", id).Scan(&patchedProduct.ProductCode, &patchedProduct.Description, &patchedProduct.Width, &patchedProduct.Height, &patchedProduct.NetWeight, &patchedProduct.ExpirationRate, &patchedProduct.RecommendedFreezingTemperature, &patchedProduct.ProductTypeID, &patchedProduct.SellerID)
+
+	if err != nil {
+		return nil, errorHandler.GetErrNotFound(errorHandler.PRODUCT)
+	}
 
 	if productAtrributesPtr.ProductCode != nil {
-		patchedProduct.ProductAtrributes.ProductCode = *productAtrributesPtr.ProductCode
+		patchedProduct.ProductCode = *productAtrributesPtr.ProductCode
 	}
 	if productAtrributesPtr.Description != nil {
-		patchedProduct.ProductAtrributes.Description = *productAtrributesPtr.Description
+		patchedProduct.Description = *productAtrributesPtr.Description
 	}
 	if productAtrributesPtr.Width != nil {
-		patchedProduct.ProductAtrributes.Width = *productAtrributesPtr.Width
+		patchedProduct.Width = *productAtrributesPtr.Width
 	}
 	if productAtrributesPtr.Height != nil {
-		patchedProduct.ProductAtrributes.Height = *productAtrributesPtr.Height
+		patchedProduct.Height = *productAtrributesPtr.Height
 	}
 	if productAtrributesPtr.Length != nil {
-		patchedProduct.ProductAtrributes.Length = *productAtrributesPtr.Length
+		patchedProduct.Length = *productAtrributesPtr.Length
 	}
 	if productAtrributesPtr.NetWeight != nil {
-		patchedProduct.ProductAtrributes.NetWeight = *productAtrributesPtr.NetWeight
+		patchedProduct.NetWeight = *productAtrributesPtr.NetWeight
 	}
 	if productAtrributesPtr.ExpirationRate != nil {
-		patchedProduct.ProductAtrributes.ExpirationRate = *productAtrributesPtr.ExpirationRate
+		patchedProduct.ExpirationRate = *productAtrributesPtr.ExpirationRate
 	}
 	if productAtrributesPtr.RecommendedFreezingTemperature != nil {
-		patchedProduct.ProductAtrributes.RecommendedFreezingTemperature = *productAtrributesPtr.RecommendedFreezingTemperature
+		patchedProduct.RecommendedFreezingTemperature = *productAtrributesPtr.RecommendedFreezingTemperature
 	}
 	if productAtrributesPtr.FreezingRate != nil {
-		patchedProduct.ProductAtrributes.FreezingRate = *productAtrributesPtr.FreezingRate
+		patchedProduct.FreezingRate = *productAtrributesPtr.FreezingRate
 	}
 	if productAtrributesPtr.ProductTypeID != nil {
-		patchedProduct.ProductAtrributes.ProductTypeID = *productAtrributesPtr.ProductTypeID
+		patchedProduct.ProductTypeID = *productAtrributesPtr.ProductTypeID
 	}
 
 	// Update the product in the repository after all fields have been patched
-	productRepository.db[id] = patchedProduct
-	product = &patchedProduct
+	_, err = productRepository.db.Exec("UPDATE products SET name = ?, quantity = ?, type = ?, price = ? WHERE id = ?", patchedProduct.ProductCode, patchedProduct.Description, patchedProduct.Width, patchedProduct.Height, patchedProduct.NetWeight, patchedProduct.ExpirationRate, patchedProduct.RecommendedFreezingTemperature, patchedProduct.ProductTypeID, patchedProduct.SellerID, id)
+	if err != nil {
+		return nil, errorHandler.GetErrInvalidData(errorHandler.PRODUCT)
+	}
+	product.ID = id
+	product.ProductAtrributes = patchedProduct
 	return product, nil
+}
+
+func (productRepository *ProductRepository) registerExists(id int) (bool, error) {
+	var exist bool
+	query := "SELECT EXISTS(SELECT 1 FROM products WHERE id = ?)"
+	err := productRepository.db.QueryRow(query, id).Scan(&exist)
+	if err != nil {
+		return false, errorHandler.GetErrNotFound(errorHandler.PRODUCT)
+	}
+	return exist, nil
 }
