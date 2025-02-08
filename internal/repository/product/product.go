@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"log"
 
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 	errorHandler "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
@@ -44,8 +45,8 @@ func (productRepository *ProductRepository) GetProductByID(id int) (product mode
 	return product, nil
 }
 
-func (ProductRepository *ProductRepository) productCodeExists(productCode string) bool {
-	row := ProductRepository.db.QueryRow("SELECT COUNT(*) FROM product WHERE product_code = ?", productCode)
+func (productRepository *ProductRepository) productCodeExists(productCode string) bool {
+	row := productRepository.db.QueryRow("SELECT COUNT(*) FROM product WHERE product_code = ?", productCode)
 	var count int
 	err := row.Scan(&count)
 	if err != nil {
@@ -62,8 +63,9 @@ func (productRepository *ProductRepository) CreateProduct(productAtrributes *mod
 	_, err = productRepository.db.Exec("INSERT INTO product (product_code, description, width, height, net_weight, expiration_rate, recommended_freezing_temperature, product_type_id, seller_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", productAtrributes.ProductCode, productAtrributes.Description, productAtrributes.Width, productAtrributes.Height, productAtrributes.NetWeight, productAtrributes.ExpirationRate, productAtrributes.RecommendedFreezingTemperature, productAtrributes.ProductTypeID, productAtrributes.SellerID)
 
 	if err != nil {
-		return errorHandler.GetErrInvalidData(errorHandler.PRODUCT)
+		return err
 	}
+
 	return nil
 }
 
@@ -133,8 +135,9 @@ func (productRepository *ProductRepository) UpdateProduct(id int, productAtrribu
 	}
 
 	// Update the product in the repository after all fields have been patched
-	_, err = productRepository.db.Exec("UPDATE products SET name = ?, quantity = ?, type = ?, price = ? WHERE id = ?", patchedProduct.ProductCode, patchedProduct.Description, patchedProduct.Width, patchedProduct.Height, patchedProduct.NetWeight, patchedProduct.ExpirationRate, patchedProduct.RecommendedFreezingTemperature, patchedProduct.ProductTypeID, patchedProduct.SellerID, id)
+	_, err = productRepository.db.Exec("UPDATE product SET product_code = ?, description = ?, width = ?, height = ?, net_weight = ?, expiration_rate = ?, recommended_freezing_temperature = ?, product_type_id = ?, seller_id = ? WHERE id = ?", patchedProduct.ProductCode, patchedProduct.Description, patchedProduct.Width, patchedProduct.Height, patchedProduct.NetWeight, patchedProduct.ExpirationRate, patchedProduct.RecommendedFreezingTemperature, patchedProduct.ProductTypeID, patchedProduct.SellerID, id)
 	if err != nil {
+		log.Println(err)
 		return nil, errorHandler.GetErrInvalidData(errorHandler.PRODUCT)
 	}
 	product.ID = id
@@ -144,7 +147,7 @@ func (productRepository *ProductRepository) UpdateProduct(id int, productAtrribu
 
 func (productRepository *ProductRepository) registerExists(id int) (bool, error) {
 	var exist bool
-	query := "SELECT EXISTS(SELECT 1 FROM products WHERE id = ?)"
+	query := "SELECT EXISTS(SELECT 1 FROM product WHERE ID = ?)"
 	err := productRepository.db.QueryRow(query, id).Scan(&exist)
 	if err != nil {
 		return false, errorHandler.GetErrNotFound(errorHandler.PRODUCT)

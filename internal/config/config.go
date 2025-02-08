@@ -9,12 +9,13 @@ import (
 )
 
 type Config struct {
-	ServerAddress string
-	DBHost        string
-	DBPort        string
-	DBUser        string
-	DBPassword    string
-	DBName        string
+	ServerAddress  string
+	LoaderFilePath string
+	DBHost         string
+	DBPort         string
+	DBUser         string
+	DBPassword     string
+	DBName         string
 }
 
 var (
@@ -26,7 +27,7 @@ var (
 func LoadConfig() (*Config, error) {
 	var err error
 	once.Do(func() {
-		if err = godotenv.Load(); err != nil {
+		if err = godotenv.Load("/Users/judiazgutier/Documents/GoWeb/Sprints/dev/wave15-grupo4/.env"); err != nil {
 			err = fmt.Errorf("error loading .env file: %w", err)
 			return
 		}
@@ -36,7 +37,7 @@ func LoadConfig() (*Config, error) {
 			DBHost:        getEnv("DB_HOST", "localhost"),
 			DBPort:        getEnv("DB_PORT", "3306"),
 			DBUser:        getEnv("DB_USER", "root"),
-			DBPassword:    getEnv("DB_PASSWORD", "7123346j"),
+			DBPassword:    getEnv("DB_PASSWORD", ""),
 			DBName:        getEnv("DB_NAME", "grupo4"),
 		}
 	})
