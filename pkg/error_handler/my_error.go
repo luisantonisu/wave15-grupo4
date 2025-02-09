@@ -10,6 +10,7 @@ const (
 	BUYER          = "buyer"
 	EMPLOYEE       = "employee"
 	PRODUCT        = "product"
+	PRODUCT_RECORD = "product record"
 	SECTION        = "section"
 	SELLER         = "seller"
 	WAREHOUSE      = "warehouse"
