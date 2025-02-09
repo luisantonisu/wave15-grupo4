@@ -10,6 +10,7 @@ import (
 	buyerRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/buyer"
 	employeeRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/employee"
 	productRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/product"
+	productRecordRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/product_record"
 	sectionRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/section"
 	sellerRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/seller"
 	warehouseRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/warehouse"
@@ -17,6 +18,7 @@ import (
 	buyerService "github.com/luisantonisu/wave15-grupo4/internal/service/buyer"
 	employeeService "github.com/luisantonisu/wave15-grupo4/internal/service/employee"
 	productService "github.com/luisantonisu/wave15-grupo4/internal/service/product"
+	productRecordService "github.com/luisantonisu/wave15-grupo4/internal/service/product_record"
 	sectionService "github.com/luisantonisu/wave15-grupo4/internal/service/section"
 	sellerService "github.com/luisantonisu/wave15-grupo4/internal/service/seller"
 	warehouseService "github.com/luisantonisu/wave15-grupo4/internal/service/warehouse"
@@ -24,6 +26,7 @@ import (
 	buyerHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/buyer"
 	employeeHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/employee"
 	productHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/product"
+	productRecordHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/product_record"
 	sectionHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/section"
 	sellerHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/seller"
 	warehouseHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/warehouse"
@@ -84,6 +87,7 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 	buyerRp := buyerRepository.NewBuyerRepository(db.Buyers)
 	employeeRp := employeeRepository.NewEmployeeRepository(db.Employees)
 	productRp := productRepository.NewProductRepository(database)
+	productRecordRp := productRecordRepository.NewProductRecordRepository(database)
 	sectionRp := sectionRepository.NewSectionRepository(db.Sections)
 	sellerRp := sellerRepository.NewSellerRepository(db.Sellers)
 	warehouseRp := warehouseRepository.NewWarehouseRepository(db.Warehouses)
@@ -92,17 +96,19 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 	buyerSv := buyerService.NewBuyerService(buyerRp)
 	employeeSv := employeeService.NewEmployeeService(employeeRp)
 	productSv := productService.NewProductService(productRp)
+	productRecordSv := productRecordService.NewProductRecordService(productRecordRp)
 	sectionSv := sectionService.NewSectionService(sectionRp)
 	sellerSv := sellerService.NewSellerService(sellerRp)
 	warehouseSv := warehouseService.NewWarehouseService(warehouseRp)
 
 	// - handler
-	buyerHd := buyerHandler.NewBuyerHandler(buyerSv)                 // buyerHd
-	employeeHd := employeeHandler.NewEmployeeHandler(employeeSv)     // employeeHd
-	productHd := productHandler.NewProductHandler(productSv)         // productHd
-	sectionHd := sectionHandler.NewSectionHandler(sectionSv)         // sectionHd
-	sellerHd := sellerHandler.NewSellerHandler(sellerSv)             // sellerHd
-	warehouseHd := warehouseHandler.NewWarehouseHandler(warehouseSv) // warehouseHd
+	buyerHd := buyerHandler.NewBuyerHandler(buyerSv)                                 // buyerHd
+	employeeHd := employeeHandler.NewEmployeeHandler(employeeSv)                     // employeeHd
+	productHd := productHandler.NewProductHandler(productSv)                         // productHd
+	productRecordHd := productRecordHandler.NewProductRecordHandler(productRecordSv) // productRecordHd
+	sectionHd := sectionHandler.NewSectionHandler(sectionSv)                         // sectionHd
+	sellerHd := sellerHandler.NewSellerHandler(sellerSv)                             // sellerHd
+	warehouseHd := warehouseHandler.NewWarehouseHandler(warehouseSv)                 // warehouseHd
 
 	// router
 	rt := chi.NewRouter()
@@ -140,12 +146,18 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 			// - GET /api/v1/products /
 			rt.Get("/", productHd.GetAll())
 			rt.Get("/{id}", productHd.GetByID())
+			// - GET /api/v1/products/reportRecords /
+			rt.Get("/reportRecords", productHd.GetRecord())
 			// - POST /api/v1/products /
 			rt.Post("/", productHd.Create())
 			// - DELETE /api/v1/products /
 			rt.Delete("/{id}", productHd.Delete())
 			// - PATCH /api/v1/products /
 			rt.Patch("/{id}", productHd.Update())
+		})
+		rt.Route("/productRecords", func(rt chi.Router) {
+			// - POST /api/v1/products /
+			rt.Post("/", productRecordHd.Create())
 		})
 		rt.Route("/sections", func(rt chi.Router) {
 			// - GET /api/v1/sections

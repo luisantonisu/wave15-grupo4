@@ -71,6 +71,50 @@ func (productHandler *ProductHandler) GetByID() http.HandlerFunc {
 	}
 }
 
+func (productHandler *ProductHandler) GetRecord() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// request
+		id := r.URL.Query().Get("id")
+		// id := chi.URLParam(r, "id")
+		if id == "" {
+			// request
+			v, err := productHandler.service.GetProductRecord()
+			if err != nil {
+				code, msg := errorHandler.HandleError(err)
+				response.JSON(w, code, msg)
+				return
+			}
+
+			// response
+			response.JSON(w, http.StatusOK, map[string]any{
+				"message": "success",
+				"data":    v,
+			})
+			return
+		}
+		idInt, err := strconv.Atoi(id)
+		if err != nil {
+			code, msg := errorHandler.HandleError(err)
+			response.JSON(w, code, msg)
+			return
+		}
+		// process
+		// - get product by id
+		v, err := productHandler.service.GetProductRecordByID(idInt)
+		if err != nil {
+			code, msg := errorHandler.HandleError(err)
+			response.JSON(w, code, msg)
+			return
+		}
+
+		// response
+		response.JSON(w, http.StatusOK, map[string]any{
+			"message": "success",
+			"data":    v,
+		})
+	}
+}
+
 func (productHandler *ProductHandler) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// request

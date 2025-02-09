@@ -45,6 +45,37 @@ func (productRepository *ProductRepository) GetProductByID(id int) (product mode
 	return product, nil
 }
 
+func (productRepository *ProductRepository) GetProductRecord() (map[int]model.ProductRecord, error) {
+	rows, err := productRepository.db.Query("SELECT id, last_update_date, purchase_price, sale_price, product_id FROM product_records")
+	if err != nil {
+		return nil, errorHandler.GetErrNotFound(errorHandler.PRODUCT_RECORD)
+	}
+	defer rows.Close()
+
+	var productRecords = make(map[int]model.ProductRecord)
+	for rows.Next() {
+		var productRecord model.ProductRecord
+		err := rows.Scan(&productRecord.ID, &productRecord.ProductRecordAtrributes.LastUpdateDate, &productRecord.ProductRecordAtrributes.PurchasePrice, &productRecord.ProductRecordAtrributes.SalePrice, &productRecord.ProductRecordAtrributes.ProductId)
+
+		if err != nil {
+			return nil, errorHandler.GetErrNotFound(errorHandler.PRODUCT_RECORD)
+		}
+		productRecords[productRecord.ID] = productRecord
+	}
+
+	return productRecords, nil
+}
+
+func (productRepository *ProductRepository) GetProductRecordByID(id int) (model.ProductRecord, error) {
+	row := productRepository.db.QueryRow("SELECT id, last_update_date, purchase_price, sale_price, product_id FROM product_records WHERE id = ?", id)
+	var productRecord model.ProductRecord
+	err := row.Scan(&productRecord.ID, &productRecord.ProductRecordAtrributes.LastUpdateDate, &productRecord.ProductRecordAtrributes.PurchasePrice, &productRecord.ProductRecordAtrributes.SalePrice, &productRecord.ProductRecordAtrributes.ProductId)
+	if err != nil {
+		return model.ProductRecord{}, errorHandler.GetErrNotFound(errorHandler.PRODUCT_RECORD)
+	}
+	return productRecord, nil
+}
+
 func (productRepository *ProductRepository) productCodeExists(productCode string) bool {
 	row := productRepository.db.QueryRow("SELECT COUNT(*) FROM product WHERE product_code = ?", productCode)
 	var count int
