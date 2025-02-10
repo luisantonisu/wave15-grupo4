@@ -1,0 +1,10 @@
+[{"warehouse_code":"YNF","address":"PO Box 39687","telephone":4649676631,"minimum_capacity":78,"minimum_temperature":28.88},
+{"warehouse_code":"YBO","address":"PO Box 3242","telephone":4745988128,"minimum_capacity":89,"minimum_temperature":61.86},
+{"warehouse_code":"MLP","address":"PO Box 56494","telephone":8401799161,"minimum_capacity":62,"minimum_temperature":97.04},
+{"warehouse_code":"PIY","address":"Room 843","telephone":7942035362,"minimum_capacity":76,"minimum_temperature":26.34},
+{"warehouse_code":"GDJ","address":"4th Floor","telephone":2492335817,"minimum_capacity":42,"minimum_temperature":5.91},
+{"warehouse_code":"DVV","address":"PO Box 17488","telephone":3442257572,"minimum_capacity":84,"minimum_temperature":91.67},
+{"warehouse_code":"YPG","address":"PO Box 87012","telephone":6922713591,"minimum_capacity":97,"minimum_temperature":70.89},
+{"warehouse_code":"OKA","address":"Apt 979","telephone":6833964980,"minimum_capacity":61,"minimum_temperature":19.96},
+{"warehouse_code":"RTN","address":"Suite 64","telephone":6332478800,"minimum_capacity":53,"minimum_temperature":70.74},
+{"warehouse_code":"FZG","address":"Suite 4","telephone":6008723562,"minimum_capacity":71,"minimum_temperature":71.15}]
