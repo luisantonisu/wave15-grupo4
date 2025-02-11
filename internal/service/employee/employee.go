@@ -26,7 +26,7 @@ func (h *EmployeeService) Create(employee model.Employee) (model.Employee, error
 	if employee.FirstName == "" || employee.LastName == "" || employee.CardNumberID <= 0 || employee.WarehouseID <= 0 {
 		return model.Employee{}, eh.GetErrInvalidData(eh.EMPLOYEE)
 	}
-	return h.rp.Create(employee)
+	return h.rp.Create(employee.EmployeeAttributes)
 }
 
 func (h *EmployeeService) Update(id int, employee model.EmployeeAttributesPtr) (model.Employee, error) {
