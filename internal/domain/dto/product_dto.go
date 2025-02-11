@@ -1,5 +1,11 @@
 package dto
 
+type ProductRecordCountResponseDTO struct {
+	ProductID   int    `json:"product_id"`
+	Description string `json:"description"`
+	Count       int    `json:"records_count"`
+}
+
 type ProductRequestDTO struct {
 	ProductCode                    string  `json:"product_code"`
 	Description                    string  `json:"description"`

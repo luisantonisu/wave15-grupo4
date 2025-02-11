@@ -17,36 +17,36 @@ func NewProductRecordRepository(defaultDB *sql.DB) *ProductRecordRepository {
 	}
 }
 
-func (productRecordRepository *ProductRecordRepository) GetProductRecord() (map[int]model.ProductRecord, error) {
-	rows, err := productRecordRepository.db.Query("SELECT id, product_id, quantity, price FROM product_records")
-	if err != nil {
-		return nil, errorHandler.GetErrNotFound(errorHandler.PRODUCT_RECORD)
-	}
-	defer rows.Close()
+// func (productRecordRepository *ProductRecordRepository) GetProductRecord() (map[int]model.ProductRecord, error) {
+// 	rows, err := productRecordRepository.db.Query("SELECT id, product_id, quantity, price FROM product_records")
+// 	if err != nil {
+// 		return nil, errorHandler.GetErrNotFound(errorHandler.PRODUCT_RECORD)
+// 	}
+// 	defer rows.Close()
 
-	var productRecords = make(map[int]model.ProductRecord)
-	for rows.Next() {
-		var productRecord model.ProductRecord
-		err := rows.Scan(&productRecord.ID, &productRecord.ProductRecordAtrributes.LastUpdateDate, &productRecord.ProductRecordAtrributes.PurchasePrice, &productRecord.ProductRecordAtrributes.SalePrice, &productRecord.ProductRecordAtrributes.ProductId)
+// 	var productRecords = make(map[int]model.ProductRecord)
+// 	for rows.Next() {
+// 		var productRecord model.ProductRecord
+// 		err := rows.Scan(&productRecord.ID, &productRecord.ProductRecordAtrributes.LastUpdateDate, &productRecord.ProductRecordAtrributes.PurchasePrice, &productRecord.ProductRecordAtrributes.SalePrice, &productRecord.ProductRecordAtrributes.ProductId)
 
-		if err != nil {
-			return nil, errorHandler.GetErrNotFound(errorHandler.PRODUCT_RECORD)
-		}
-		productRecords[productRecord.ID] = productRecord
-	}
+// 		if err != nil {
+// 			return nil, errorHandler.GetErrNotFound(errorHandler.PRODUCT_RECORD)
+// 		}
+// 		productRecords[productRecord.ID] = productRecord
+// 	}
 
-	return productRecords, nil
-}
+// 	return productRecords, nil
+// }
 
-func (productRecordRepository *ProductRecordRepository) GetProductRecordByID(id int) (model.ProductRecord, error) {
-	row := productRecordRepository.db.QueryRow("SELECT id, last_update_date, purchase_price, sale_price, product_id FROM product_records WHERE id = ?", id)
-	var productRecord model.ProductRecord
-	err := row.Scan(&productRecord.ID, &productRecord.ProductRecordAtrributes.LastUpdateDate, &productRecord.ProductRecordAtrributes.PurchasePrice, &productRecord.ProductRecordAtrributes.SalePrice, &productRecord.ProductRecordAtrributes.ProductId)
-	if err != nil {
-		return model.ProductRecord{}, errorHandler.GetErrNotFound(errorHandler.PRODUCT_RECORD)
-	}
-	return productRecord, nil
-}
+// func (productRecordRepository *ProductRecordRepository) GetProductRecordByID(id int) (model.ProductRecord, error) {
+// 	row := productRecordRepository.db.QueryRow("SELECT id, last_update_date, purchase_price, sale_price, product_id FROM product_records WHERE id = ?", id)
+// 	var productRecord model.ProductRecord
+// 	err := row.Scan(&productRecord.ID, &productRecord.ProductRecordAtrributes.LastUpdateDate, &productRecord.ProductRecordAtrributes.PurchasePrice, &productRecord.ProductRecordAtrributes.SalePrice, &productRecord.ProductRecordAtrributes.ProductId)
+// 	if err != nil {
+// 		return model.ProductRecord{}, errorHandler.GetErrNotFound(errorHandler.PRODUCT_RECORD)
+// 	}
+// 	return productRecord, nil
+// }
 
 func (productRecordRepository *ProductRecordRepository) productIdExists(productId int) bool {
 	row := productRecordRepository.db.QueryRow("SELECT COUNT(*) FROM product WHERE id = ?", productId)

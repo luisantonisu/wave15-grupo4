@@ -22,11 +22,11 @@ func (productService *ProductService) GetProductByID(id int) (product model.Prod
 	return productService.repository.GetProductByID(id)
 }
 
-func (productService *ProductService) GetProductRecord() (productRecordMap map[int]model.ProductRecord, err error) {
+func (productService *ProductService) GetProductRecord() (productRecordMap map[int]model.ProductRecordCount, err error) {
 	return productService.repository.GetProductRecord()
 }
 
-func (productService *ProductService) GetProductRecordByID(id int) (productRecord model.ProductRecord, err error) {
+func (productService *ProductService) GetProductRecordByID(id int) (productRecord model.ProductRecordCount, err error) {
 	return productService.repository.GetProductRecordByID(id)
 }
 

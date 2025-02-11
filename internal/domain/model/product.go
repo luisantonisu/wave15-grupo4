@@ -5,6 +5,12 @@ type Product struct {
 	ProductAtrributes
 }
 
+type ProductRecordCount struct {
+	ProductID   int
+	Description string
+	Count       int
+}
+
 type ProductAtrributes struct {
 	ProductCode                    string
 	Description                    string

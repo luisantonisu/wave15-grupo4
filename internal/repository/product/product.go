@@ -45,35 +45,35 @@ func (productRepository *ProductRepository) GetProductByID(id int) (product mode
 	return product, nil
 }
 
-func (productRepository *ProductRepository) GetProductRecord() (map[int]model.ProductRecord, error) {
-	rows, err := productRepository.db.Query("SELECT id, last_update_date, purchase_price, sale_price, product_id FROM product_records")
+func (productRepository *ProductRepository) GetProductRecord() (map[int]model.ProductRecordCount, error) {
+	rows, err := productRepository.db.Query("SELECT prod.id as product_id, prod.description, COUNT(*) as records_count FROM product as prod INNER JOIN product_records as pr ON prod.id = pr.product_id GROUP BY prod.id")
 	if err != nil {
 		return nil, errorHandler.GetErrNotFound(errorHandler.PRODUCT_RECORD)
 	}
 	defer rows.Close()
 
-	var productRecords = make(map[int]model.ProductRecord)
+	var productRecords = make(map[int]model.ProductRecordCount)
 	for rows.Next() {
-		var productRecord model.ProductRecord
-		err := rows.Scan(&productRecord.ID, &productRecord.ProductRecordAtrributes.LastUpdateDate, &productRecord.ProductRecordAtrributes.PurchasePrice, &productRecord.ProductRecordAtrributes.SalePrice, &productRecord.ProductRecordAtrributes.ProductId)
+		var productRecord model.ProductRecordCount
+		err := rows.Scan(&productRecord.ProductID, &productRecord.Description, &productRecord.Count)
 
 		if err != nil {
 			return nil, errorHandler.GetErrNotFound(errorHandler.PRODUCT_RECORD)
 		}
-		productRecords[productRecord.ID] = productRecord
+		productRecords[productRecord.ProductID] = productRecord
 	}
 
 	return productRecords, nil
 }
 
-func (productRepository *ProductRepository) GetProductRecordByID(id int) (model.ProductRecord, error) {
-	row := productRepository.db.QueryRow("SELECT id, last_update_date, purchase_price, sale_price, product_id FROM product_records WHERE id = ?", id)
-	var productRecord model.ProductRecord
-	err := row.Scan(&productRecord.ID, &productRecord.ProductRecordAtrributes.LastUpdateDate, &productRecord.ProductRecordAtrributes.PurchasePrice, &productRecord.ProductRecordAtrributes.SalePrice, &productRecord.ProductRecordAtrributes.ProductId)
+func (productRepository *ProductRepository) GetProductRecordByID(id int) (model.ProductRecordCount, error) {
+	row := productRepository.db.QueryRow("SELECT prod.id as product_id, prod.description, COUNT(*) as records_count FROM product as prod INNER JOIN product_records as pr ON prod.id = pr.product_id GROUP BY prod.id HAVING prod.id = ?", id)
+	var productRecordCount model.ProductRecordCount
+	err := row.Scan(&productRecordCount.ProductID, &productRecordCount.Description, &productRecordCount.Count)
 	if err != nil {
-		return model.ProductRecord{}, errorHandler.GetErrNotFound(errorHandler.PRODUCT_RECORD)
+		return model.ProductRecordCount{}, err
 	}
-	return productRecord, nil
+	return productRecordCount, nil
 }
 
 func (productRepository *ProductRepository) productCodeExists(productCode string) bool {

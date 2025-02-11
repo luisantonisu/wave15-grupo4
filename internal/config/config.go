@@ -37,7 +37,7 @@ func LoadConfig() (*Config, error) {
 			DBHost:        getEnv("DB_HOST", "localhost"),
 			DBPort:        getEnv("DB_PORT", "3306"),
 			DBUser:        getEnv("DB_USER", "root"),
-			DBPassword:    getEnv("DB_PASSWORD", ""),
+			DBPassword:    getEnv("DB_PASSWORD", "password"),
 			DBName:        getEnv("DB_NAME", "grupo4"),
 		}
 	})
