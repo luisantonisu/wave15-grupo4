@@ -5,6 +5,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/luisantonisu/wave15-grupo4/internal/config"
+	"github.com/luisantonisu/wave15-grupo4/internal/db"
 	buyerRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/buyer"
 	employeeRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/employee"
 	productRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/product"
@@ -28,13 +30,9 @@ import (
 	"github.com/luisantonisu/wave15-grupo4/internal/loader"
 )
 
-type ConfigServerChi struct {
-	ServerAddress  string
-	LoaderFilePath string
-}
+func NewServerChi(cfg *config.Config) *ServerChi {
 
-func NewServerChi(cfg *ConfigServerChi) *ServerChi {
-	defaultConfig := &ConfigServerChi{
+	defaultConfig := &config.Config{
 		ServerAddress: ":8080",
 	}
 	if cfg != nil {
@@ -44,21 +42,39 @@ func NewServerChi(cfg *ConfigServerChi) *ServerChi {
 		if cfg.LoaderFilePath != "" {
 			defaultConfig.LoaderFilePath = cfg.LoaderFilePath
 		}
+		if cfg.DBHost != "" {
+			defaultConfig.DBHost = cfg.DBHost
+		}
+		if cfg.DBPort != "" {
+			defaultConfig.DBPort = cfg.DBPort
+		}
+		if cfg.DBUser != "" {
+			defaultConfig.DBUser = cfg.DBUser
+		}
+		if cfg.DBPassword != "" {
+			defaultConfig.DBPassword = cfg.DBPassword
+		}
+		if cfg.DBName != "" {
+			defaultConfig.DBName = cfg.DBName
+		}
 	}
 
 	return &ServerChi{
-		serverAddress:  defaultConfig.ServerAddress,
-		loaderFilePath: defaultConfig.LoaderFilePath,
+		serverAddress: defaultConfig.ServerAddress,
+		config:        defaultConfig,
 	}
 }
 
 type ServerChi struct {
-	serverAddress  string
-	loaderFilePath string
+	serverAddress string
+	config        *config.Config
 }
 
-func (a *ServerChi) Run() (err error) {
+func (a *ServerChi) Run(cfg config.Config) (err error) {
 	//TODO
+	database := db.ConnectDB(&cfg)
+	defer database.Close()
+
 	db, err := loader.Load()
 	if err != nil {
 		return
@@ -67,7 +83,7 @@ func (a *ServerChi) Run() (err error) {
 	// - repository
 	buyerRp := buyerRepository.NewBuyerRepository(db.Buyers)
 	employeeRp := employeeRepository.NewEmployeeRepository(db.Employees)
-	productRp := productRepository.NewProductRepository(db.Products)
+	productRp := productRepository.NewProductRepository(database)
 	sectionRp := sectionRepository.NewSectionRepository(db.Sections)
 	sellerRp := sellerRepository.NewSellerRepository(db.Sellers)
 	warehouseRp := warehouseRepository.NewWarehouseRepository(db.Warehouses)
