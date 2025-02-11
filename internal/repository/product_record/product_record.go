@@ -49,7 +49,7 @@ func NewProductRecordRepository(defaultDB *sql.DB) *ProductRecordRepository {
 // }
 
 func (productRecordRepository *ProductRecordRepository) productIdExists(productId int) bool {
-	row := productRecordRepository.db.QueryRow("SELECT COUNT(*) FROM product WHERE id = ?", productId)
+	row := productRecordRepository.db.QueryRow("SELECT COUNT(*) FROM products WHERE id = ?", productId)
 	var count int
 	err := row.Scan(&count)
 	if err != nil {
@@ -69,7 +69,7 @@ func (productRecordRepository *ProductRecordRepository) CreateProductRecord(prod
 	_, err := productRecordRepository.db.Exec("INSERT INTO product_records (last_update_date, purchase_price, sale_price, product_id) VALUES (?, ?, ?, ?)", productRecord.LastUpdateDate, productRecord.PurchasePrice, productRecord.SalePrice, productRecord.ProductId)
 
 	if err != nil {
-		return err
+		return errorHandler.GetErrInvalidData("product record")
 	}
 
 	return err
