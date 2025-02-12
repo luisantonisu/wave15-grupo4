@@ -87,7 +87,7 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 	}
 
 	// - repository
-	buyerRp := buyerRepository.NewBuyerRepository(db.Buyers)
+	buyerRp := buyerRepository.NewBuyerRepository(database)
 	employeeRp := employeeRepository.NewEmployeeRepository(database)
 	inboundOrderRp := inboundOrderRepository.NewInboundOrderRepository(database)
 	productRp := productRepository.NewProductRepository(database)

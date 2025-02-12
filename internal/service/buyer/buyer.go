@@ -14,7 +14,7 @@ type BuyerService struct {
 }
 
 // Create a new buyer
-func (s *BuyerService) Create(buyer model.Buyer) (model.Buyer, error) {
+func (s *BuyerService) Create(buyer model.BuyerAttributes) (model.Buyer, error) {
 	newBuyer, err := s.rp.Create(buyer)
 	if err != nil {
 		return model.Buyer{}, err
