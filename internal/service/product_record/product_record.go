@@ -13,13 +13,13 @@ func NewProductRecordService(repository repository.IProductRecord) *ProductRecor
 	return &ProductRecordService{repository: repository}
 }
 
-func (productRecordService *ProductRecordService) GetProductRecord() (map[int]model.ProductRecord, error) {
-	return productRecordService.repository.GetProductRecord()
-}
+// func (productRecordService *ProductRecordService) GetProductRecord() (map[int]model.ProductRecord, error) {
+// 	return productRecordService.repository.GetProductRecord()
+// }
 
-func (productRecordService *ProductRecordService) GetProductRecordByID(id int) (model.ProductRecord, error) {
-	return productRecordService.repository.GetProductRecordByID(id)
-}
+// func (productRecordService *ProductRecordService) GetProductRecordByID(id int) (model.ProductRecord, error) {
+// 	return productRecordService.repository.GetProductRecordByID(id)
+// }
 
 func (productRecordService *ProductRecordService) CreateProductRecord(productRecord model.ProductRecordAtrributes) error {
 	return productRecordService.repository.CreateProductRecord(productRecord)
