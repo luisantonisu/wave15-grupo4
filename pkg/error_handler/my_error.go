@@ -26,6 +26,8 @@ var (
 	ErrNotFound      = errors.New("not found")      // 404
 	ErrAlreadyExists = errors.New("already exists") // 409
 	ErrInvalidData   = errors.New("invalid data")   // 422
+	ErrGettingData   = errors.New("error getting data")
+	ErrParsingData   = errors.New("error parsing data")
 )
 
 func GetErrNotFound(entity string) error {
@@ -37,6 +39,14 @@ func GetErrAlreadyExists(entity string) error {
 }
 
 func GetErrInvalidData(entity string) error {
+	return fmt.Errorf("%w: %s", ErrInvalidData, entity)
+}
+
+func GetErrGettingData(entity string) error {
+	return fmt.Errorf("%w: %s", ErrInvalidData, entity)
+}
+
+func GetErrParsingData(entity string) error {
 	return fmt.Errorf("%w: %s", ErrInvalidData, entity)
 }
 

@@ -5,8 +5,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/luisantonisu/wave15-grupo4/infrastructure/db"
 	"github.com/luisantonisu/wave15-grupo4/internal/config"
-	"github.com/luisantonisu/wave15-grupo4/internal/db"
 	buyerRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/buyer"
 	employeeRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/employee"
 	productRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/product"
@@ -85,7 +85,7 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 
 	// - repository
 	buyerRp := buyerRepository.NewBuyerRepository(db.Buyers)
-	employeeRp := employeeRepository.NewEmployeeRepository(db.Employees)
+	employeeRp := employeeRepository.NewEmployeeRepository(database)
 	productRp := productRepository.NewProductRepository(database)
 	productRecordRp := productRecordRepository.NewProductRecordRepository(database)
 	sectionRp := sectionRepository.NewSectionRepository(db.Sections)
