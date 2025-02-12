@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"log"
 
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
@@ -19,10 +20,11 @@ func NewInboundOrderRepository(defaultDB *sql.DB) *InbounderOrderRepository {
 
 func (i *InbounderOrderRepository) AlreadyExits(atribute string, value int) bool {
 	var exists bool
-	err := i.db.QueryRow("SELECT EXISTS(SELECT 1 FROM inbound_orders WHERE ? = ?)", atribute, value).Scan(&exists)
+	err := i.db.QueryRow("SELECT EXISTS(SELECT 1 FROM inbound_orders WHERE "+atribute+" = ?)", value).Scan(&exists)
 	if err != nil {
 		return false
 	}
+	log.Println(exists)
 	return exists
 }
 

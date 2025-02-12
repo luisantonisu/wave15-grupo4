@@ -16,7 +16,7 @@ func NewInboundOrderService(rp repository.IInboundOrder) *InboundOrderService {
 
 func (h *InboundOrderService) Create(inboundOrder model.InboundOrderAttributes) (model.InboundOrder, error) {
 	if inboundOrder.OrderDate == "" || inboundOrder.EmployeeID <= 0 || inboundOrder.OrderNumber <= 0 || inboundOrder.WarehouseID <= 0 || inboundOrder.ProductBatchID <= 0 {
-		return model.InboundOrder{}, eh.GetErrInvalidData(eh.EMPLOYEE)
+		return model.InboundOrder{}, eh.GetErrInvalidData(eh.INBOUND_ORDER)
 	}
 	return h.rp.CreateInboundOrder(inboundOrder)
 }

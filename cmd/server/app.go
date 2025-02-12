@@ -9,6 +9,7 @@ import (
 	"github.com/luisantonisu/wave15-grupo4/internal/config"
 	buyerRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/buyer"
 	employeeRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/employee"
+	inboundOrderRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/inbound_order"
 	productRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/product"
 	productRecordRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/product_record"
 	sectionRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/section"
@@ -17,6 +18,7 @@ import (
 
 	buyerService "github.com/luisantonisu/wave15-grupo4/internal/service/buyer"
 	employeeService "github.com/luisantonisu/wave15-grupo4/internal/service/employee"
+	inboundOrderService "github.com/luisantonisu/wave15-grupo4/internal/service/inbound_order"
 	productService "github.com/luisantonisu/wave15-grupo4/internal/service/product"
 	productRecordService "github.com/luisantonisu/wave15-grupo4/internal/service/product_record"
 	sectionService "github.com/luisantonisu/wave15-grupo4/internal/service/section"
@@ -25,6 +27,7 @@ import (
 
 	buyerHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/buyer"
 	employeeHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/employee"
+	inboundOrderHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/inbound_order"
 	productHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/product"
 	productRecordHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/product_record"
 	sectionHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/section"
@@ -86,6 +89,7 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 	// - repository
 	buyerRp := buyerRepository.NewBuyerRepository(db.Buyers)
 	employeeRp := employeeRepository.NewEmployeeRepository(database)
+	inboundOrderRp := inboundOrderRepository.NewInboundOrderRepository(database)
 	productRp := productRepository.NewProductRepository(database)
 	productRecordRp := productRecordRepository.NewProductRecordRepository(database)
 	sectionRp := sectionRepository.NewSectionRepository(db.Sections)
@@ -95,6 +99,7 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 	// - service
 	buyerSv := buyerService.NewBuyerService(buyerRp)
 	employeeSv := employeeService.NewEmployeeService(employeeRp)
+	inboundOrderSv := inboundOrderService.NewInboundOrderService(inboundOrderRp)
 	productSv := productService.NewProductService(productRp)
 	productRecordSv := productRecordService.NewProductRecordService(productRecordRp)
 	sectionSv := sectionService.NewSectionService(sectionRp)
@@ -104,6 +109,7 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 	// - handler
 	buyerHd := buyerHandler.NewBuyerHandler(buyerSv)                                 // buyerHd
 	employeeHd := employeeHandler.NewEmployeeHandler(employeeSv)                     // employeeHd
+	inboundOrderHd := inboundOrderHandler.NewInboundOrderHandler(inboundOrderSv)     // inboundOrderHd
 	productHd := productHandler.NewProductHandler(productSv)                         // productHd
 	productRecordHd := productRecordHandler.NewProductRecordHandler(productRecordSv) // productRecordHd
 	sectionHd := sectionHandler.NewSectionHandler(sectionSv)                         // sectionHd
@@ -141,6 +147,10 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 			rt.Patch("/{id}", employeeHd.Update())
 			// - DELETE /api/v1/employees/{id}
 			rt.Delete("/{id}", employeeHd.Delete())
+		})
+		rt.Route("/inboundOrders", func(rt chi.Router) {
+			// - POST /api/v1/inboundOrders
+			rt.Post("/", inboundOrderHd.Create())
 		})
 		rt.Route("/products", func(rt chi.Router) {
 			// - GET /api/v1/products /
