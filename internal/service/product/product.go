@@ -22,6 +22,14 @@ func (productService *ProductService) GetProductByID(id int) (product model.Prod
 	return productService.repository.GetProductByID(id)
 }
 
+func (productService *ProductService) GetProductRecord() (productRecordMap map[int]model.ProductRecordCount, err error) {
+	return productService.repository.GetProductRecord()
+}
+
+func (productService *ProductService) GetProductRecordByID(id int) (productRecord model.ProductRecordCount, err error) {
+	return productService.repository.GetProductRecordByID(id)
+}
+
 func ValueCheck(productAtrributes model.ProductAtrributes) (err error) {
 	if productAtrributes.ProductCode == "" || productAtrributes.Description == "" || productAtrributes.Width <= 0 || productAtrributes.Height <= 0 || productAtrributes.Length <= 0 || productAtrributes.NetWeight <= 0 || productAtrributes.ExpirationRate <= 0 || productAtrributes.RecommendedFreezingTemperature <= 0 || productAtrributes.FreezingRate <= 0 || productAtrributes.ProductTypeID <= 0 {
 		return errorHandler.GetErrInvalidData(errorHandler.PRODUCT)

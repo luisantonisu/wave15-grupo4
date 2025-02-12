@@ -7,14 +7,14 @@ type ProductRecord struct {
 
 type ProductRecordAtrributes struct {
 	LastUpdateDate string
-	PurchasePrice  string
+	PurchasePrice  float64
 	SalePrice      float64
-	ProductId      float64
+	ProductId      int
 }
 
 type ProductRecordAtrributesPtr struct {
 	LastUpdateDate *string
-	PurchasePrice  *string
+	PurchasePrice  *float64
 	SalePrice      *float64
-	ProductId      *float64
+	ProductId      *int
 }
