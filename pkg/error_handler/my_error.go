@@ -43,11 +43,11 @@ func GetErrInvalidData(entity string) error {
 }
 
 func GetErrGettingData(entity string) error {
-	return fmt.Errorf("%w: %s", ErrInvalidData, entity)
+	return fmt.Errorf("%w: %s", ErrGettingData, entity)
 }
 
 func GetErrParsingData(entity string) error {
-	return fmt.Errorf("%w: %s", ErrInvalidData, entity)
+	return fmt.Errorf("%w: %s", ErrParsingData, entity)
 }
 
 func HandleError(err error) (int, string) {

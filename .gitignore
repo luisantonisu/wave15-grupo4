@@ -4,3 +4,6 @@
 #Temp files
 tmp/build-errors.log
 tmp/main
+
+#ide settings
+.idea

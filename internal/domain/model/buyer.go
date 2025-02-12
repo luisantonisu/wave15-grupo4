@@ -6,13 +6,13 @@ type Buyer struct {
 }
 
 type BuyerAttributes struct {
-	CardNumberId int
+	CardNumberId string
 	FirstName    string
 	LastName     string
 }
 
 type BuyerAttributesPtr struct {
-	CardNumberId *int
+	CardNumberId *string
 	FirstName    *string
 	LastName     *string
 }
