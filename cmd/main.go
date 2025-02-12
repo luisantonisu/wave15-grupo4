@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/luisantonisu/wave15-grupo4/cmd/server"
@@ -13,17 +12,16 @@ func main() {
 	// ...
 	cfg, err := config.LoadConfig()
 	if err != nil {
-		fmt.Errorf("error loading config: %v", err)
-
+		log.Printf("error loading config: %v", err)
+		return
 	}
 	// app
-	log.Printf("config: %v", cfg)
-	log.Println("Starting server on :" + cfg.ServerAddress)
+	log.Println("Starting server on " + cfg.ServerAddress)
 	// - config
 	app := server.NewServerChi(cfg)
 	// - run
 	if err := app.Run(*cfg); err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 }
