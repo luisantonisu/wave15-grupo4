@@ -20,6 +20,8 @@ const (
 	CARD_NUMBER    = "card number ID"
 	WAREHOUSE_CODE = "warehouse code"
 	SECTION_NUMBER = "section number"
+	ORDER_NUMBER   = "order number"
+	INBOUND_ORDER  = "inbound order"
 )
 
 var (

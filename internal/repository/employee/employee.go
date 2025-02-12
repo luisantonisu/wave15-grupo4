@@ -73,7 +73,7 @@ func (r *EmployeeRepository) Create(employee model.EmployeeAttributes) (model.Em
 	row, err := r.db.Exec("INSERT INTO employees (first_name, last_name, card_number_id, warehouse_id) VALUES (?, ?, ?, ?)",
 		employee.FirstName, employee.LastName, employee.CardNumberID, employee.WarehouseID)
 	if err != nil {
-		return model.Employee{}, err
+		return model.Employee{}, eh.GetErrInvalidData(eh.EMPLOYEE)
 	}
 
 	id, err := row.LastInsertId()
