@@ -5,23 +5,20 @@ import (
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 )
 
-func ProductToProductResponseDTO(product map[int]model.Product) map[int]dto.ProductResponseDTO {
-	data := make(map[int]dto.ProductResponseDTO)
-	for _, value := range product {
-		data[value.ID] = dto.ProductResponseDTO{
-			ID:                             value.ID,
-			ProductCode:                    value.ProductAtrributes.ProductCode,
-			Description:                    value.ProductAtrributes.Description,
-			Width:                          value.ProductAtrributes.Width,
-			Height:                         value.ProductAtrributes.Height,
-			Length:                         value.ProductAtrributes.Length,
-			NetWeight:                      value.ProductAtrributes.NetWeight,
-			ExpirationRate:                 value.ProductAtrributes.ExpirationRate,
-			RecommendedFreezingTemperature: value.ProductAtrributes.RecommendedFreezingTemperature,
-			FreezingRate:                   value.ProductAtrributes.FreezingRate,
-			ProductTypeId:                  value.ProductAtrributes.ProductTypeID,
-			SellerId:                       value.ProductAtrributes.SellerID,
-		}
+func ProductToProductResponseDTO(product model.Product) dto.ProductResponseDTO {
+	data := dto.ProductResponseDTO{
+		ID:                             product.ID,
+		ProductCode:                    product.ProductAtrributes.ProductCode,
+		Description:                    product.ProductAtrributes.Description,
+		Width:                          product.ProductAtrributes.Width,
+		Height:                         product.ProductAtrributes.Height,
+		Length:                         product.ProductAtrributes.Length,
+		NetWeight:                      product.ProductAtrributes.NetWeight,
+		ExpirationRate:                 product.ProductAtrributes.ExpirationRate,
+		RecommendedFreezingTemperature: product.ProductAtrributes.RecommendedFreezingTemperature,
+		FreezingRate:                   product.ProductAtrributes.FreezingRate,
+		ProductTypeId:                  product.ProductAtrributes.ProductTypeID,
+		SellerId:                       product.ProductAtrributes.SellerID,
 	}
 	return data
 }
@@ -56,6 +53,15 @@ func ProductRequestDTOPtrToProductPtr(product dto.ProductRequestDTOPtr) model.Pr
 		FreezingRate:                   product.FreezingRate,
 		ProductTypeID:                  product.ProductTypeId,
 		SellerID:                       product.SellerId,
+	}
+	return data
+}
+
+func ProductRecordCountToProductRecordCountResponseDTO(product model.ProductRecordCount) dto.ProductRecordCountResponseDTO {
+	data := dto.ProductRecordCountResponseDTO{
+		ProductID:   product.ProductID,
+		Description: product.Description,
+		Count:       product.Count,
 	}
 	return data
 }

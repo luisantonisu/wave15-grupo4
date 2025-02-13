@@ -20,6 +20,8 @@ const (
 	CARD_NUMBER    = "card number ID"
 	WAREHOUSE_CODE = "warehouse code"
 	SECTION_NUMBER = "section number"
+	ORDER_NUMBER   = "order number"
+	INBOUND_ORDER  = "inbound order"
 )
 
 var (
@@ -43,11 +45,11 @@ func GetErrInvalidData(entity string) error {
 }
 
 func GetErrGettingData(entity string) error {
-	return fmt.Errorf("%w: %s", ErrInvalidData, entity)
+	return fmt.Errorf("%w: %s", ErrGettingData, entity)
 }
 
 func GetErrParsingData(entity string) error {
-	return fmt.Errorf("%w: %s", ErrInvalidData, entity)
+	return fmt.Errorf("%w: %s", ErrParsingData, entity)
 }
 
 func HandleError(err error) (int, string) {

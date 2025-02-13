@@ -36,7 +36,7 @@ func (h *BuyerHandler) Create() http.HandlerFunc {
 			response.Error(w, code, message)
 			return
 		}
-		newBuyer := helper.BuyerRequestDTOToBuyer(buyerRequestDto)
+		newBuyer := helper.BuyerRequestDTOToBuyerAttributes(buyerRequestDto)
 
 		// Call service
 		data, err := h.sv.Create(newBuyer)

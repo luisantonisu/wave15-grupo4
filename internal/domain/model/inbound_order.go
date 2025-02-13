@@ -7,7 +7,7 @@ type InboundOrder struct {
 
 type InboundOrderAttributes struct {
 	OrderDate      string
-	OrderNumber    string
+	OrderNumber    int
 	EmployeeID     int
 	ProductBatchID int
 	WarehouseID    int
@@ -15,7 +15,7 @@ type InboundOrderAttributes struct {
 
 type InboundOrderAttributesPtr struct {
 	OrderDate      *string
-	OrderNumber    *string
+	OrderNumber    *int
 	EmployeeID     *int
 	ProductBatchID *int
 	WarehouseID    *int
