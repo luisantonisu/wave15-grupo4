@@ -93,7 +93,7 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 	productRp := productRepository.NewProductRepository(database)
 	productRecordRp := productRecordRepository.NewProductRecordRepository(database)
 	sectionRp := sectionRepository.NewSectionRepository(db.Sections)
-	sellerRp := sellerRepository.NewSellerRepository(db.Sellers)
+	sellerRp := sellerRepository.NewSellerRepository(database)
 	warehouseRp := warehouseRepository.NewWarehouseRepository(db.Warehouses)
 
 	// - service
