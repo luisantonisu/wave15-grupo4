@@ -119,7 +119,7 @@ func (r *BuyerRepository) Update(id int, buyer model.BuyerAttributesPtr) (model.
 	}
 	if buyer.CardNumberId != nil {
 		// Validate card number id already exist
-		if r.CardNumberIdIsMine(*buyer.CardNumberId, id) {
+		if r.cardNumberIdIsMine(*buyer.CardNumberId, id) {
 			return model.Buyer{}, eh.GetErrAlreadyExists(eh.CARD_NUMBER)
 		}
 		newBuyer.CardNumberId = *buyer.CardNumberId
@@ -147,7 +147,7 @@ func (r *BuyerRepository) cardNumberIdExists(cardNumberId string) bool {
 }
 
 // Validate if card number is from the current user
-func (r *BuyerRepository) CardNumberIdIsMine(cardNumberId string, id int) bool {
+func (r *BuyerRepository) cardNumberIdIsMine(cardNumberId string, id int) bool {
 	var exists bool
 	err := r.db.QueryRow("SELECT EXISTS(SELECT 1 FROM buyers WHERE card_number_id = ? AND id != ?)", cardNumberId, id).Scan(&exists)
 	if err != nil {
