@@ -8,4 +8,5 @@ type IEmployee interface {
 	Create(employee model.Employee) (model.Employee, error)
 	Update(id int, employee model.EmployeeAttributesPtr) (model.Employee, error)
 	Delete(id int) error
+	Report(id int) (map[int]model.InboundOrdersReport, error)
 }

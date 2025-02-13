@@ -46,3 +46,14 @@ func EmployeeRequestDTOPtrToEmployeePtr(employee dto.EmployeeRequestDTOPtr) mode
 		WarehouseID:  employee.WarehouseID,
 	}
 }
+
+func InboundOrderToInboundOrderDTO(employees model.InboundOrdersReport) dto.InboundOrdersReportDTO {
+	return dto.InboundOrdersReportDTO{
+		ID:                 employees.ID,
+		CardNumberID:       employees.CardNumberID,
+		FirstName:          employees.FirstName,
+		LastName:           employees.LastName,
+		WarehouseID:        employees.WarehouseID,
+		InboundOrdersCount: employees.InboundOrdersCount,
+	}
+}
