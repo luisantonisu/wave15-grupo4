@@ -10,7 +10,7 @@ type SectionResponseDTO struct {
 	MaximumCapacity    int     `json:"maximum_capacity"`
 	WarehouseID        int     `json:"warehouse_id"`
 	ProductTypeID      int     `json:"product_type_id"`
-	ProductBatchID     []int   `json:"product_batch_id"`
+	// ProductBatchID     []int   `json:"product_batch_id"`
 }
 
 type SectionRequestDTO struct {
@@ -22,7 +22,7 @@ type SectionRequestDTO struct {
 	MaximumCapacity    int     `json:"maximum_capacity"`
 	WarehouseID        int     `json:"warehouse_id"`
 	ProductTypeID      int     `json:"product_type_id"`
-	ProductBatchID     []int   `json:"product_batch_id"`
+	// ProductBatchID     []int   `json:"product_batch_id"`
 }
 
 type SectionRequestDTOPtr struct {
@@ -34,5 +34,5 @@ type SectionRequestDTOPtr struct {
 	MaximumCapacity    *int     `json:"maximum_capacity"`
 	WarehouseID        *int     `json:"warehouse_id"`
 	ProductTypeID      *int     `json:"product_type_id"`
-	ProductBatchID     *[]int   `json:"product_batch_id"`
+	// ProductBatchID     *[]int   `json:"product_batch_id"`
 }
