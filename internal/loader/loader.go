@@ -57,10 +57,10 @@ func Load() (*DB, error) {
 
 	return &DB{
 		//Buyers:     buyersDb,
-		Employees:  employeesDb,
-		Products:   productDb,
-		Sections:   sectionDb,
-		//Sellers:    sellerDB,
+		Employees: employeesDb,
+		Products:  productDb,
+		Sections:  sectionDb,
+		// Sellers:    sellerDB,
 		Warehouses: warehousesDb,
 	}, nil
 }

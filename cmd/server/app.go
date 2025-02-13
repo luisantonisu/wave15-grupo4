@@ -96,7 +96,7 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 	inboundOrderRp := inboundOrderRepository.NewInboundOrderRepository(database)
 	productRp := productRepository.NewProductRepository(database)
 	productRecordRp := productRecordRepository.NewProductRecordRepository(database)
-	sectionRp := sectionRepository.NewSectionRepository(db.Sections)
+	sectionRp := sectionRepository.NewSectionRepository(database)
 	sellerRp := sellerRepository.NewSellerRepository(database)
 	warehouseRp := warehouseRepository.NewWarehouseRepository(db.Warehouses)
 
