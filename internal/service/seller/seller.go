@@ -46,7 +46,7 @@ func (s *SellerService) Create(seller model.Seller) (model.Seller, error) {
 	}
 
 	//create seller
-	newSeller, err := s.rp.Create(seller)
+	newSeller, err := s.rp.Create(seller.SellerAttributes)
 	if err != nil {
 		return model.Seller{}, err
 	}
@@ -54,7 +54,7 @@ func (s *SellerService) Create(seller model.Seller) (model.Seller, error) {
 	return newSeller, nil
 }
 
-func (s *SellerService) Update(id int, seller model.SellerAtrributesPtr) (model.Seller, error) {
+func (s *SellerService) Update(id int, seller model.SellerAttributesPtr) (model.Seller, error) {
 
 	updatedSeller, err := s.rp.Update(id, seller)
 	if err != nil {
@@ -74,7 +74,7 @@ func (s *SellerService) Delete(id int) error {
 
 func (s *SellerService) validateSeller(seller model.Seller) error {
 
-	hasCID := seller.CompanyID != 0
+	hasCID := seller.CompanyID != ""
 	hasCompanyName := seller.CompanyName != ""
 	hasAddress := seller.Address != ""
 	hasTelephone := seller.Telephone != ""
