@@ -22,6 +22,7 @@ const (
 	SECTION_NUMBER = "section number"
 	ORDER_NUMBER   = "order number"
 	INBOUND_ORDER  = "inbound order"
+	COMPANY_ID     = "company ID"
 )
 
 var (
