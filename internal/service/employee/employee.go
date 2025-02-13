@@ -36,3 +36,7 @@ func (h *EmployeeService) Update(id int, employee model.EmployeeAttributesPtr) (
 func (h *EmployeeService) Delete(id int) error {
 	return h.rp.Delete(id)
 }
+
+func (h *EmployeeService) Report(id int) (map[int]model.InboundOrdersReport, error) {
+	return h.rp.Report(id)
+}

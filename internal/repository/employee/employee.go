@@ -142,3 +142,31 @@ func (r *EmployeeRepository) Delete(id int) error {
 
 	return nil
 }
+
+func (r *EmployeeRepository) Report(id int) (map[int]model.InboundOrdersReport, error) {
+	var rows *sql.Rows
+	var err error
+	if id == -1 {
+		rows, err = r.db.Query("SELECT em.id, em.first_name, em.last_name, em.card_number_id, em.warehouse_id, COUNT(*) as inbound_orders_count FROM employees em INNER JOIN inbound_orders ib ON em.id = ib.employee_id GROUP BY em.id")
+		if err != nil {
+			return nil, eh.GetErrGettingData(eh.EMPLOYEE)
+		}
+	} else {
+		rows, err = r.db.Query("SELECT em.id, em.first_name, em.last_name, em.card_number_id, em.warehouse_id, COUNT(*) as inbound_orders_count FROM employees em INNER JOIN inbound_orders ib ON em.id = ib.employee_id GROUP BY em.id HAVING em.id = ?", id)
+		if err != nil {
+			return nil, eh.GetErrNotFound(eh.EMPLOYEE)
+		}
+	}
+
+	employees := make(map[int]model.InboundOrdersReport)
+	for rows.Next() {
+		var employee model.InboundOrdersReport
+		err := rows.Scan(&employee.ID, &employee.FirstName, &employee.LastName, &employee.CardNumberID, &employee.WarehouseID, &employee.InboundOrdersCount)
+		if err != nil {
+			return nil, eh.GetErrParsingData(eh.EMPLOYEE)
+		}
+		employees[employee.ID] = employee
+	}
+
+	return employees, nil
+}

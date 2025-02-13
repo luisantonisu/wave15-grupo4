@@ -141,3 +141,36 @@ func (h *EmployeeHandler) Delete() http.HandlerFunc {
 		response.JSON(w, http.StatusNoContent, nil)
 	}
 }
+
+func (h *EmployeeHandler) Report() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var err error
+		var id int
+		query := r.URL.Query().Get("id")
+		if query == "" {
+			id = -1
+		} else {
+			id, err = strconv.Atoi(query)
+			if err != nil {
+				response.Error(w, http.StatusBadRequest, eh.INVALID_ID)
+				return
+			}
+		}
+
+		employees, err := h.sv.Report(id)
+		if err != nil {
+			code, msg := eh.HandleError(err)
+			response.Error(w, code, msg)
+			return
+		}
+
+		data := []dto.InboundOrdersReportDTO{}
+		for _, employee := range employees {
+			data = append(data, helper.InboundOrderToInboundOrderDTO(employee))
+		}
+
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data": data,
+		})
+	}
+}
