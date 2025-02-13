@@ -2,21 +2,19 @@ package service
 
 import (
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
-	repositoryProduct "github.com/luisantonisu/wave15-grupo4/internal/repository/product"
 	repositorySection "github.com/luisantonisu/wave15-grupo4/internal/repository/section"
 	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
-func NewSectionService(repositorySection repositorySection.ISection, repositoryProduct repositoryProduct.IProduct) *SectionService {
+func NewSectionService(repositorySection repositorySection.ISection) *SectionService {
 	return &SectionService{
 		sectionRepo: repositorySection,
-		productRepo: repositoryProduct,
 	}
 }
 
 type SectionService struct {
 	sectionRepo repositorySection.ISection
-	productRepo repositoryProduct.IProduct
+	// productRepo repositoryProduct.IProduct
 }
 
 func (h *SectionService) GetAll() (map[int]model.Section, error) {
@@ -39,10 +37,10 @@ func (h *SectionService) Create(section model.Section) (model.Section, error) {
 		return model.Section{}, eh.GetErrInvalidData(eh.SECTION)
 	}
 
-	_, err := h.productRepo.GetProductByID(section.ProductTypeID)
-	if err != nil {
-		return model.Section{}, eh.GetErrNotFound(eh.PRODUCT)
-	}
+	// _, err := h.productRepo.GetProductByID(section.ProductTypeID)
+	// if err != nil {
+	// 	return model.Section{}, eh.GetErrNotFound(eh.PRODUCT)
+	// }
 
 	return h.sectionRepo.Create(section.SectionAttributes)
 }

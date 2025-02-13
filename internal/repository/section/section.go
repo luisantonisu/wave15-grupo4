@@ -8,11 +8,6 @@ import (
 )
 
 func NewSectionRepository(db *sql.DB) *SectionRepository {
-	// defaultDb := make(map[int]model.Section)
-	// if db != nil {
-	// 	defaultDb = db
-	// }
-	// return &SectionRepository{db: defaultDb}
 	return &SectionRepository{
 		db: db,
 	}
@@ -23,8 +18,6 @@ type SectionRepository struct {
 }
 
 func (s *SectionRepository) sectionExists(id int) bool {
-	// _, exists := s.db[id]
-	// return exists
 	var exists bool
 	err := s.db.QueryRow("SELECT EXISTS(SELECT 1 FROM sections WHERE id = ?)", id).Scan(&exists)
 	if err != nil {
@@ -34,12 +27,6 @@ func (s *SectionRepository) sectionExists(id int) bool {
 }
 
 func (s *SectionRepository) sectionNumberExist(sectionNumber int) bool {
-	// for _, section := range s.db {
-	// 	if section.SectionNumber == sectionNumber {
-	// 		return true
-	// 	}
-	// }
-	// return false
 	var exists bool
 	err := s.db.QueryRow("SELECT EXISTS(SELECT 1 FROM sections WHERE section_number = ?)", sectionNumber).Scan(&exists)
 	if err != nil {
@@ -49,7 +36,6 @@ func (s *SectionRepository) sectionNumberExist(sectionNumber int) bool {
 }
 
 func (s *SectionRepository) GetAll() (map[int]model.Section, error) {
-	// return s.db, nil
 	rows, err := s.db.Query("SELECT id, section_number, current_temperature, minimum_temperature, current_capacity, minimum_capacity, maximum_capacity, warehouse_id, product_type_id FROM sections")
 	if err != nil {
 		return nil, eh.GetErrGettingData(eh.SECTION)
@@ -67,10 +53,6 @@ func (s *SectionRepository) GetAll() (map[int]model.Section, error) {
 }
 
 func (s *SectionRepository) GetByID(id int) (section model.Section, err error) {
-	// if !s.sectionExists(id) {
-	// 	return model.Section{}, eh.GetErrNotFound(eh.SECTION)
-	// }
-	// return s.db[id], nil
 	err = s.db.QueryRow("SELECT id, section_number, current_temperature, minimum_temperature, current_capacity, minimum_capacity, maximum_capacity, warehouse_id, product_type_id FROM sections WHERE id = ?", id).Scan(
 		&section.ID, &section.SectionNumber, &section.CurrentTemperature, &section.MinimumTemperature, &section.CurrentCapacity, &section.MinimumCapacity, &section.MaximumCapacity, &section.WarehouseID, &section.ProductTypeID)
 	if err != nil {
@@ -80,14 +62,6 @@ func (s *SectionRepository) GetByID(id int) (section model.Section, err error) {
 }
 
 func (s *SectionRepository) Create(section model.SectionAttributes) (model.Section, error) {
-	// if s.sectionNumberExist(section.SectionNumber) {
-	// 	return model.Section{}, eh.GetErrAlreadyExists(eh.SECTION_NUMBER)
-	// }
-	// lastId := s.db[len(s.db)].ID + 1
-	// section.ID = lastId
-	// s.db[section.ID] = section
-
-	// return s.db[lastId], nil
 	if s.sectionNumberExist(section.SectionNumber) {
 		return model.Section{}, eh.GetErrAlreadyExists(eh.SECTION_NUMBER)
 	}
@@ -151,10 +125,6 @@ func (s *SectionRepository) Patch(id int, section model.SectionAttributesPtr) (m
 	if section.ProductTypeID != nil {
 		sec.ProductTypeID = *section.ProductTypeID
 	}
-	// if section.ProductBatchID != nil {
-	// 	sec.ProductBatchID = *section.ProductBatchID
-	// }
-
 	_, err = s.db.Exec("UPDATE sections SET section_number = ?, current_temperature = ?, minimum_temperature = ?, current_capacity = ?, minimum_capacity = ?, maximum_capacity = ?, warehouse_id = ?, product_type_id = ?, WHERE id = ?",
 		sec.SectionNumber, sec.CurrentTemperature, sec.MinimumTemperature, sec.CurrentCapacity, sec.MinimumCapacity, sec.MaximumCapacity, sec.WarehouseID, sec.ProductTypeID, id)
 
