@@ -33,10 +33,10 @@ func Load() (*DB, error) {
 	}
 
 	// load products
-	sellerDB, err := LoadSellers()
-	if err != nil {
-		return nil, err
-	}
+	// sellerDB, err := LoadSellers()
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	// load buyers
 	// buyersDb, err := LoadBuyers()
@@ -60,7 +60,7 @@ func Load() (*DB, error) {
 		Employees:  employeesDb,
 		Products:   productDb,
 		Sections:   sectionDb,
-		Sellers:    sellerDB,
+		//Sellers:    sellerDB,
 		Warehouses: warehousesDb,
 	}, nil
 }
