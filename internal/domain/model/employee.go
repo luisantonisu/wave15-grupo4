@@ -18,3 +18,12 @@ type EmployeeAttributesPtr struct {
 	LastName     *string
 	WarehouseID  *int
 }
+
+type InboundOrdersReport struct {
+	ID                 int
+	CardNumberID       int
+	FirstName          string
+	LastName           string
+	WarehouseID        int
+	InboundOrdersCount int
+}
