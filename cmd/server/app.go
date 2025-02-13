@@ -84,7 +84,7 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 	buyerRp := buyerRepository.NewBuyerRepository(db.Buyers)
 	employeeRp := employeeRepository.NewEmployeeRepository(database)
 	productRp := productRepository.NewProductRepository(database)
-	sectionRp := sectionRepository.NewSectionRepository(db.Sections)
+	sectionRp := sectionRepository.NewSectionRepository(database)
 	sellerRp := sellerRepository.NewSellerRepository(db.Sellers)
 	warehouseRp := warehouseRepository.NewWarehouseRepository(db.Warehouses)
 
@@ -92,7 +92,7 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 	buyerSv := buyerService.NewBuyerService(buyerRp)
 	employeeSv := employeeService.NewEmployeeService(employeeRp)
 	productSv := productService.NewProductService(productRp)
-	sectionSv := sectionService.NewSectionService(sectionRp)
+	sectionSv := sectionService.NewSectionService(sectionRp, productRp)
 	sellerSv := sellerService.NewSellerService(sellerRp)
 	warehouseSv := warehouseService.NewWarehouseService(warehouseRp)
 
