@@ -7,6 +7,7 @@ type WarehouseResponseDTO struct {
 	Telephone          uint    `json:"telephone"`
 	MinimumCapacity    int     `json:"minimum_capacity"`
 	MinimumTemperature float32 `json:"minimum_temperature"`
+	LocalityID         int     `json:"locality_id"`
 }
 
 type WarehouseRequestDTO struct {
@@ -15,6 +16,7 @@ type WarehouseRequestDTO struct {
 	Telephone          uint    `json:"telephone"`
 	MinimumCapacity    int     `json:"minimum_capacity"`
 	MinimumTemperature float32 `json:"minimum_temperature"`
+	LocalityID         int     `json:"locality_id"`
 }
 
 type WarehouseRequestDTOPtr struct {
@@ -23,4 +25,5 @@ type WarehouseRequestDTOPtr struct {
 	Telephone          *uint    `json:"telephone"`
 	MinimumCapacity    *int     `json:"minimum_capacity"`
 	MinimumTemperature *float32 `json:"minimum_temperature"`
+	LocalityID         int      `json:"locality_id"`
 }

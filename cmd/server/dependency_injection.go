@@ -3,7 +3,6 @@ package server
 import (
 	"database/sql"
 
-	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 	buyerRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/buyer"
 	countryRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/country"
 	employeeRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/employee"
@@ -62,7 +61,7 @@ func GetHandlers(db *sql.DB) Handlers {
 	productRecordRp := productRecordRepository.NewProductRecordRepository(db)
 	sectionRp := sectionRepository.NewSectionRepository(db)
 	sellerRp := sellerRepository.NewSellerRepository(db)
-	warehouseRp := warehouseRepository.NewWarehouseRepository(map[int]model.Warehouse{})
+	warehouseRp := warehouseRepository.NewWarehouseRepository(db)
 	countryRp := countryRepository.NewCountryRepository(db)
 	provinceRp := provinceRepository.NewProvinceRepository(db)
 	localityRp := localityRepository.NewLocalityRepository(db)
