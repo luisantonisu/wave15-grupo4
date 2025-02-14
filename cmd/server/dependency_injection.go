@@ -5,10 +5,13 @@ import (
 
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 	buyerRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/buyer"
+	countryRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/country"
 	employeeRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/employee"
 	inboundOrderRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/inbound_order"
+	localityRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/locality"
 	productRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/product"
 	productRecordRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/product_record"
+	provinceRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/province"
 	purchaseOrderRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/purchase_order"
 	sectionRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/section"
 	sellerRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/seller"
@@ -17,6 +20,7 @@ import (
 	buyerService "github.com/luisantonisu/wave15-grupo4/internal/service/buyer"
 	employeeService "github.com/luisantonisu/wave15-grupo4/internal/service/employee"
 	inboundOrderService "github.com/luisantonisu/wave15-grupo4/internal/service/inbound_order"
+	localityService "github.com/luisantonisu/wave15-grupo4/internal/service/locality"
 	productService "github.com/luisantonisu/wave15-grupo4/internal/service/product"
 	productRecordService "github.com/luisantonisu/wave15-grupo4/internal/service/product_record"
 	purchaseOrderService "github.com/luisantonisu/wave15-grupo4/internal/service/purchase_order"
@@ -27,6 +31,7 @@ import (
 	buyerHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/buyer"
 	employeeHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/employee"
 	inboundOrderHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/inbound_order"
+	localityHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/locality"
 	productHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/product"
 	productRecordHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/product_record"
 	purchaseOrderHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/purchase_order"
@@ -45,6 +50,7 @@ type Handlers struct {
 	SectionHandler       *sectionHandler.SectionHandler
 	SellerHandler        *sellerHandler.SellerHandler
 	WarehouseHandler     *warehouseHandler.WarehouseHandler
+	LocalityHandler      *localityHandler.LocalityHandler
 }
 
 func GetHandlers(db *sql.DB) Handlers {
@@ -57,6 +63,9 @@ func GetHandlers(db *sql.DB) Handlers {
 	sectionRp := sectionRepository.NewSectionRepository(db)
 	sellerRp := sellerRepository.NewSellerRepository(db)
 	warehouseRp := warehouseRepository.NewWarehouseRepository(map[int]model.Warehouse{})
+	countryRp := countryRepository.NewCountryRepository(db)
+	provinceRp := provinceRepository.NewProvinceRepository(db)
+	localityRp := localityRepository.NewLocalityRepository(db)
 
 	// - service
 	buyerSv := buyerService.NewBuyerService(buyerRp)
@@ -68,6 +77,7 @@ func GetHandlers(db *sql.DB) Handlers {
 	sectionSv := sectionService.NewSectionService(sectionRp)
 	sellerSv := sellerService.NewSellerService(sellerRp)
 	warehouseSv := warehouseService.NewWarehouseService(warehouseRp)
+	localitySv := localityService.NewLocalityService(countryRp, provinceRp, localityRp)
 
 	// - handler
 	buyerHd := buyerHandler.NewBuyerHandler(buyerSv)
@@ -79,6 +89,7 @@ func GetHandlers(db *sql.DB) Handlers {
 	sectionHd := sectionHandler.NewSectionHandler(sectionSv)
 	sellerHd := sellerHandler.NewSellerHandler(sellerSv)
 	warehouseHd := warehouseHandler.NewWarehouseHandler(warehouseSv)
+	localityHd := localityHandler.NewLocalityHandler(localitySv)
 
 	return Handlers{
 		BuyerHandler:         buyerHd,
@@ -90,5 +101,6 @@ func GetHandlers(db *sql.DB) Handlers {
 		SectionHandler:       sectionHd,
 		SellerHandler:        sellerHd,
 		WarehouseHandler:     warehouseHd,
+		LocalityHandler:      localityHd,
 	}
 }

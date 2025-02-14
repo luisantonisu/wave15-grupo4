@@ -156,6 +156,9 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 			// - DELETE /api/v1/warehouses/{id}
 			rt.Delete("/{id}", handlers.WarehouseHandler.Delete())
 		})
+		rt.Route("/localities", func(rt chi.Router){
+			rt.Post("/", handlers.LocalityHandler.Create())
+		})
 	})
 
 	// run server
