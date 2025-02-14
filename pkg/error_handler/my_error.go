@@ -24,14 +24,21 @@ const (
 	INBOUND_ORDER  = "inbound order"
 	PURCHASE_ORDER = "purchase order"
 	COMPANY_ID     = "company ID"
+	LOCALITY       = "locality"
+	COUNTRY_NAME   = "country name"
+	PROVINCE_NAME  = "province name"
+	COUNTRY_ID     = "country ID"
+	PROVINCE_ID    = "province ID"
+	LOCALITY_ID    = "locality ID"
 )
 
 var (
-	ErrNotFound      = errors.New("not found")      // 404
-	ErrAlreadyExists = errors.New("already exists") // 409
-	ErrInvalidData   = errors.New("invalid data")   // 422
-	ErrGettingData   = errors.New("error getting data")
-	ErrParsingData   = errors.New("error parsing data")
+	ErrNotFound      = errors.New("not found")             // 404
+	ErrAlreadyExists = errors.New("already exists")        // 409
+	ErrInvalidData   = errors.New("invalid data")          // 422
+	ErrForeignKey    = errors.New("foreign key not found") // 409
+	ErrGettingData   = errors.New("error getting data")    // 500
+	ErrParsingData   = errors.New("error parsing data")    // 500
 )
 
 func GetErrNotFound(entity string) error {
@@ -44,6 +51,10 @@ func GetErrAlreadyExists(entity string) error {
 
 func GetErrInvalidData(entity string) error {
 	return fmt.Errorf("%w: %s", ErrInvalidData, entity)
+}
+
+func GetErrForeignKey(entity string) error {
+	return fmt.Errorf("%s %w", entity, ErrForeignKey)
 }
 
 func GetErrGettingData(entity string) error {
@@ -65,6 +76,10 @@ func HandleError(err error) (int, string) {
 
 	if errors.Is(err, ErrInvalidData) {
 		return http.StatusUnprocessableEntity, err.Error()
+	}
+
+	if errors.Is(err, ErrForeignKey) {
+		return http.StatusConflict, err.Error()
 	}
 
 	return http.StatusInternalServerError, err.Error()
