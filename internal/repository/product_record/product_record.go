@@ -48,39 +48,13 @@ func NewProductRecordRepository(defaultDB *sql.DB) *ProductRecordRepository {
 // 	return productRecord, nil
 // }
 
-func (productRecordRepository *ProductRecordRepository) productIdExists(productId int) bool {
-	row := productRecordRepository.db.QueryRow("SELECT COUNT(*) FROM products WHERE id = ?", productId)
-	var count int
-	err := row.Scan(&count)
-	if err != nil {
-		return false
-	}
-	return count > 0
-}
-
 func (productRecordRepository *ProductRecordRepository) CreateProductRecord(productRecord model.ProductRecordAtrributes) error {
-
-	productIdExists := productRecordRepository.productIdExists(productRecord.ProductId)
-
-	if !productIdExists {
-		return errorHandler.GetErrAlreadyExists("product doesn't")
-	}
 
 	_, err := productRecordRepository.db.Exec("INSERT INTO product_records (last_update_date, purchase_price, sale_price, product_id) VALUES (?, ?, ?, ?)", productRecord.LastUpdateDate, productRecord.PurchasePrice, productRecord.SalePrice, productRecord.ProductId)
 
 	if err != nil {
-		return errorHandler.GetErrInvalidData("product record")
+		return errorHandler.GetErrInvalidData(errorHandler.PRODUCT_RECORD)
 	}
 
 	return err
 }
-
-// func (productRepository *ProductRecordRepository) registerExists(id int) (bool, error) {
-// 	var exist bool
-// 	query := "SELECT EXISTS(SELECT 1 FROM product WHERE ID = ?)"
-// 	err := productRepository.db.QueryRow(query, id).Scan(&exist)
-// 	if err != nil {
-// 		return false, errorHandler.GetErrNotFound(errorHandler.PRODUCT)
-// 	}
-// 	return exist, nil
-// }
