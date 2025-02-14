@@ -141,9 +141,11 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 			rt.Patch("/{id}", buyerHd.Update())
 			// - DELETE /api/v1/buyers
 			rt.Delete("/{id}", buyerHd.Delete())
+			// - GET /api/v1/buyers/reportPurchaseOrders
+			rt.Get("/reportPurchaseOrders", buyerHd.Report())
 		})
 		rt.Route("/purchaseOrders", func(rt chi.Router) {
-			// - POST /api/v1/buyers
+			// - POST /api/v1/purchaseOrders
 			rt.Post("/", purchaseOrderHd.Create())
 		})
 		rt.Route("/employees", func(rt chi.Router) {

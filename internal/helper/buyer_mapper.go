@@ -43,3 +43,14 @@ func BuyerRequestDTOPtrToBuyerPtr(buyerRequestDto dto.BuyerRequestDTOPtr) model.
 	}
 	return data
 }
+
+func ReportPurchaseOrdersToReportPurchaseOrdersResponseDTO(report model.ReportPurchaseOrders) dto.ReportPurchaseOrdersResponseDTO {
+	data := dto.ReportPurchaseOrdersResponseDTO{
+		ID:                  report.ID,
+		CardNumberId:        report.CardNumberId,
+		FirstName:           report.FirstName,
+		LastName:            report.LastName,
+		PurchaseOrdersCount: report.PurchaseOrdersCount,
+	}
+	return data
+}
