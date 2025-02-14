@@ -2,25 +2,28 @@ package service
 
 import (
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
+	repoProduct "github.com/luisantonisu/wave15-grupo4/internal/repository/product"
 	repository "github.com/luisantonisu/wave15-grupo4/internal/repository/product_record"
+	"github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
 type ProductRecordService struct {
-	repository repository.IProductRecord
+	repository        repository.IProductRecord
+	repositoryProduct repoProduct.IProduct
 }
 
-func NewProductRecordService(repository repository.IProductRecord) *ProductRecordService {
-	return &ProductRecordService{repository: repository}
+func NewProductRecordService(repositoryRecord repository.IProductRecord, repositoryProduct repoProduct.IProduct) *ProductRecordService {
+	return &ProductRecordService{
+		repository:        repositoryRecord,
+		repositoryProduct: repositoryProduct,
+	}
 }
 
-// func (productRecordService *ProductRecordService) GetProductRecord() (map[int]model.ProductRecord, error) {
-// 	return productRecordService.repository.GetProductRecord()
-// }
+func (s *ProductRecordService) CreateProductRecord(productRecord model.ProductRecordAtrributes) error {
+	_, err := s.repositoryProduct.GetProductByID(productRecord.ProductId)
 
-// func (productRecordService *ProductRecordService) GetProductRecordByID(id int) (model.ProductRecord, error) {
-// 	return productRecordService.repository.GetProductRecordByID(id)
-// }
-
-func (productRecordService *ProductRecordService) CreateProductRecord(productRecord model.ProductRecordAtrributes) error {
-	return productRecordService.repository.CreateProductRecord(productRecord)
+	if err != nil {
+		return error_handler.GetErrForeignKey(error_handler.PRODUCT)
+	}
+	return s.repository.CreateProductRecord(productRecord)
 }

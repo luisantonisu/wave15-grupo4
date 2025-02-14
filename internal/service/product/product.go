@@ -14,20 +14,20 @@ type ProductService struct {
 	repository repository.IProduct
 }
 
-func (productService *ProductService) GetProduct() (productMap map[int]model.Product, err error) {
-	return productService.repository.GetProduct()
+func (s *ProductService) GetProduct() (productMap map[int]model.Product, err error) {
+	return s.repository.GetProduct()
 }
 
-func (productService *ProductService) GetProductByID(id int) (product model.Product, err error) {
-	return productService.repository.GetProductByID(id)
+func (s *ProductService) GetProductByID(id int) (product model.Product, err error) {
+	return s.repository.GetProductByID(id)
 }
 
-func (productService *ProductService) GetProductRecord() (productRecordMap map[int]model.ProductRecordCount, err error) {
-	return productService.repository.GetProductRecord()
+func (s *ProductService) GetProductRecord() (productRecordMap map[int]model.ProductRecordCount, err error) {
+	return s.repository.GetProductRecord()
 }
 
-func (productService *ProductService) GetProductRecordByID(id int) (productRecord model.ProductRecordCount, err error) {
-	return productService.repository.GetProductRecordByID(id)
+func (s *ProductService) GetProductRecordByID(id int) (productRecord model.ProductRecordCount, err error) {
+	return s.repository.GetProductRecordByID(id)
 }
 
 func ValueCheck(productAtrributes model.ProductAtrributes) (err error) {
@@ -37,17 +37,17 @@ func ValueCheck(productAtrributes model.ProductAtrributes) (err error) {
 	return
 }
 
-func (productService *ProductService) CreateProduct(productAttributes *model.ProductAtrributes) (err error) {
+func (s *ProductService) CreateProduct(productAttributes *model.ProductAtrributes) (err error) {
 	if err = ValueCheck(*productAttributes); err != nil {
 		return err
 	}
-	return productService.repository.CreateProduct(productAttributes)
+	return s.repository.CreateProduct(productAttributes)
 }
 
-func (productService *ProductService) DeleteProduct(id int) (err error) {
-	return productService.repository.DeleteProduct(id)
+func (s *ProductService) DeleteProduct(id int) (err error) {
+	return s.repository.DeleteProduct(id)
 }
 
-func (productService *ProductService) UpdateProduct(id int, productAttributes *model.ProductAtrributesPtr) (producto *model.Product, err error) {
-	return productService.repository.UpdateProduct(id, productAttributes)
+func (s *ProductService) UpdateProduct(id int, productAttributes *model.ProductAtrributesPtr) (producto *model.Product, err error) {
+	return s.repository.UpdateProduct(id, productAttributes)
 }
