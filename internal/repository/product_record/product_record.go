@@ -17,9 +17,9 @@ func NewProductRecordRepository(defaultDB *sql.DB) *ProductRecordRepository {
 	}
 }
 
-func (productRecordRepository *ProductRecordRepository) CreateProductRecord(productRecord model.ProductRecordAtrributes) error {
+func (r *ProductRecordRepository) CreateProductRecord(productRecord model.ProductRecordAtrributes) error {
 
-	_, err := productRecordRepository.db.Exec("INSERT INTO product_records (last_update_date, purchase_price, sale_price, product_id) VALUES (?, ?, ?, ?)", productRecord.LastUpdateDate, productRecord.PurchasePrice, productRecord.SalePrice, productRecord.ProductId)
+	_, err := r.db.Exec("INSERT INTO product_records (last_update_date, purchase_price, sale_price, product_id) VALUES (?, ?, ?, ?)", productRecord.LastUpdateDate, productRecord.PurchasePrice, productRecord.SalePrice, productRecord.ProductId)
 
 	if err != nil {
 		return errorHandler.GetErrInvalidData(errorHandler.PRODUCT_RECORD)

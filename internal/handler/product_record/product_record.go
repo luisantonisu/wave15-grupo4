@@ -19,7 +19,7 @@ func NewProductRecordHandler(service service.IProductRecord) *ProductRecordHandl
 	return &ProductRecordHandler{service: service}
 }
 
-func (productRecordHandler *ProductRecordHandler) Create() http.HandlerFunc {
+func (h *ProductRecordHandler) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// request
 		var requestDTO dto.ProductRecordRequestDTO
@@ -32,7 +32,7 @@ func (productRecordHandler *ProductRecordHandler) Create() http.HandlerFunc {
 		request := helper.ProductRecordRequestDTOToProductRecord(requestDTO)
 		// process
 		// - create product record
-		err := productRecordHandler.service.CreateProductRecord(request)
+		err := h.service.CreateProductRecord(request)
 		if err != nil {
 			code, msg := errorHandler.HandleError(err)
 			response.JSON(w, code, msg)

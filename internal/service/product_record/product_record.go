@@ -19,11 +19,11 @@ func NewProductRecordService(repositoryRecord repository.IProductRecord, reposit
 	}
 }
 
-func (productRecordService *ProductRecordService) CreateProductRecord(productRecord model.ProductRecordAtrributes) error {
-	_, err := productRecordService.repositoryProduct.GetProductByID(productRecord.ProductId)
+func (s *ProductRecordService) CreateProductRecord(productRecord model.ProductRecordAtrributes) error {
+	_, err := s.repositoryProduct.GetProductByID(productRecord.ProductId)
 
 	if err != nil {
 		return error_handler.GetErrForeignKey(error_handler.PRODUCT)
 	}
-	return productRecordService.repository.CreateProductRecord(productRecord)
+	return s.repository.CreateProductRecord(productRecord)
 }
