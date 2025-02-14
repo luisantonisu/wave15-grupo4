@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `grupo4`.`localities` (
 
 CREATE TABLE IF NOT EXISTS `grupo4`.`carriers` (
     `id` INT NOT NULL AUTO_INCREMENT,
-    `carry_id` VARCHAR(50),
+    `carry_id` VARCHAR(50) UNIQUE NOT NULL,
 	`company_name` VARCHAR(50),
 	`address` VARCHAR(50),
 	`telephone` INT,

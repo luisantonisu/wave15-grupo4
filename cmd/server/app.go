@@ -165,6 +165,10 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 		rt.Route("/localities", func(rt chi.Router){
 			rt.Post("/", handlers.LocalityHandler.Create())
 		})
+		rt.Route("/carriers", func(rt chi.Router){
+			// - POST /api/v1/carriers
+			rt.Post("/", handlers.CarryHandler.Create())
+		})
 	})
 
 	// run server
