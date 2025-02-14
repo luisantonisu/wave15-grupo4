@@ -163,3 +163,40 @@ func (h *BuyerHandler) Update() http.HandlerFunc {
 		})
 	}
 }
+
+// Generate Purchase Order Report
+func (h *BuyerHandler) Report() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Decode query params
+		var id int
+		var err error
+		idStr := r.URL.Query().Get("id")
+		if idStr == "" {
+			id = -1
+		} else {
+			id, err = strconv.Atoi(idStr)
+			if err != nil {
+				response.Error(w, http.StatusBadRequest, eh.INVALID_ID)
+				return
+			}
+		}
+
+		// Call service
+		report, err := h.sv.Report(id)
+		if err != nil {
+			code, message := eh.HandleError(err)
+			response.Error(w, code, message)
+			return
+		}
+
+		// Return response
+		data := []dto.ReportPurchaseOrdersResponseDTO{}
+		for _, buyer := range report {
+			data = append(data, helper.ReportPurchaseOrdersToReportPurchaseOrdersResponseDTO(buyer))
+		}
+		response.JSON(w, http.StatusOK, map[string]any{
+			"message": "Success",
+			"data":    data,
+		})
+	}
+}
