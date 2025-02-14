@@ -21,10 +21,10 @@ type ProductHandler struct {
 	service service.IProduct
 }
 
-func (productHandler *ProductHandler) GetAll() http.HandlerFunc {
+func (h *ProductHandler) GetAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// request
-		v, err := productHandler.service.GetProduct()
+		v, err := h.service.GetProduct()
 		if err != nil {
 			code, msg := errorHandler.HandleError(err)
 			response.JSON(w, code, msg)
@@ -43,7 +43,7 @@ func (productHandler *ProductHandler) GetAll() http.HandlerFunc {
 	}
 }
 
-func (productHandler *ProductHandler) GetByID() http.HandlerFunc {
+func (h *ProductHandler) GetByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// request
 		id := chi.URLParam(r, "id")
@@ -60,7 +60,7 @@ func (productHandler *ProductHandler) GetByID() http.HandlerFunc {
 		}
 		// process
 		// - get product by id
-		v, err := productHandler.service.GetProductByID(idInt)
+		v, err := h.service.GetProductByID(idInt)
 		vResponse := helper.ProductToProductResponseDTO(v)
 		if err != nil {
 			code, msg := errorHandler.HandleError(err)
@@ -76,14 +76,14 @@ func (productHandler *ProductHandler) GetByID() http.HandlerFunc {
 	}
 }
 
-func (productHandler *ProductHandler) GetRecord() http.HandlerFunc {
+func (h *ProductHandler) GetRecord() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// request
 		id := r.URL.Query().Get("id")
 		// id := chi.URLParam(r, "id")
 		if id == "" {
 			// request
-			v, err := productHandler.service.GetProductRecord()
+			v, err := h.service.GetProductRecord()
 			if err != nil {
 				code, msg := errorHandler.HandleError(err)
 				response.JSON(w, code, msg)
@@ -108,7 +108,7 @@ func (productHandler *ProductHandler) GetRecord() http.HandlerFunc {
 		}
 		// process
 		// - get product by id
-		v, err := productHandler.service.GetProductRecordByID(idInt)
+		v, err := h.service.GetProductRecordByID(idInt)
 		if err != nil {
 			code, msg := errorHandler.HandleError(err)
 			response.JSON(w, code, msg)
@@ -124,7 +124,7 @@ func (productHandler *ProductHandler) GetRecord() http.HandlerFunc {
 	}
 }
 
-func (productHandler *ProductHandler) Create() http.HandlerFunc {
+func (h *ProductHandler) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// request
 		var requestDTO dto.ProductRequestDTO
@@ -137,7 +137,7 @@ func (productHandler *ProductHandler) Create() http.HandlerFunc {
 		request := helper.ProductRequestDTOToProduct(requestDTO)
 		// process
 		// - create product
-		err := productHandler.service.CreateProduct(&request)
+		err := h.service.CreateProduct(&request)
 		if err != nil {
 			code, msg := errorHandler.HandleError(err)
 			response.JSON(w, code, msg)
@@ -151,7 +151,7 @@ func (productHandler *ProductHandler) Create() http.HandlerFunc {
 	}
 }
 
-func (productHandler *ProductHandler) Delete() http.HandlerFunc {
+func (h *ProductHandler) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// request
 		id := chi.URLParam(r, "id")
@@ -168,7 +168,7 @@ func (productHandler *ProductHandler) Delete() http.HandlerFunc {
 		}
 		// process
 		// - delete product
-		err = productHandler.service.DeleteProduct(idInt)
+		err = h.service.DeleteProduct(idInt)
 		if err != nil {
 			code, msg := errorHandler.HandleError(err)
 			response.JSON(w, code, msg)
@@ -180,7 +180,7 @@ func (productHandler *ProductHandler) Delete() http.HandlerFunc {
 	}
 }
 
-func (productHandler *ProductHandler) Update() http.HandlerFunc {
+func (h *ProductHandler) Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// request
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
@@ -200,7 +200,7 @@ func (productHandler *ProductHandler) Update() http.HandlerFunc {
 
 		// process
 		// - update product
-		v, err := productHandler.service.UpdateProduct(id, &request)
+		v, err := h.service.UpdateProduct(id, &request)
 		if err != nil {
 			code, msg := errorHandler.HandleError(err)
 			response.JSON(w, code, msg)

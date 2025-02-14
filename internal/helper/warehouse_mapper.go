@@ -13,6 +13,7 @@ func WarehouseToWarehouseResponseDTO(warehouse model.Warehouse) dto.WarehouseRes
 		Telephone:          warehouse.Telephone,
 		MinimumCapacity:    warehouse.MinimumCapacity,
 		MinimumTemperature: warehouse.MinimumTemperature,
+		LocalityID:         warehouse.LocalityID,
 	}
 	return data
 }
@@ -25,6 +26,7 @@ func WarehouseRequestDTOToWarehouse(warehouseRequestDTO dto.WarehouseRequestDTO)
 			Telephone:          warehouseRequestDTO.Telephone,
 			MinimumCapacity:    warehouseRequestDTO.MinimumCapacity,
 			MinimumTemperature: warehouseRequestDTO.MinimumTemperature,
+			LocalityID:         warehouseRequestDTO.LocalityID,
 		},
 	}
 	return data
@@ -37,6 +39,7 @@ func WarehouseRequestDTOPtrToWarehouseAttributesPtr(warehouseRequestDTOPtr dto.W
 			Telephone:          warehouseRequestDTOPtr.Telephone,
 			MinimumCapacity:    warehouseRequestDTOPtr.MinimumCapacity,
 			MinimumTemperature: warehouseRequestDTOPtr.MinimumTemperature,
+			LocalityID:         warehouseRequestDTOPtr.LocalityID,
 		}
 	return data
 }
