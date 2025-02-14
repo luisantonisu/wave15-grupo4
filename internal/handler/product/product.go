@@ -80,9 +80,8 @@ func (productHandler *ProductHandler) GetRecord() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// request
 		id := r.URL.Query().Get("id")
-		// id := chi.URLParam(r, "id")
 		if id == "" {
-			// request
+			// process with id not found
 			v, err := productHandler.service.GetProductRecord()
 			if err != nil {
 				code, msg := errorHandler.HandleError(err)
@@ -100,6 +99,7 @@ func (productHandler *ProductHandler) GetRecord() http.HandlerFunc {
 			})
 			return
 		}
+		// process with id found
 		idInt, err := strconv.Atoi(id)
 		if err != nil {
 			code, msg := errorHandler.HandleError(err)
