@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `grupo4`.`provinces`(
 );
 
 CREATE TABLE IF NOT EXISTS `grupo4`.`localities` (
-    `id` INT NOT NULL AUTO_INCREMENT,
+    `id` INT NOT NULL,
     `locality_name` VARCHAR(50),
     `province_id` INT,
     PRIMARY KEY(`id`),
