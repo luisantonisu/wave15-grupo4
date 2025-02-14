@@ -16,6 +16,9 @@ import (
 	sectionRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/section"
 	sellerRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/seller"
 	warehouseRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/warehouse"
+	countryRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/country"
+	provinceRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/province"
+	localityRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/locality"
 
 	buyerService "github.com/luisantonisu/wave15-grupo4/internal/service/buyer"
 	employeeService "github.com/luisantonisu/wave15-grupo4/internal/service/employee"
@@ -26,6 +29,7 @@ import (
 	sectionService "github.com/luisantonisu/wave15-grupo4/internal/service/section"
 	sellerService "github.com/luisantonisu/wave15-grupo4/internal/service/seller"
 	warehouseService "github.com/luisantonisu/wave15-grupo4/internal/service/warehouse"
+	localityService "github.com/luisantonisu/wave15-grupo4/internal/service/locality"
 
 	buyerHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/buyer"
 	employeeHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/employee"
@@ -36,6 +40,7 @@ import (
 	sectionHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/section"
 	sellerHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/seller"
 	warehouseHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/warehouse"
+	localityHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/locality"
 	"github.com/luisantonisu/wave15-grupo4/internal/loader"
 )
 
@@ -99,6 +104,9 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 	sectionRp := sectionRepository.NewSectionRepository(database)
 	sellerRp := sellerRepository.NewSellerRepository(database)
 	warehouseRp := warehouseRepository.NewWarehouseRepository(db.Warehouses)
+	countryRp := countryRepository.NewCountryRepository(database)
+	provinceRp := provinceRepository.NewProvinceRepository(database)
+	localityRp := localityRepository.NewLocalityRepository(database)
 
 	// - service
 	buyerSv := buyerService.NewBuyerService(buyerRp)
@@ -110,6 +118,7 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 	sectionSv := sectionService.NewSectionService(sectionRp)
 	sellerSv := sellerService.NewSellerService(sellerRp)
 	warehouseSv := warehouseService.NewWarehouseService(warehouseRp)
+	localitySv := localityService.NewLocalityService(countryRp, provinceRp,localityRp)
 
 	// - handler
 	buyerHd := buyerHandler.NewBuyerHandler(buyerSv)                                 // buyerHd
@@ -121,6 +130,7 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 	sectionHd := sectionHandler.NewSectionHandler(sectionSv)                         // sectionHd
 	sellerHd := sellerHandler.NewSellerHandler(sellerSv)                             // sellerHd
 	warehouseHd := warehouseHandler.NewWarehouseHandler(warehouseSv)                 // warehouseHd
+	localityHd := localityHandler.NewLocalityHandler(localitySv)                     // localityHd
 
 	// router
 	rt := chi.NewRouter()
@@ -214,6 +224,9 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 			rt.Patch("/{id}", warehouseHd.Update())
 			// - DELETE /api/v1/warehouses/{id}
 			rt.Delete("/{id}", warehouseHd.Delete())
+		})
+		rt.Route("/localities", func(rt chi.Router){
+			rt.Post("/", localityHd.Create())
 		})
 	})
 
