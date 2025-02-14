@@ -19,16 +19,16 @@ type EmployeeRepository struct {
 
 func (r *EmployeeRepository) employeeExists(id int) bool {
 	var exists bool
-	err := r.db.QueryRow("SELECT EXISTS(SELECT 1 FROM employees WHERE id = ?)", id).Scan(&exists)
+	err := r.db.QueryRow("SELECT EXISTS(SELECT 1 FROM employees WHERE id = ?) ", id).Scan(&exists)
 	if err != nil {
 		return false
 	}
 	return exists
 }
 
-func (r *EmployeeRepository) cardNumberIdExists(cardNumberId int) bool {
+func (r *EmployeeRepository) cardNumberIdExists(cardNumberId int, id int) bool {
 	var exists bool
-	err := r.db.QueryRow("SELECT EXISTS(SELECT 1 FROM employees WHERE card_number_id = ?)", cardNumberId).Scan(&exists)
+	err := r.db.QueryRow("SELECT EXISTS(SELECT 1 FROM employees WHERE card_number_id = ?) AND id != ?", cardNumberId, id).Scan(&exists)
 	if err != nil {
 		return false
 	}
@@ -66,8 +66,8 @@ func (r *EmployeeRepository) GetByID(id int) (employee model.Employee, err error
 
 func (r *EmployeeRepository) Create(employee model.EmployeeAttributes) (model.Employee, error) {
 
-	if r.cardNumberIdExists(employee.CardNumberID) {
-		return model.Employee{}, eh.GetErrAlreadyExists(eh.CARD_NUMBER)
+	if r.cardNumberIdExists(employee.CardNumberID, -1) {
+		return model.Employee{}, eh.GetErrAlreadyExistsCompose(eh.EMPLOYEE, eh.CARD_NUMBER)
 	}
 
 	row, err := r.db.Exec("INSERT INTO employees (first_name, last_name, card_number_id, warehouse_id) VALUES (?, ?, ?, ?)",
@@ -78,7 +78,7 @@ func (r *EmployeeRepository) Create(employee model.EmployeeAttributes) (model.Em
 
 	id, err := row.LastInsertId()
 	if err != nil {
-		return model.Employee{}, err // Handle error
+		return model.Employee{}, eh.GetErrDatabase(eh.EMPLOYEE)
 	}
 
 	var emp model.Employee
@@ -93,8 +93,8 @@ func (r *EmployeeRepository) Update(id int, employee model.EmployeeAttributesPtr
 		return model.Employee{}, eh.GetErrNotFound(eh.EMPLOYEE)
 	}
 
-	if r.cardNumberIdExists(*employee.CardNumberID) {
-		return model.Employee{}, eh.GetErrAlreadyExists(eh.CARD_NUMBER)
+	if r.cardNumberIdExists(*employee.CardNumberID, id) {
+		return model.Employee{}, eh.GetErrAlreadyExistsCompose(eh.EMPLOYEE, eh.CARD_NUMBER)
 	}
 
 	var emp model.Employee
@@ -137,7 +137,7 @@ func (r *EmployeeRepository) Delete(id int) error {
 
 	_, err := r.db.Exec("DELETE FROM employees WHERE id = ?", id)
 	if err != nil {
-		return eh.GetErrNotFound(eh.EMPLOYEE) // TODO: Handle error (Error deleting employee)
+		return eh.GetErrDatabase(eh.EMPLOYEE)
 	}
 
 	return nil
