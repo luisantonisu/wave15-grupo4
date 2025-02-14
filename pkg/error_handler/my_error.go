@@ -30,6 +30,7 @@ const (
 	COUNTRY_ID     = "country ID"
 	PROVINCE_ID    = "province ID"
 	LOCALITY_ID    = "locality ID"
+	CARRY          = "carry"
 )
 
 var (
