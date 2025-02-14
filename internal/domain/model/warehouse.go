@@ -21,6 +21,7 @@ type WarehouseAttributes struct {
 	Telephone          uint
 	MinimumCapacity    int
 	MinimumTemperature float32
+	LocalityID         int
 }
 
 type WarehouseAttributesPtr struct {
@@ -29,4 +30,5 @@ type WarehouseAttributesPtr struct {
 	Telephone          *uint
 	MinimumCapacity    *int
 	MinimumTemperature *float32
+	LocalityID         int
 }
