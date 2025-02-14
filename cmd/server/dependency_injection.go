@@ -1,0 +1,94 @@
+package server
+
+import (
+	"database/sql"
+
+	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
+	buyerRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/buyer"
+	employeeRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/employee"
+	inboundOrderRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/inbound_order"
+	productRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/product"
+	productRecordRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/product_record"
+	purchaseOrderRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/purchase_order"
+	sectionRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/section"
+	sellerRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/seller"
+	warehouseRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/warehouse"
+
+	buyerService "github.com/luisantonisu/wave15-grupo4/internal/service/buyer"
+	employeeService "github.com/luisantonisu/wave15-grupo4/internal/service/employee"
+	inboundOrderService "github.com/luisantonisu/wave15-grupo4/internal/service/inbound_order"
+	productService "github.com/luisantonisu/wave15-grupo4/internal/service/product"
+	productRecordService "github.com/luisantonisu/wave15-grupo4/internal/service/product_record"
+	purchaseOrderService "github.com/luisantonisu/wave15-grupo4/internal/service/purchase_order"
+	sectionService "github.com/luisantonisu/wave15-grupo4/internal/service/section"
+	sellerService "github.com/luisantonisu/wave15-grupo4/internal/service/seller"
+	warehouseService "github.com/luisantonisu/wave15-grupo4/internal/service/warehouse"
+
+	buyerHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/buyer"
+	employeeHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/employee"
+	inboundOrderHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/inbound_order"
+	productHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/product"
+	productRecordHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/product_record"
+	purchaseOrderHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/purchase_order"
+	sectionHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/section"
+	sellerHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/seller"
+	warehouseHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/warehouse"
+)
+
+type Handlers struct {
+	BuyerHandler         *buyerHandler.BuyerHandler
+	PurchaseOrderHandler *purchaseOrderHandler.PurchaseOrderHandler
+	EmployeeHandler      *employeeHandler.EmployeeHandler
+	InboundOrderHandler  *inboundOrderHandler.InboundOrderHandler
+	ProductHandler       *productHandler.ProductHandler
+	ProductRecordHandler *productRecordHandler.ProductRecordHandler
+	SectionHandler       *sectionHandler.SectionHandler
+	SellerHandler        *sellerHandler.SellerHandler
+	WarehouseHandler     *warehouseHandler.WarehouseHandler
+}
+
+func GetHandlers(db *sql.DB) Handlers {
+	buyerRp := buyerRepository.NewBuyerRepository(db)
+	purchaseOrderRp := purchaseOrderRepository.NewPurchaseOrderRepository(db)
+	employeeRp := employeeRepository.NewEmployeeRepository(db)
+	inboundOrderRp := inboundOrderRepository.NewInboundOrderRepository(db)
+	productRp := productRepository.NewProductRepository(db)
+	productRecordRp := productRecordRepository.NewProductRecordRepository(db)
+	sectionRp := sectionRepository.NewSectionRepository(db)
+	sellerRp := sellerRepository.NewSellerRepository(db)
+	warehouseRp := warehouseRepository.NewWarehouseRepository(map[int]model.Warehouse{})
+
+	// - service
+	buyerSv := buyerService.NewBuyerService(buyerRp)
+	PurchaseOrderSv := purchaseOrderService.NewPurchaseOrderService(purchaseOrderRp)
+	employeeSv := employeeService.NewEmployeeService(employeeRp)
+	inboundOrderSv := inboundOrderService.NewInboundOrderService(inboundOrderRp)
+	productSv := productService.NewProductService(productRp)
+	productRecordSv := productRecordService.NewProductRecordService(productRecordRp)
+	sectionSv := sectionService.NewSectionService(sectionRp)
+	sellerSv := sellerService.NewSellerService(sellerRp)
+	warehouseSv := warehouseService.NewWarehouseService(warehouseRp)
+
+	// - handler
+	buyerHd := buyerHandler.NewBuyerHandler(buyerSv)
+	purchaseOrderHd := purchaseOrderHandler.NewPurchaseOrderHandler(PurchaseOrderSv)
+	employeeHd := employeeHandler.NewEmployeeHandler(employeeSv)
+	inboundOrderHd := inboundOrderHandler.NewInboundOrderHandler(inboundOrderSv)
+	productHd := productHandler.NewProductHandler(productSv)
+	productRecordHd := productRecordHandler.NewProductRecordHandler(productRecordSv)
+	sectionHd := sectionHandler.NewSectionHandler(sectionSv)
+	sellerHd := sellerHandler.NewSellerHandler(sellerSv)
+	warehouseHd := warehouseHandler.NewWarehouseHandler(warehouseSv)
+
+	return Handlers{
+		BuyerHandler:         buyerHd,
+		PurchaseOrderHandler: purchaseOrderHd,
+		EmployeeHandler:      employeeHd,
+		InboundOrderHandler:  inboundOrderHd,
+		ProductHandler:       productHd,
+		ProductRecordHandler: productRecordHd,
+		SectionHandler:       sectionHd,
+		SellerHandler:        sellerHd,
+		WarehouseHandler:     warehouseHd,
+	}
+}
