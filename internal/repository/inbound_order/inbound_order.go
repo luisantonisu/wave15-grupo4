@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"log"
 
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
@@ -24,13 +23,13 @@ func (i *InbounderOrderRepository) AlreadyExits(atribute string, value int) bool
 	if err != nil {
 		return false
 	}
-	log.Println(exists)
+
 	return exists
 }
 
 func (i *InbounderOrderRepository) CreateInboundOrder(inboundOrder model.InboundOrderAttributes) (model.InboundOrder, error) {
-	if i.AlreadyExits("employee_id", inboundOrder.EmployeeID) {
-		return model.InboundOrder{}, eh.GetErrAlreadyExists(eh.EMPLOYEE)
+	if i.AlreadyExits("product_batch_id", inboundOrder.ProductBatchID) == false {
+		return model.InboundOrder{}, eh.GetErrForeignKey(eh.PRODUCT_BATCH_ID)
 	}
 
 	if i.AlreadyExits("order_id", inboundOrder.OrderNumber) {
@@ -44,7 +43,7 @@ func (i *InbounderOrderRepository) CreateInboundOrder(inboundOrder model.Inbound
 
 	id, err := row.LastInsertId()
 	if err != nil {
-		return model.InboundOrder{}, err
+		return model.InboundOrder{}, eh.GetErrDatabase(eh.INBOUND_ORDER)
 	}
 
 	var inb model.InboundOrder
