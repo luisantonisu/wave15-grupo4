@@ -2,11 +2,13 @@ package server
 
 import (
 	"net/http"
+	"sync"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/luisantonisu/wave15-grupo4/infrastructure/db"
 	"github.com/luisantonisu/wave15-grupo4/internal/config"
+	"github.com/luisantonisu/wave15-grupo4/internal/loader"
 )
 
 func NewServerChi(cfg *config.Config) *ServerChi {
@@ -54,10 +56,14 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 	defer database.Close()
 
 	// Optional, if deploy, delete this
-	// err = loader.Load(database)
-	// if err != nil {
-	// 	return
-	// }
+	var o sync.Once
+	o.Do(func() {
+		err = loader.Load(database)
+		if err != nil {
+			return
+		}
+	},
+	)
 
 	handlers := GetHandlers(database)
 
@@ -158,6 +164,10 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 		})
 		rt.Route("/localities", func(rt chi.Router){
 			rt.Post("/", handlers.LocalityHandler.Create())
+		})
+		rt.Route("/carriers", func(rt chi.Router){
+			// - POST /api/v1/carriers
+			rt.Post("/", handlers.CarryHandler.Create())
 		})
 	})
 

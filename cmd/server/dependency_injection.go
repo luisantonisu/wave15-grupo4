@@ -15,6 +15,7 @@ import (
 	sectionRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/section"
 	sellerRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/seller"
 	warehouseRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/warehouse"
+	carryRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/carry"
 
 	buyerService "github.com/luisantonisu/wave15-grupo4/internal/service/buyer"
 	employeeService "github.com/luisantonisu/wave15-grupo4/internal/service/employee"
@@ -26,6 +27,7 @@ import (
 	sectionService "github.com/luisantonisu/wave15-grupo4/internal/service/section"
 	sellerService "github.com/luisantonisu/wave15-grupo4/internal/service/seller"
 	warehouseService "github.com/luisantonisu/wave15-grupo4/internal/service/warehouse"
+	carryService "github.com/luisantonisu/wave15-grupo4/internal/service/carry"
 
 	buyerHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/buyer"
 	employeeHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/employee"
@@ -37,6 +39,7 @@ import (
 	sectionHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/section"
 	sellerHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/seller"
 	warehouseHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/warehouse"
+	carryHandler "github.com/luisantonisu/wave15-grupo4/internal/handler/carry"
 )
 
 type Handlers struct {
@@ -50,6 +53,7 @@ type Handlers struct {
 	SellerHandler        *sellerHandler.SellerHandler
 	WarehouseHandler     *warehouseHandler.WarehouseHandler
 	LocalityHandler      *localityHandler.LocalityHandler
+	CarryHandler         *carryHandler.CarryHandler
 }
 
 func GetHandlers(db *sql.DB) Handlers {
@@ -65,6 +69,7 @@ func GetHandlers(db *sql.DB) Handlers {
 	countryRp := countryRepository.NewCountryRepository(db)
 	provinceRp := provinceRepository.NewProvinceRepository(db)
 	localityRp := localityRepository.NewLocalityRepository(db)
+	carryRp := carryRepository.NewCarryRepository(db)
 
 	// - service
 	buyerSv := buyerService.NewBuyerService(buyerRp)
@@ -77,6 +82,7 @@ func GetHandlers(db *sql.DB) Handlers {
 	sellerSv := sellerService.NewSellerService(sellerRp)
 	warehouseSv := warehouseService.NewWarehouseService(warehouseRp)
 	localitySv := localityService.NewLocalityService(countryRp, provinceRp, localityRp)
+	carrySv := carryService.NewCarryService(carryRp)
 
 	// - handler
 	buyerHd := buyerHandler.NewBuyerHandler(buyerSv)
@@ -89,6 +95,7 @@ func GetHandlers(db *sql.DB) Handlers {
 	sellerHd := sellerHandler.NewSellerHandler(sellerSv)
 	warehouseHd := warehouseHandler.NewWarehouseHandler(warehouseSv)
 	localityHd := localityHandler.NewLocalityHandler(localitySv)
+	carryHd := carryHandler.NewCarryHandler(carrySv)
 
 	return Handlers{
 		BuyerHandler:         buyerHd,
@@ -101,5 +108,6 @@ func GetHandlers(db *sql.DB) Handlers {
 		SellerHandler:        sellerHd,
 		WarehouseHandler:     warehouseHd,
 		LocalityHandler:      localityHd,
+		CarryHandler:         carryHd,
 	}
 }

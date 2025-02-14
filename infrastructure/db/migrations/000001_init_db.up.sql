@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `grupo4`.`provinces`(
 );
 
 CREATE TABLE IF NOT EXISTS `grupo4`.`localities` (
-    `id` INT NOT NULL AUTO_INCREMENT,
+    `id` INT NOT NULL,
     `locality_name` VARCHAR(50),
     `province_id` INT,
     PRIMARY KEY(`id`),
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `grupo4`.`localities` (
 
 CREATE TABLE IF NOT EXISTS `grupo4`.`carriers` (
     `id` INT NOT NULL AUTO_INCREMENT,
-    `carry_id` VARCHAR(50),
+    `carry_id` VARCHAR(50) UNIQUE NOT NULL,
 	`company_name` VARCHAR(50),
 	`address` VARCHAR(50),
 	`telephone` INT,
