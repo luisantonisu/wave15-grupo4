@@ -1,106 +1,149 @@
 package repository
 
 import (
+	"database/sql"
+
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
-func NewWarehouseRepository(db map[int]model.Warehouse) *WarehouseRepository {
-	defaultDb := make(map[int]model.Warehouse)
-	if db != nil {
-		defaultDb = db
+func NewWarehouseRepository(db *sql.DB) *WarehouseRepository {
+	return &WarehouseRepository{
+		db: db,
 	}
-	return &WarehouseRepository{autoIncrement: len(db), db: defaultDb}
 }
 
 type WarehouseRepository struct {
-	autoIncrement int
-	db            map[int]model.Warehouse
+	db *sql.DB
 }
 
-func (wr *WarehouseRepository) GetAll() (map[int]model.Warehouse, error) {
-	return wr.db, nil
-}
+func (r *WarehouseRepository) GetAll() (map[int]model.Warehouse, error) {
+	rows, err := r.db.Query(`SELECT id, 
+		warehouse_code, 
+		address, 
+		telephone, 
+		minimum_capacity, 
+		minimum_temperature,
+		locality_id FROM warehouses`)
 
-func (wr *WarehouseRepository) GetByID(id int) (model.Warehouse, error) {
-	if len(wr.db) == 0 {
-		return model.Warehouse{}, eh.GetErrNotFound(eh.WAREHOUSE)
+	if err != nil {
+		return nil, eh.GetErrGettingData(eh.WAREHOUSE)
 	}
+	defer rows.Close()
 
-	warehouse, ok := wr.db[id]
-	if !ok {
-		return model.Warehouse{}, eh.GetErrNotFound(eh.WAREHOUSE)
-	}
-
-	return warehouse, nil
-}
-
-func (wr *WarehouseRepository) Create(warehouse model.Warehouse) (model.Warehouse, error) {
-	if warehouse.WarehouseCode == "" {
-		return model.Warehouse{}, eh.GetErrInvalidData(eh.WAREHOUSE_CODE)
-	}
-
-	if wr.warehouseCodeExists(warehouse.WarehouseCode) {
-		return model.Warehouse{}, eh.GetErrAlreadyExists(eh.WAREHOUSE_CODE)
-	}
-
-	wr.autoIncrement++
-	warehouse.ID = wr.autoIncrement
-	wr.db[warehouse.ID] = warehouse
-
-	return warehouse, nil
-}
-
-func (wr *WarehouseRepository) Update(id int, warehouse model.WarehouseAttributesPtr) (model.Warehouse, error) {
-	updatedWarehouse, ok := wr.db[id]
-	if !ok {
-		return model.Warehouse{}, eh.GetErrNotFound(eh.WAREHOUSE)
-	}
-
-	if warehouse.WarehouseCode != nil && *warehouse.WarehouseCode != updatedWarehouse.WarehouseCode {
-		if wr.warehouseCodeExists(*warehouse.WarehouseCode) {
-			return model.Warehouse{}, eh.GetErrAlreadyExists(eh.WAREHOUSE_CODE)
+	warehouses := make(map[int]model.Warehouse)
+	for rows.Next() {
+		var warehouse model.Warehouse
+		err := rows.Scan(&warehouse.ID,
+			&warehouse.WarehouseCode,
+			&warehouse.Address,
+			&warehouse.Telephone,
+			&warehouse.MinimumCapacity,
+			&warehouse.MinimumTemperature,
+			&warehouse.LocalityID)
+		if err != nil {
+			return nil, eh.GetErrParsingData(eh.WAREHOUSE)
 		}
-		updatedWarehouse.WarehouseCode = *warehouse.WarehouseCode
+		warehouses[warehouse.ID] = warehouse
+	}
+	return warehouses, nil
+}
+
+func (r *WarehouseRepository) GetByID(id int) (model.Warehouse, error) {
+	var warehouse model.Warehouse
+	err := r.db.QueryRow(`SELECT id, 
+			warehouse_code, 
+			address, 
+			telephone, 
+			minimum_capacity, 
+			minimum_temperature,
+			locality_id
+			FROM warehouses WHERE id = ?`, id).
+		Scan(&warehouse.ID,
+			&warehouse.WarehouseCode,
+			&warehouse.Address,
+			&warehouse.Telephone,
+			&warehouse.MinimumCapacity,
+			&warehouse.MinimumTemperature,
+			&warehouse.LocalityID)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return model.Warehouse{}, eh.GetErrNotFound(eh.WAREHOUSE)
+		}
+		return model.Warehouse{}, eh.GetErrParsingData(eh.WAREHOUSE)
+	}
+
+	return warehouse, nil
+}
+
+func (r *WarehouseRepository) Create(warehouse model.Warehouse) (model.Warehouse, error) {
+	row, err := r.db.Exec(`INSERT INTO warehouses (
+		warehouse_code, address, telephone, minimum_capacity, minimum_temperature, locality_id) VALUES (?, ?, ?, ?, ?, ?)`,
+		warehouse.WarehouseCode, warehouse.Address, warehouse.Telephone, warehouse.MinimumCapacity, warehouse.MinimumTemperature, warehouse.LocalityID)
+	if err != nil {
+		return model.Warehouse{}, eh.GetErrInvalidData(eh.WAREHOUSE)
+	}
+
+	id, err := row.LastInsertId()
+	if err != nil {
+		return model.Warehouse{}, eh.GetErrInvalidData(eh.WAREHOUSE)
+	}
+
+	var newWarehouse model.Warehouse
+	newWarehouse.ID = int(id)
+	newWarehouse.WarehouseAttributes = warehouse.WarehouseAttributes
+
+	return newWarehouse, nil
+}
+
+func (r *WarehouseRepository) Update(id int, warehouse model.WarehouseAttributesPtr) (model.Warehouse, error) {
+	existingWarehouse, err := r.GetByID(id)
+	if err != nil {
+		return model.Warehouse{}, eh.GetErrNotFound(eh.WAREHOUSE)
+	}
+
+	if warehouse.WarehouseCode != nil && *warehouse.WarehouseCode != existingWarehouse.WarehouseCode {
+		existingWarehouse.WarehouseCode = *warehouse.WarehouseCode
 	}
 
 	if warehouse.Address != nil {
-		updatedWarehouse.Address = *warehouse.Address
+		existingWarehouse.Address = *warehouse.Address
 	}
 
 	if warehouse.Telephone != nil {
-		updatedWarehouse.Telephone = *warehouse.Telephone
+		existingWarehouse.Telephone = *warehouse.Telephone
 	}
 
 	if warehouse.MinimumCapacity != nil {
-		updatedWarehouse.MinimumCapacity = *warehouse.MinimumCapacity
+		existingWarehouse.MinimumCapacity = *warehouse.MinimumCapacity
 	}
 
 	if warehouse.MinimumTemperature != nil {
-		updatedWarehouse.MinimumTemperature = *warehouse.MinimumTemperature
+		existingWarehouse.MinimumTemperature = *warehouse.MinimumTemperature
 	}
 
-	wr.db[id] = updatedWarehouse
+	_, err = r.db.Exec(`UPDATE warehouses SET
+		warehouse_code = ?, address = ?, telephone = ?, minimum_capacity = ?, minimum_temperature = ?, locality_id = ? WHERE id = ?`,
+		existingWarehouse.WarehouseCode, existingWarehouse.Address, existingWarehouse.Telephone,
+		existingWarehouse.MinimumCapacity, existingWarehouse.MinimumTemperature, existingWarehouse.LocalityID, id)
+	if err != nil {
+		return model.Warehouse{}, eh.GetErrInvalidData(eh.WAREHOUSE)
+	}
 
-	return updatedWarehouse, nil
+	return existingWarehouse, nil
 }
 
-func (wr *WarehouseRepository) Delete(id int) error {
-	_, ok := wr.db[id]
-	if !ok {
+func (r *WarehouseRepository) Delete(id int) error {
+	_, err := r.GetByID(id)
+	if err != nil {
 		return eh.GetErrNotFound(eh.WAREHOUSE)
 	}
 
-	delete(wr.db, id)
+	_, err = r.db.Exec("DELETE FROM warehouses WHERE id = ?", id)
+	if err != nil {
+		return eh.GetErrNotFound(eh.WAREHOUSE)
+	}
 
 	return nil
-}
-
-func (wr *WarehouseRepository) warehouseCodeExists(warehouseCode string) bool {
-	for _, w := range wr.db {
-		if w.WarehouseCode == warehouseCode {
-			return true
-		}
-	}
-	return false
 }

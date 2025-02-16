@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"strconv"
 
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
@@ -32,7 +33,7 @@ func (r *BuyerRepository) Create(buyer model.BuyerAttributes) (model.Buyer, erro
 	}
 	id, err := row.LastInsertId()
 	if err != nil {
-		return model.Buyer{}, eh.GetErrInvalidData(eh.BUYER)
+		return model.Buyer{}, eh.GetErrDatabase(eh.BUYER)
 	}
 
 	// Response
@@ -90,7 +91,7 @@ func (r *BuyerRepository) Delete(id int) error {
 	// Delete buyer from db
 	_, err := r.db.Exec("DELETE FROM buyers WHERE id = ?", id)
 	if err != nil {
-		return eh.GetErrNotFound(eh.BUYER)
+		return eh.GetErrDatabase(eh.BUYER)
 	}
 	return nil
 }
@@ -107,7 +108,7 @@ func (r *BuyerRepository) Update(id int, buyer model.BuyerAttributesPtr) (model.
 		&newBuyer.ID, &newBuyer.FirstName, &newBuyer.LastName, &newBuyer.CardNumberId,
 	)
 	if err != nil {
-		return model.Buyer{}, eh.GetErrNotFound(eh.BUYER)
+		return model.Buyer{}, eh.GetErrDatabase(eh.BUYER)
 	}
 
 	// Update buyer entity with new values
@@ -134,6 +135,38 @@ func (r *BuyerRepository) Update(id int, buyer model.BuyerAttributesPtr) (model.
 	}
 
 	return newBuyer, nil
+}
+
+// Generate Purchase Order reports for buyer
+func (r *BuyerRepository) Report(id int) (map[int]model.ReportPurchaseOrders, error) {
+	// Make a "dynamic" query to get single or multiple buyers
+	query := "SELECT buyers.id, buyers.first_name, buyers.last_name, buyers.card_number_id, COUNT(*) AS purchase_orders_count FROM buyers JOIN purchase_orders ON buyers.id = purchase_orders.buyer_id GROUP BY buyers.id"
+
+	if id != -1 {
+		// Verify buyer exists
+		if !r.buyerExists(id) {
+			return nil, eh.GetErrNotFound(eh.BUYER)
+		}
+		query += " HAVING buyers.id = " + strconv.Itoa(id)
+	}
+	
+	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, eh.GetErrGettingData(eh.BUYER)
+	}
+
+	// Response
+	buyers := make(map[int]model.ReportPurchaseOrders)
+	for rows.Next() {
+		var buyer model.ReportPurchaseOrders
+		err := rows.Scan(&buyer.ID, &buyer.FirstName, &buyer.LastName, &buyer.CardNumberId, &buyer.PurchaseOrdersCount)
+		if err != nil {
+			return nil, eh.GetErrParsingData(eh.BUYER)
+		}
+		buyers[buyer.ID] = buyer
+	}
+	return buyers, nil
+
 }
 
 // Validate if card number id is already in use
