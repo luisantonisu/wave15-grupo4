@@ -16,6 +16,7 @@ import (
 	sellerRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/seller"
 	warehouseRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/warehouse"
 	carryRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/carry"
+	orderStatusRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/order_status"
 
 	buyerService "github.com/luisantonisu/wave15-grupo4/internal/service/buyer"
 	employeeService "github.com/luisantonisu/wave15-grupo4/internal/service/employee"
@@ -59,6 +60,7 @@ type Handlers struct {
 func GetHandlers(db *sql.DB) Handlers {
 	buyerRp := buyerRepository.NewBuyerRepository(db)
 	purchaseOrderRp := purchaseOrderRepository.NewPurchaseOrderRepository(db)
+	orderStatusRp := orderStatusRepository.NewOrderStatusRepository(db)
 	employeeRp := employeeRepository.NewEmployeeRepository(db)
 	inboundOrderRp := inboundOrderRepository.NewInboundOrderRepository(db)
 	productRp := productRepository.NewProductRepository(db)
@@ -73,7 +75,7 @@ func GetHandlers(db *sql.DB) Handlers {
 
 	// - service
 	buyerSv := buyerService.NewBuyerService(buyerRp)
-	PurchaseOrderSv := purchaseOrderService.NewPurchaseOrderService(purchaseOrderRp)
+	PurchaseOrderSv := purchaseOrderService.NewPurchaseOrderService(purchaseOrderRp, buyerRp, carryRp, orderStatusRp, warehouseRp)
 	employeeSv := employeeService.NewEmployeeService(employeeRp, warehouseRp)
 	inboundOrderSv := inboundOrderService.NewInboundOrderService(inboundOrderRp, employeeRp, warehouseRp)
 	productSv := productService.NewProductService(productRp)
