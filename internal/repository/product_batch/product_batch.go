@@ -28,7 +28,7 @@ func (p *ProductBatchRepository) productBatchExists(BatchNumber string) bool {
 
 func (p *ProductBatchRepository) Create(productBatch model.ProductBatchAttributes) (model.ProductBatch, error) {
 	if p.productBatchExists(productBatch.BatchNumber) {
-		return model.ProductBatch{}, eh.GetErrAlreadyExists(eh.SECTION)
+		return model.ProductBatch{}, eh.GetErrAlreadyExists(eh.PRODUCT_BATCH_ID)
 	}
 
 	row, err := p.db.Exec("INSERT INTO product_batches (batch_number, current_quantity, current_temperature, due_date, intial_quantity, manufacturing_date, manufacturing_hour, minimum_temperature, product_id, section_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",

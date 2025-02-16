@@ -29,6 +29,13 @@ func (h *ProductBatchHandler) Create() http.HandlerFunc {
 			return
 		}
 
+		// Validate if the product batch request is valid
+		if err := productBatchRequest.Validate(); err != nil {
+			code, message := eh.HandleError(err)
+			response.Error(w, code, message)
+			return
+		}
+
 		productBatch := helper.ProductBatchRequestDTOToProductBatch(productBatchRequest)
 		data, err := h.pb.Create(productBatch)
 
