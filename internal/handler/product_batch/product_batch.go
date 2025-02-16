@@ -30,7 +30,7 @@ func (h *ProductBatchHandler) Create() http.HandlerFunc {
 		}
 
 		productBatch := helper.ProductBatchRequestDTOToProductBatch(productBatchRequest)
-		productBatch, err = h.pb.Create(productBatch)
+		data, err := h.pb.Create(productBatch)
 
 		if err != nil {
 			code, msg := eh.HandleError(err)
@@ -38,7 +38,7 @@ func (h *ProductBatchHandler) Create() http.HandlerFunc {
 			return
 		}
 
-		data := helper.ProductBatchToProductBatchResponseDTO(productBatch)
+		// data := helper.ProductBatchToProductBatchResponseDTO(productBatch)
 
 		response.JSON(w, http.StatusCreated, map[string]any{
 			"data": data,

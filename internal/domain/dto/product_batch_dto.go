@@ -2,7 +2,7 @@ package dto
 
 type ProductBatchResponseDTO struct {
 	ID                 int     `json:"id"`
-	BatchNumber        int     `json:"batch_number"`
+	BatchNumber        string  `json:"batch_number"`
 	CurrentQuantity    int     `json:"current_quantity"`
 	CurrentTemperature float64 `json:"current_temperature"`
 	DueDate            string  `json:"due_date"`
@@ -15,7 +15,7 @@ type ProductBatchResponseDTO struct {
 }
 
 type ProductBatchRequestDTO struct {
-	BatchNumber        int     `json:"batch_number"`
+	BatchNumber        string  `json:"batch_number"`
 	CurrentQuantity    int     `json:"current_quantity"`
 	CurrentTemperature float64 `json:"current_temperature"`
 	DueDate            string  `json:"due_date"`

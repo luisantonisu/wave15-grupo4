@@ -17,9 +17,9 @@ type ProductBatchRepository struct {
 	db *sql.DB
 }
 
-func (p *ProductBatchRepository) productBatchExists(id int) bool {
+func (p *ProductBatchRepository) productBatchExists(BatchNumber string) bool {
 	var exists bool
-	err := p.db.QueryRow("SELECT EXISTS(SELECT 1 FROM product_batches WHERE id = ?)", id).Scan(&exists)
+	err := p.db.QueryRow("SELECT EXISTS(SELECT 1 FROM product_batches WHERE batch_number = ?)", BatchNumber).Scan(&exists)
 	if err != nil {
 		return false
 	}
@@ -27,11 +27,11 @@ func (p *ProductBatchRepository) productBatchExists(id int) bool {
 }
 
 func (p *ProductBatchRepository) Create(productBatch model.ProductBatchAttributes) (model.ProductBatch, error) {
-	if p.productBatchExists(productBatch.ProductID) {
+	if p.productBatchExists(productBatch.BatchNumber) {
 		return model.ProductBatch{}, eh.GetErrAlreadyExists(eh.SECTION)
 	}
 
-	row, err := p.db.Exec("INSERT INTO product_batches (batch_number, current_quantity, current_temperature, due_date, initial_quantity, manufacturing_date, manufacturing_hour, minimum_temperature, product_id, section_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+	row, err := p.db.Exec("INSERT INTO product_batches (batch_number, current_quantity, current_temperature, due_date, intial_quantity, manufacturing_date, manufacturing_hour, minimum_temperature, product_id, section_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 		productBatch.BatchNumber, productBatch.CurrentQuantity, productBatch.CurrentTemperature, productBatch.DueDate, productBatch.InitialQuantity, productBatch.ManufacturingDate, productBatch.ManufacturingHour, productBatch.MinimumTemperature, productBatch.ProductID, productBatch.SectionID)
 	if err != nil {
 		return model.ProductBatch{}, err

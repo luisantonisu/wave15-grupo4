@@ -21,19 +21,17 @@ func ProductBatchToProductBatchResponseDTO(productBatch model.ProductBatch) dto.
 	}
 }
 
-func ProductBatchRequestDTOToProductBatch(productBatch dto.ProductBatchRequestDTO) model.ProductBatch {
-	return model.ProductBatch{
-		ProductBatchAttributes: model.ProductBatchAttributes{
-			BatchNumber:        productBatch.BatchNumber,
-			CurrentQuantity:    productBatch.CurrentQuantity,
-			CurrentTemperature: productBatch.CurrentTemperature,
-			DueDate:            productBatch.DueDate,
-			InitialQuantity:    productBatch.InitialQuantity,
-			ManufacturingDate:  productBatch.ManufacturingDate,
-			ManufacturingHour:  productBatch.ManufacturingHour,
-			MinimumTemperature: productBatch.MinimumTemperature,
-			ProductID:          productBatch.ProductID,
-			SectionID:          productBatch.SectionID,
-		},
+func ProductBatchRequestDTOToProductBatch(productBatch dto.ProductBatchRequestDTO) model.ProductBatchAttributes {
+	return model.ProductBatchAttributes{
+		BatchNumber:        productBatch.BatchNumber,
+		CurrentQuantity:    productBatch.CurrentQuantity,
+		CurrentTemperature: productBatch.CurrentTemperature,
+		DueDate:            productBatch.DueDate,
+		InitialQuantity:    productBatch.InitialQuantity,
+		ManufacturingDate:  productBatch.ManufacturingDate,
+		ManufacturingHour:  productBatch.ManufacturingHour,
+		MinimumTemperature: productBatch.MinimumTemperature,
+		ProductID:          productBatch.ProductID,
+		SectionID:          productBatch.SectionID,
 	}
 }

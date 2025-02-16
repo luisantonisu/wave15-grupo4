@@ -6,7 +6,7 @@ type ProductBatch struct {
 }
 
 type ProductBatchAttributes struct {
-	BatchNumber        int
+	BatchNumber        string
 	CurrentQuantity    int
 	CurrentTemperature float64
 	DueDate            string
