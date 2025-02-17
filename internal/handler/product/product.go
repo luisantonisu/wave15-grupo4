@@ -30,11 +30,10 @@ func (h *ProductHandler) GetAll() http.HandlerFunc {
 			response.JSON(w, code, msg)
 			return
 		}
-		vResponse := make(map[int]dto.ProductResponseDTO)
-		for i, prod := range v {
-			vResponse[i] = helper.ProductToProductResponseDTO(prod)
+		var vResponse []dto.ProductResponseDTO
+		for _, prod := range v {
+			vResponse = append(vResponse, helper.ProductToProductResponseDTO(prod))
 		}
-
 		// response
 		response.JSON(w, http.StatusOK, map[string]any{
 			"message": "success",
@@ -54,8 +53,7 @@ func (h *ProductHandler) GetByID() http.HandlerFunc {
 
 		idInt, err := strconv.Atoi(id)
 		if err != nil {
-			code, msg := errorHandler.HandleError(err)
-			response.JSON(w, code, msg)
+			response.Error(w, http.StatusBadRequest, errorHandler.INVALID_ID)
 			return
 		}
 		// process
@@ -89,9 +87,9 @@ func (h *ProductHandler) GetRecord() http.HandlerFunc {
 				response.JSON(w, code, msg)
 				return
 			}
-			vResponse := make(map[int]dto.ProductRecordCountResponseDTO)
-			for i, prod := range v {
-				vResponse[i] = helper.ProductRecordCountToProductRecordCountResponseDTO(prod)
+			var vResponse []dto.ProductRecordCountResponseDTO
+			for _, prod := range v {
+				vResponse = append(vResponse, helper.ProductRecordCountToProductRecordCountResponseDTO(prod))
 			}
 			// response
 			response.JSON(w, http.StatusOK, map[string]any{
@@ -102,8 +100,7 @@ func (h *ProductHandler) GetRecord() http.HandlerFunc {
 		}
 		idInt, err := strconv.Atoi(id)
 		if err != nil {
-			code, msg := errorHandler.HandleError(err)
-			response.JSON(w, code, msg)
+			response.Error(w, http.StatusBadRequest, errorHandler.INVALID_ID)
 			return
 		}
 		// process
@@ -114,7 +111,8 @@ func (h *ProductHandler) GetRecord() http.HandlerFunc {
 			response.JSON(w, code, msg)
 			return
 		}
-		vResponse := helper.ProductRecordCountToProductRecordCountResponseDTO(v)
+		var vResponse []dto.ProductRecordCountResponseDTO
+		vResponse = append(vResponse, helper.ProductRecordCountToProductRecordCountResponseDTO(v))
 
 		// response
 		response.JSON(w, http.StatusOK, map[string]any{
@@ -137,7 +135,7 @@ func (h *ProductHandler) Create() http.HandlerFunc {
 		request := helper.ProductRequestDTOToProduct(requestDTO)
 		// process
 		// - create product
-		err := h.service.CreateProduct(&request)
+		prod, err := h.service.CreateProduct(&request)
 		if err != nil {
 			code, msg := errorHandler.HandleError(err)
 			response.JSON(w, code, msg)
@@ -147,6 +145,7 @@ func (h *ProductHandler) Create() http.HandlerFunc {
 		// response
 		response.JSON(w, http.StatusCreated, map[string]any{
 			"message": "Product created",
+			"data":    helper.ProductToProductResponseDTO(prod),
 		})
 	}
 }
@@ -162,8 +161,7 @@ func (h *ProductHandler) Delete() http.HandlerFunc {
 
 		idInt, err := strconv.Atoi(id)
 		if err != nil {
-			code, msg := errorHandler.HandleError(err)
-			response.JSON(w, code, msg)
+			response.Error(w, http.StatusBadRequest, errorHandler.INVALID_ID)
 			return
 		}
 		// process
@@ -185,8 +183,7 @@ func (h *ProductHandler) Update() http.HandlerFunc {
 		// request
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
-			code, msg := errorHandler.HandleError(err)
-			response.JSON(w, code, msg)
+			response.Error(w, http.StatusBadRequest, errorHandler.INVALID_ID)
 			return
 		}
 
@@ -206,7 +203,8 @@ func (h *ProductHandler) Update() http.HandlerFunc {
 			response.JSON(w, code, msg)
 			return
 		}
-		vResponse := helper.ProductToProductResponseDTO(*v)
+		var vResponse []dto.ProductResponseDTO
+		vResponse = append(vResponse, helper.ProductToProductResponseDTO(*v))
 
 		// response
 		response.JSON(w, http.StatusOK, map[string]any{

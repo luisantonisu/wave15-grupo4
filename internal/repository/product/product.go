@@ -86,18 +86,27 @@ func (r *ProductRepository) productCodeExists(productCode string) bool {
 	return count > 0
 }
 
-func (r *ProductRepository) CreateProduct(productAtrributes *model.ProductAtrributes) (err error) {
+func (r *ProductRepository) CreateProduct(productAtrributes *model.ProductAtrributes) (prod model.Product, err error) {
 
 	if r.productCodeExists(productAtrributes.ProductCode) {
-		return errorHandler.GetErrAlreadyExists(errorHandler.PRODUCT)
+		return model.Product{}, errorHandler.GetErrAlreadyExists(errorHandler.PRODUCT)
 	}
-	_, err = r.db.Exec("INSERT INTO products (product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, product_type_id, seller_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", productAtrributes.ProductCode, productAtrributes.Description, productAtrributes.Width, productAtrributes.Height, productAtrributes.Length, productAtrributes.NetWeight, productAtrributes.ExpirationRate, productAtrributes.RecommendedFreezingTemperature, productAtrributes.ProductTypeID, productAtrributes.SellerID)
+	row, err := r.db.Exec("INSERT INTO products (product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, product_type_id, seller_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", productAtrributes.ProductCode, productAtrributes.Description, productAtrributes.Width, productAtrributes.Height, productAtrributes.Length, productAtrributes.NetWeight, productAtrributes.ExpirationRate, productAtrributes.RecommendedFreezingTemperature, productAtrributes.ProductTypeID, productAtrributes.SellerID)
 
 	if err != nil {
-		return errorHandler.GetErrInvalidData(errorHandler.PRODUCT)
+		return model.Product{}, errorHandler.GetErrInvalidData(errorHandler.PRODUCT)
 	}
 
-	return nil
+	id, err := row.LastInsertId()
+	if err != nil {
+		return model.Product{}, errorHandler.GetErrDatabase(errorHandler.PRODUCT)
+	}
+
+	var newProduct model.Product
+	newProduct.ID = int(id)
+	newProduct.ProductAtrributes = *productAtrributes
+
+	return newProduct, nil
 }
 
 func (r *ProductRepository) DeleteProduct(id int) (err error) {
@@ -123,9 +132,11 @@ func (r *ProductRepository) UpdateProduct(id int, productAtrributesPtr *model.Pr
 		return nil, errorHandler.GetErrInvalidData(errorHandler.PRODUCT)
 	}
 
-	if r.productCodeExists(*productAtrributesPtr.ProductCode) {
+	if productAtrributesPtr.ProductCode != nil && r.productCodeExists(*productAtrributesPtr.ProductCode) {
 		return nil, errorHandler.GetErrAlreadyExists(errorHandler.PRODUCT)
+
 	}
+
 	var patchedProduct model.ProductAtrributes
 	product = &model.Product{}
 	err = r.db.QueryRow("SELECT product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, product_type_id, seller_id FROM products WHERE id = ?", id).Scan(&patchedProduct.ProductCode, &patchedProduct.Description, &patchedProduct.Width, &patchedProduct.Height, &patchedProduct.Length, &patchedProduct.NetWeight, &patchedProduct.ExpirationRate, &patchedProduct.RecommendedFreezingTemperature, &patchedProduct.ProductTypeID, &patchedProduct.SellerID)
