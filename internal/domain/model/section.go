@@ -14,7 +14,6 @@ type SectionAttributes struct {
 	MaximumCapacity    int
 	WarehouseID        int
 	ProductTypeID      int
-	// ProductBatchID     []int
 }
 
 type SectionAttributesPtr struct {
@@ -26,5 +25,10 @@ type SectionAttributesPtr struct {
 	MaximumCapacity    *int
 	WarehouseID        *int
 	ProductTypeID      *int
-	// ProductBatchID     *[]int
+}
+
+type ReportProductsBatches struct {
+	SectionID     int `json:"section_id"`
+	SectionNumber int `json:"section_number"`
+	ProductsCount int `json:"products_count"`
 }
