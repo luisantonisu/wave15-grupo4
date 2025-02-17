@@ -41,6 +41,7 @@ func (h *InboundOrderHandler) Create() http.HandlerFunc {
 
 		response.JSON(w, http.StatusCreated, map[string]any{
 			"data": data,
+			"message": "Success",
 		})
 	}
 }
