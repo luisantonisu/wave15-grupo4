@@ -37,9 +37,9 @@ func ValueCheck(productAtrributes model.ProductAtrributes) (err error) {
 	return
 }
 
-func (s *ProductService) CreateProduct(productAttributes *model.ProductAtrributes) (err error) {
+func (s *ProductService) CreateProduct(productAttributes *model.ProductAtrributes) (prod model.Product, err error) {
 	if err = ValueCheck(*productAttributes); err != nil {
-		return err
+		return model.Product{}, err
 	}
 	return s.repository.CreateProduct(productAttributes)
 }
