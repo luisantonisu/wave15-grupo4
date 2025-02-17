@@ -42,7 +42,7 @@ func (r *LocalityRepository) Create(locality model.LocalityDBModel) (model.Local
 
 	hasNameAlreadyExist := r.localityNameExist(locality.LocalityName)
 	if hasNameAlreadyExist {
-		return model.LocalityDBModel{}, eh.GetErrAlreadyExists(eh.LOCALITY_Name)
+		return model.LocalityDBModel{}, eh.GetErrAlreadyExists(eh.LOCALITY_NAME)
 	}
 
 	row, err := r.db.Exec("INSERT INTO localities (id, locality_name, province_id) VALUES (?,?,?)",
@@ -66,12 +66,12 @@ func (r *LocalityRepository) Create(locality model.LocalityDBModel) (model.Local
 }
 
 func (r *LocalityRepository) SellersReport(id *int) (map[int]model.LocalityReport, error) {
-	
+
 	rows, err := r.buildingReportQuery(id)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	localities := make(map[int]model.LocalityReport)
 	for rows.Next() {
 		var locality model.LocalityReport
