@@ -143,12 +143,12 @@ func (h *BuyerHandler) Update() http.HandlerFunc {
 		}
 
 		// Decode body
-		var buyerRequestDto dto.BuyerRequestDTOPtr
+		var buyerRequestDto dto.BuyerRequestDTO
 		if err := json.NewDecoder(r.Body).Decode(&buyerRequestDto); err != nil {
 			response.Error(w, http.StatusBadRequest, eh.INVALID_BODY)
 			return
 		}
-		newBuyer := helper.BuyerRequestDTOPtrToBuyerPtr(buyerRequestDto)
+		newBuyer := helper.BuyerRequestDTOToBuyer(buyerRequestDto)
 
 		// Call service
 		updatedBuyer, err := h.sv.Update(id, newBuyer)

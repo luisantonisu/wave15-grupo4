@@ -37,14 +37,14 @@ func BuyerRequestDTOToBuyerAttributes(buyerRuquestDto dto.BuyerRequestDTO) model
 	return data
 }
 
-func BuyerRequestDTOPtrToBuyerPtr(buyerRequestDto dto.BuyerRequestDTOPtr) model.BuyerAttributesPtr {
-	data := model.BuyerAttributesPtr{
-		CardNumberId: buyerRequestDto.CardNumberId,
-		FirstName:    buyerRequestDto.FirstName,
-		LastName:     buyerRequestDto.LastName,
-	}
-	return data
-}
+// func BuyerRequestDTOPtrToBuyerPtr(buyerRequestDto dto.BuyerRequestDTOPtr) model.BuyerAttributesPtr {
+// 	data := model.BuyerAttributesPtr{
+// 		CardNumberId: buyerRequestDto.CardNumberId,
+// 		FirstName:    buyerRequestDto.FirstName,
+// 		LastName:     buyerRequestDto.LastName,
+// 	}
+// 	return data
+// }
 
 func ReportPurchaseOrdersToReportPurchaseOrdersResponseDTO(report model.ReportPurchaseOrders) dto.ReportPurchaseOrdersResponseDTO {
 	data := dto.ReportPurchaseOrdersResponseDTO{

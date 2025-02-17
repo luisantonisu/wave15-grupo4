@@ -7,6 +7,6 @@ type IBuyer interface {
 	GetAll() ([]model.Buyer, error)
 	GetByID(id int) (model.Buyer, error)
 	Delete(id int) error
-	Update(id int, buyer model.BuyerAttributesPtr) (model.Buyer, error)
+	Update(id int, buyer model.BuyerAttributes) (model.Buyer, error)
 	PurchaseOrderReport(id int) ([]model.ReportPurchaseOrders, error)
 }

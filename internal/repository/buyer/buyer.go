@@ -21,12 +21,12 @@ type BuyerRepository struct {
 // Create a new buyer
 func (r *BuyerRepository) Create(buyer model.BuyerAttributes) (model.Buyer, error) {
 	// Validate card number id doesnt already exist
-	if r.cardNumberIdExists(buyer.CardNumberId) {
+	if r.cardNumberIdExists(*buyer.CardNumberId) {
 		return model.Buyer{}, eh.GetErrAlreadyExists(eh.CARD_NUMBER)
 	}
 	// Create new buyer in DB
 	row, err := r.db.Exec("INSERT INTO buyers (first_name, last_name, card_number_id) VALUES (?, ?, ?)",
-		buyer.FirstName, buyer.LastName, buyer.CardNumberId,
+		*buyer.FirstName, *buyer.LastName, *buyer.CardNumberId,
 	)
 	if err != nil {
 		return model.Buyer{}, eh.GetErrInvalidData(eh.BUYER)
@@ -97,7 +97,7 @@ func (r *BuyerRepository) Delete(id int) error {
 }
 
 // Update a buyer by id
-func (r *BuyerRepository) Update(id int, buyer model.BuyerAttributesPtr) (model.Buyer, error) {
+func (r *BuyerRepository) Update(id int, buyer model.BuyerAttributes) (model.Buyer, error) {
 	// Validate buyer exists
 	if !r.buyerExists(id) {
 		return model.Buyer{}, eh.GetErrNotFound(eh.BUYER)
@@ -113,22 +113,22 @@ func (r *BuyerRepository) Update(id int, buyer model.BuyerAttributesPtr) (model.
 
 	// Update buyer entity with new values
 	if buyer.FirstName != nil {
-		newBuyer.FirstName = *buyer.FirstName
+		newBuyer.FirstName = buyer.FirstName
 	}
 	if buyer.LastName != nil {
-		newBuyer.LastName = *buyer.LastName
+		newBuyer.LastName = buyer.LastName
 	}
 	if buyer.CardNumberId != nil {
 		// Validate card number id already exist
 		if r.cardNumberIdIsMine(*buyer.CardNumberId, id) {
 			return model.Buyer{}, eh.GetErrAlreadyExists(eh.CARD_NUMBER)
 		}
-		newBuyer.CardNumberId = *buyer.CardNumberId
+		newBuyer.CardNumberId = buyer.CardNumberId
 	}
 
 	// Update buyer in db
 	_, err = r.db.Exec("UPDATE buyers SET first_name = ?, last_name = ?, card_number_id = ? WHERE id = ?",
-		newBuyer.FirstName, newBuyer.LastName, newBuyer.CardNumberId, id,
+		*newBuyer.FirstName, *newBuyer.LastName, *newBuyer.CardNumberId, id,
 	)
 	if err != nil {
 		return model.Buyer{}, eh.GetErrInvalidData(eh.BUYER)
