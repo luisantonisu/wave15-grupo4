@@ -98,5 +98,8 @@ func (s *LocalityService) validateLocality(locality model.Locality) error {
 	}
 
 	return nil
+}
 
+func (s *LocalityService) Report(id int) (map[int]model.CarriersByLocalityReport, error) {
+	return s.localityRp.Report(id)
 }

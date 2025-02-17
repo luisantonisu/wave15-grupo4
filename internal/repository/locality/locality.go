@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"strconv"
 
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
@@ -82,6 +83,36 @@ func (r *LocalityRepository) SellersReport(id *int) (map[int]model.LocalityRepor
 	}
 
 	return localities, nil
+}
+
+func (r *LocalityRepository) Report(id int) (map[int]model.CarriersByLocalityReport, error) {
+	query := `SELECT l.id, l.locality_name, COUNT(c.id) as carriers_count 
+		FROM localities l 
+		INNER JOIN carriers c ON l.id = c.locality_id 
+		GROUP BY l.id, l.locality_name`
+
+	if id != -1 {
+		if !r.localityIDExist(id) {
+			return nil, eh.GetErrNotFound(eh.LOCALITY)
+		}
+		query += " HAVING l.id = " + strconv.Itoa(id)
+	}
+
+	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, eh.GetErrGettingData(eh.LOCALITY)
+	}
+
+	report := make(map[int]model.CarriersByLocalityReport)
+	for rows.Next() {
+		var record model.CarriersByLocalityReport
+		err := rows.Scan(&record.LocalityID, &record.LocalityName, &record.CarriersCount)
+		if err != nil {
+			return nil, eh.GetErrParsingData(eh.LOCALITY)
+		}
+		report[record.LocalityID] = record
+	}
+	return report, nil
 }
 
 func (r *LocalityRepository) localityIDExist(localityID int) bool {

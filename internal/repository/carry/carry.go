@@ -40,3 +40,17 @@ func (r *CarryRepository) Create(carry model.Carry) (model.Carry, error) {
 
 	return newCarry, nil
 }
+
+func (r *CarryRepository) GetByID(id int) (model.Carry, error) {
+		// Create response entity
+		var carry model.Carry
+
+		// Get carry from db
+		err := r.db.QueryRow("SELECT id, company_id, company_name, address, telephone, locality_id FROM carriers WHERE id = ?", id).Scan(
+			&carry.ID, &carry.CarryID, &carry.CompanyName, &carry.Address, &carry.Telephone, &carry.LocalityID,
+		)
+		if err != nil {
+			return model.Carry{}, eh.GetErrNotFound(eh.CARRY)
+		}
+		return carry, nil
+}

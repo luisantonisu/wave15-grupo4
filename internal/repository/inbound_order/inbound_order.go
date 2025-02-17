@@ -17,7 +17,7 @@ func NewInboundOrderRepository(defaultDB *sql.DB) *InbounderOrderRepository {
 	}
 }
 
-func (i *InbounderOrderRepository) AlreadyExits(atribute string, value int) bool {
+func (i *InbounderOrderRepository) AlreadyExists(atribute string, value int) bool {
 	var exists bool
 	err := i.db.QueryRow("SELECT EXISTS(SELECT 1 FROM inbound_orders WHERE "+atribute+" = ?)", value).Scan(&exists)
 	if err != nil {
@@ -28,11 +28,11 @@ func (i *InbounderOrderRepository) AlreadyExits(atribute string, value int) bool
 }
 
 func (i *InbounderOrderRepository) CreateInboundOrder(inboundOrder model.InboundOrderAttributes) (model.InboundOrder, error) {
-	if i.AlreadyExits("product_batch_id", inboundOrder.ProductBatchID) == false {
+	if i.AlreadyExists("product_batch_id", inboundOrder.ProductBatchID) == false {
 		return model.InboundOrder{}, eh.GetErrForeignKey(eh.PRODUCT_BATCH_ID)
 	}
 
-	if i.AlreadyExits("order_id", inboundOrder.OrderNumber) {
+	if i.AlreadyExists("order_number", inboundOrder.OrderNumber) {
 		return model.InboundOrder{}, eh.GetErrAlreadyExists(eh.ORDER_NUMBER)
 	}
 

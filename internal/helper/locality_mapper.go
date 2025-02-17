@@ -22,10 +22,20 @@ func LocalityRequestDTOToLocality(localityDto dto.LocalityRequestDTO) model.Loca
 
 func LocalityToLocalityDataResponseDTO(locality model.Locality) dto.LocalityDataResponseDTO {
 	data := dto.LocalityDataResponseDTO{
-		Id : locality.Id,
+		Id:           locality.Id,
 		LocalityName: locality.LocalityName,
 		ProvinceName: locality.ProvinceName,
-		CountryName: locality.CountryName,
+		CountryName:  locality.CountryName,
+	}
+
+	return data
+}
+
+func CarriersByLocalityReportToCarriersByLocalityReportResponseDTO(carriersReport model.CarriersByLocalityReport) dto.CarriersByLocalityReportResponseDTO {
+	data := dto.CarriersByLocalityReportResponseDTO{
+		LocalityID:    carriersReport.LocalityID,
+		LocalityName:  carriersReport.LocalityName,
+		CarriersCount: carriersReport.CarriersCount,
 	}
 
 	return data

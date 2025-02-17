@@ -21,6 +21,8 @@ const (
 	WAREHOUSE_CODE   = "warehouse code"
 	SECTION_NUMBER   = "section number"
 	ORDER_NUMBER     = "order number"
+	PRODUCT_BATCH    = "product batch"
+	ORDER_STATUS     = "order status"
 	INBOUND_ORDER    = "inbound order"
 	PURCHASE_ORDER   = "purchase order"
 	COMPANY_ID       = "company ID"
@@ -38,8 +40,8 @@ const (
 var (
 	ErrNotFound      = errors.New("not found")             // 404
 	ErrAlreadyExists = errors.New("already exists")        // 409
-	ErrInvalidData   = errors.New("invalid data")          // 422
 	ErrForeignKey    = errors.New("foreign key not found") // 409
+	ErrInvalidData   = errors.New("invalid data")          // 422
 	ErrGettingData   = errors.New("error getting data")    // 500
 	ErrParsingData   = errors.New("error parsing data")    // 500
 	ErrDatabase      = errors.New("database error")        // 500

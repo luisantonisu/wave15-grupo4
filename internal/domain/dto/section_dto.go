@@ -1,5 +1,7 @@
 package dto
 
+import eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
+
 type SectionResponseDTO struct {
 	ID                 int     `json:"id"`
 	SectionNumber      int     `json:"section_number"`
@@ -10,7 +12,6 @@ type SectionResponseDTO struct {
 	MaximumCapacity    int     `json:"maximum_capacity"`
 	WarehouseID        int     `json:"warehouse_id"`
 	ProductTypeID      int     `json:"product_type_id"`
-	// ProductBatchID     []int   `json:"product_batch_id"`
 }
 
 type SectionRequestDTO struct {
@@ -22,7 +23,6 @@ type SectionRequestDTO struct {
 	MaximumCapacity    int     `json:"maximum_capacity"`
 	WarehouseID        int     `json:"warehouse_id"`
 	ProductTypeID      int     `json:"product_type_id"`
-	// ProductBatchID     []int   `json:"product_batch_id"`
 }
 
 type SectionRequestDTOPtr struct {
@@ -34,5 +34,17 @@ type SectionRequestDTOPtr struct {
 	MaximumCapacity    *int     `json:"maximum_capacity"`
 	WarehouseID        *int     `json:"warehouse_id"`
 	ProductTypeID      *int     `json:"product_type_id"`
-	// ProductBatchID     *[]int   `json:"product_batch_id"`
+}
+
+type ReportProductsBatchesResponseDTO struct {
+	SectionID     int `json:"section_id"`
+	SectionNumber int `json:"section_number"`
+	ProductsCount int `json:"products_count"`
+}
+
+func (e *SectionRequestDTO) Validate() error {
+	if e.SectionNumber <= 0 {
+		return eh.GetErrInvalidData(eh.SECTION)
+	}
+	return nil
 }

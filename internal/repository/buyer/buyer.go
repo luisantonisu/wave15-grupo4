@@ -33,7 +33,7 @@ func (r *BuyerRepository) Create(buyer model.BuyerAttributes) (model.Buyer, erro
 	}
 	id, err := row.LastInsertId()
 	if err != nil {
-		return model.Buyer{}, eh.GetErrInvalidData(eh.BUYER)
+		return model.Buyer{}, eh.GetErrDatabase(eh.BUYER)
 	}
 
 	// Response
@@ -91,7 +91,7 @@ func (r *BuyerRepository) Delete(id int) error {
 	// Delete buyer from db
 	_, err := r.db.Exec("DELETE FROM buyers WHERE id = ?", id)
 	if err != nil {
-		return eh.GetErrNotFound(eh.BUYER)
+		return eh.GetErrDatabase(eh.BUYER)
 	}
 	return nil
 }
@@ -108,7 +108,7 @@ func (r *BuyerRepository) Update(id int, buyer model.BuyerAttributesPtr) (model.
 		&newBuyer.ID, &newBuyer.FirstName, &newBuyer.LastName, &newBuyer.CardNumberId,
 	)
 	if err != nil {
-		return model.Buyer{}, eh.GetErrNotFound(eh.BUYER)
+		return model.Buyer{}, eh.GetErrDatabase(eh.BUYER)
 	}
 
 	// Update buyer entity with new values
@@ -149,6 +149,7 @@ func (r *BuyerRepository) Report(id int) (map[int]model.ReportPurchaseOrders, er
 		}
 		query += " HAVING buyers.id = " + strconv.Itoa(id)
 	}
+	
 	rows, err := r.db.Query(query)
 	if err != nil {
 		return nil, eh.GetErrGettingData(eh.BUYER)

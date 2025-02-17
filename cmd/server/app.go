@@ -131,12 +131,18 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 			// - GET /api/v1/sections
 			rt.Get("/", handlers.SectionHandler.GetAll())
 			rt.Get("/{id}", handlers.SectionHandler.GetByID())
-			// - POST /api/v1/products /
+			// - POST /api/v1/sections /
 			rt.Post("/", handlers.SectionHandler.Create())
-			// - PATCH /api/v1/products /
+			// - PATCH /api/v1/sections /
 			rt.Patch("/{id}", handlers.SectionHandler.Patch())
-			// - DELETE /api/v1/employees/{id}
+			// - DELETE /api/v1/sections/{id}
 			rt.Delete("/{id}", handlers.SectionHandler.Delete())
+			// - GET /api/v1/sections/reportProducts /
+			rt.Get("/reportProducts", handlers.SectionHandler.Report())
+		})
+		rt.Route("/productBatches", func(rt chi.Router) {
+			// - POST /api/v1/productBatches
+			rt.Post("/", handlers.ProductBatchHandler.Create())
 		})
 		rt.Route("/sellers", func(rt chi.Router) {
 			// - GET /api/v1/sellers
@@ -155,6 +161,8 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 			rt.Post("/", handlers.LocalityHandler.Create())
 			// - GET /api/v1/localities
 			rt.Get("/reportSellers", handlers.LocalityHandler.SellersReport())
+			// - GET /api/v1/localities/reportCarriers?id=?
+			rt.Get("/reportCarriers", handlers.LocalityHandler.Report())
 		})
 		rt.Route("/warehouses", func(rt chi.Router) {
 			// - GET /api/v1/warehouses

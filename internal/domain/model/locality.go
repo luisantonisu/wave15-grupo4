@@ -23,8 +23,14 @@ type LocalityDBModel struct {
 	ProvinceID   int
 }
 
+type CarriersByLocalityReport struct {
+	LocalityID    int
+	LocalityName  string
+	CarriersCount int
+}
+
 type LocalityReport struct {
 	Id           int 
 	LocalityName string 
-	SellerCount  int    
+	SellerCount  int 
 }
