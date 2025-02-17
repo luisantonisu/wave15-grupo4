@@ -8,4 +8,5 @@ type ISection interface {
 	Create(section model.SectionAttributes) (model.Section, error)
 	Patch(id int, section model.SectionAttributesPtr) (model.Section, error)
 	Delete(id int) error
+	Report(id int) (map[int]model.ReportProductsBatches, error)
 }

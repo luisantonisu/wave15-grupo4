@@ -16,7 +16,6 @@ func SectionToSectionResponseDTO(section model.Section) dto.SectionResponseDTO {
 		MaximumCapacity:    section.MaximumCapacity,
 		WarehouseID:        section.WarehouseID,
 		ProductTypeID:      section.ProductTypeID,
-		// ProductBatchID:     section.ProductBatchID,
 	}
 }
 
@@ -31,7 +30,6 @@ func SectionRequestDTOToSection(section dto.SectionRequestDTO) model.Section {
 			MaximumCapacity:    section.MaximumCapacity,
 			WarehouseID:        section.WarehouseID,
 			ProductTypeID:      section.ProductTypeID,
-			// ProductBatchID:     section.ProductBatchID,
 		},
 	}
 }
@@ -48,7 +46,6 @@ func SectionResponseDTOToSection(section dto.SectionResponseDTO) model.Section {
 			MaximumCapacity:    section.MaximumCapacity,
 			WarehouseID:        section.WarehouseID,
 			ProductTypeID:      section.ProductTypeID,
-			// ProductBatchID:     section.ProductBatchID,
 		},
 	}
 }
@@ -63,6 +60,13 @@ func SectionRequestDTOPtrToSectionPtr(section dto.SectionRequestDTOPtr) model.Se
 		MaximumCapacity:    section.MaximumCapacity,
 		WarehouseID:        section.WarehouseID,
 		ProductTypeID:      section.ProductTypeID,
-		// ProductBatchID:     section.ProductBatchID,
+	}
+}
+
+func ReportProductsBatchesToReportProductsBatchesResponseDTO(report model.ReportProductsBatches) dto.ReportProductsBatchesResponseDTO {
+	return dto.ReportProductsBatchesResponseDTO{
+		SectionID:     report.SectionID,
+		SectionNumber: report.SectionNumber,
+		ProductsCount: report.ProductsCount,
 	}
 }

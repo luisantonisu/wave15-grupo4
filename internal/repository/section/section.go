@@ -147,3 +147,37 @@ func (s *SectionRepository) Delete(id int) error {
 
 	return nil
 }
+
+func (s *SectionRepository) Report(id int) (map[int]model.ReportProductsBatches, error) {
+
+	var rows *sql.Rows
+	var err error
+
+	query := "SELECT sections.id, sections.section_number, COUNT(*) AS products_count FROM sections JOIN product_batches ON sections.id = product_batches.section_id "
+
+	if id != -1 {
+		if !s.sectionExists(id) {
+			return nil, eh.GetErrNotFound(eh.SECTION)
+		}
+		query += "WHERE sections.id = ? GROUP BY sections.id"
+		rows, err = s.db.Query(query, id)
+	} else {
+		query += "GROUP BY sections.id"
+		rows, err = s.db.Query(query)
+	}
+
+	if err != nil {
+		return nil, eh.GetErrGettingData(eh.SECTION)
+	}
+
+	productsBatches := make(map[int]model.ReportProductsBatches)
+	for rows.Next() {
+		var productBatch model.ReportProductsBatches
+		err := rows.Scan(&productBatch.SectionID, &productBatch.SectionNumber, &productBatch.ProductsCount)
+		if err != nil {
+			return nil, eh.GetErrParsingData(eh.SECTION)
+		}
+		productsBatches[productBatch.SectionID] = productBatch
+	}
+	return productsBatches, nil
+}

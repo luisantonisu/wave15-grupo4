@@ -140,3 +140,36 @@ func (h *SectionHandler) Delete() http.HandlerFunc {
 		response.JSON(w, http.StatusNoContent, nil)
 	}
 }
+
+func (h *SectionHandler) Report() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var id int
+		var err error
+		idStr := r.URL.Query().Get("id")
+		if idStr == "" {
+			id = -1
+		} else {
+			id, err = strconv.Atoi(idStr)
+			if err != nil {
+				response.Error(w, http.StatusBadRequest, eh.INVALID_ID)
+				return
+			}
+		}
+
+		report, err := h.sv.Report(id)
+		if err != nil {
+			code, msg := eh.HandleError(err)
+			response.Error(w, code, msg)
+			return
+		}
+
+		data := []dto.ReportProductsBatchesResponseDTO{}
+		for _, value := range report {
+			data = append(data, helper.ReportProductsBatchesToReportProductsBatchesResponseDTO(value))
+		}
+
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data": data,
+		})
+	}
+}

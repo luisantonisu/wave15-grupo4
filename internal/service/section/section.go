@@ -52,3 +52,11 @@ func (h *SectionService) Patch(id int, section model.SectionAttributesPtr) (mode
 func (h *SectionService) Delete(id int) error {
 	return h.sectionRepo.Delete(id)
 }
+
+func (h *SectionService) Report(id int) (map[int]model.ReportProductsBatches, error) {
+	report, err := h.sectionRepo.Report(id)
+	if err != nil {
+		return nil, err
+	}
+	return report, nil
+}
