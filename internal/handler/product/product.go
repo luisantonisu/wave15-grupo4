@@ -30,9 +30,12 @@ func (h *ProductHandler) GetAll() http.HandlerFunc {
 			response.JSON(w, code, msg)
 			return
 		}
-		var vResponse []dto.ProductResponseDTO
+		vResponse := []dto.ProductResponseDTO{}
+
 		for _, prod := range v {
+
 			vResponse = append(vResponse, helper.ProductToProductResponseDTO(prod))
+
 		}
 		// response
 		response.JSON(w, http.StatusOK, map[string]any{
@@ -87,7 +90,7 @@ func (h *ProductHandler) GetRecord() http.HandlerFunc {
 				response.JSON(w, code, msg)
 				return
 			}
-			var vResponse []dto.ProductRecordCountResponseDTO
+			vResponse := []dto.ProductRecordCountResponseDTO{}
 			for _, prod := range v {
 				vResponse = append(vResponse, helper.ProductRecordCountToProductRecordCountResponseDTO(prod))
 			}
@@ -111,7 +114,7 @@ func (h *ProductHandler) GetRecord() http.HandlerFunc {
 			response.JSON(w, code, msg)
 			return
 		}
-		var vResponse []dto.ProductRecordCountResponseDTO
+		vResponse := []dto.ProductRecordCountResponseDTO{}
 		vResponse = append(vResponse, helper.ProductRecordCountToProductRecordCountResponseDTO(v))
 
 		// response
@@ -187,13 +190,13 @@ func (h *ProductHandler) Update() http.HandlerFunc {
 			return
 		}
 
-		var requestDTO dto.ProductRequestDTOPtr
+		var requestDTO dto.ProductRequestDTO
 		if err := json.NewDecoder(r.Body).Decode(&requestDTO); err != nil {
 			response.Error(w, http.StatusBadRequest, errorHandler.INVALID_BODY)
 			return
 		}
 
-		request := helper.ProductRequestDTOPtrToProductPtr(requestDTO)
+		request := helper.ProductRequestDTOToProduct(requestDTO)
 
 		// process
 		// - update product
