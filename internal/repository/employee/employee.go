@@ -93,7 +93,7 @@ func (r *EmployeeRepository) Update(id int, employee model.EmployeeAttributesPtr
 		return model.Employee{}, eh.GetErrNotFound(eh.EMPLOYEE)
 	}
 
-	if r.cardNumberIdExists(*employee.CardNumberID, id) {
+	if employee.CardNumberID != nil && r.cardNumberIdExists(*employee.CardNumberID, id) {
 		return model.Employee{}, eh.GetErrAlreadyExistsCompose(eh.EMPLOYEE, eh.CARD_NUMBER)
 	}
 
@@ -152,9 +152,13 @@ func (r *EmployeeRepository) Report(id int) (map[int]model.InboundOrdersReport, 
 			return nil, eh.GetErrGettingData(eh.EMPLOYEE)
 		}
 	} else {
+		if !r.employeeExists(id) {
+			return nil, eh.GetErrNotFound(eh.EMPLOYEE)
+		}
+
 		rows, err = r.db.Query("SELECT em.id, em.first_name, em.last_name, em.card_number_id, em.warehouse_id, COUNT(*) as inbound_orders_count FROM employees em INNER JOIN inbound_orders ib ON em.id = ib.employee_id GROUP BY em.id HAVING em.id = ?", id)
 		if err != nil {
-			return nil, eh.GetErrNotFound(eh.EMPLOYEE)
+			return nil, eh.GetErrGettingData(eh.EMPLOYEE)
 		}
 	}
 

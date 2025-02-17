@@ -37,6 +37,7 @@ func (h *EmployeeHandler) GetAll() http.HandlerFunc {
 
 		response.JSON(w, http.StatusOK, map[string]any{
 			"data": data,
+			"message": "Success",
 		})
 	}
 }
@@ -61,6 +62,7 @@ func (h *EmployeeHandler) GetByID() http.HandlerFunc {
 
 		response.JSON(w, http.StatusOK, map[string]any{
 			"data": data,
+			"message": "Success",
 		})
 	}
 }
@@ -88,6 +90,7 @@ func (h *EmployeeHandler) Create() http.HandlerFunc {
 
 		response.JSON(w, http.StatusCreated, map[string]any{
 			"data": data,
+			"message": "Success",
 		})
 	}
 }
@@ -171,6 +174,7 @@ func (h *EmployeeHandler) Report() http.HandlerFunc {
 
 		response.JSON(w, http.StatusOK, map[string]any{
 			"data": data,
+			"message": "Success",
 		})
 	}
 }
