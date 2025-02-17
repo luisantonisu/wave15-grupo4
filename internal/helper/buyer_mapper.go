@@ -18,10 +18,12 @@ func BuyerRequestDTOToBuyer(buyerRequestDto dto.BuyerRequestDTO) model.Buyer {
 
 func BuyerToBuyerResponseDTO(buyer model.Buyer) dto.BuyerResponseDTO {
 	data := dto.BuyerResponseDTO{
-		ID:           buyer.ID,
-		CardNumberId: buyer.CardNumberId,
-		FirstName:    buyer.FirstName,
-		LastName:     buyer.LastName,
+		ID: buyer.ID,
+		BuyerRequestDTO: dto.BuyerRequestDTO{
+			CardNumberId: buyer.CardNumberId,
+			FirstName:    buyer.FirstName,
+			LastName:     buyer.LastName,
+		},
 	}
 	return data
 }

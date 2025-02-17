@@ -21,13 +21,15 @@ func PurchaseOrderRequestDTOToPurchaseOrderAttributes(purchaseOrderRequestDto dt
 func PurchaseOrderToPurchaseOrderResponseDTO(purchaseOrder model.PurchaseOrder) dto.PurchaseOrderResponseDTO {
 	data := dto.PurchaseOrderResponseDTO{
 		ID:            purchaseOrder.ID,
-		OrderNumber:   purchaseOrder.OrderNumber,
-		OrderDate:     purchaseOrder.OrderDate,
-		TrackingCode:  purchaseOrder.TrackingCode,
-		BuyerID:       purchaseOrder.BuyerID,
-		CarrierID:     purchaseOrder.CarrierID,
-		OrderStatusID: purchaseOrder.OrderStatusID,
-		WarehouseID:   purchaseOrder.WarehouseID,
+		PurchaseOrderRequestDTO: dto.PurchaseOrderRequestDTO{
+			OrderNumber:   purchaseOrder.OrderNumber,
+			OrderDate:     purchaseOrder.OrderDate,
+			TrackingCode:  purchaseOrder.TrackingCode,
+			BuyerID:       purchaseOrder.BuyerID,
+			CarrierID:     purchaseOrder.CarrierID,
+			OrderStatusID: purchaseOrder.OrderStatusID,
+			WarehouseID:   purchaseOrder.WarehouseID,
+		},
 	}
 	return data
 }
