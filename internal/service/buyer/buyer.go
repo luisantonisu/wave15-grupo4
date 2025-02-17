@@ -23,7 +23,7 @@ func (s *BuyerService) Create(buyer model.BuyerAttributes) (model.Buyer, error) 
 }
 
 // List all buyers
-func (s *BuyerService) GetAll() (map[int]model.Buyer, error) {
+func (s *BuyerService) GetAll() ([]model.Buyer, error) {
 	allBuyers, err := s.rp.GetAll()
 	if err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func (s *BuyerService) Update(id int, buyer model.BuyerAttributesPtr) (model.Buy
 }
 
 // Generate Purchase Order Report
-func (s *BuyerService) Report(id int) (map[int]model.ReportPurchaseOrders, error) {
+func (s *BuyerService) Report(id int) ([]model.ReportPurchaseOrders, error) {
 	report, err := s.rp.Report(id)
 	if err != nil {
 		return nil, err
