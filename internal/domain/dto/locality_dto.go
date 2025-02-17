@@ -7,15 +7,15 @@ type LocalityRequestDTO struct {
 type LocalityDataRequestDTO struct {
 	Id           string `json:"id"`
 	LocalityName string `json:"locality_name"`
-	ProvinceName string    `json:"province_name"`
-	CountryName  string    `json:"country_name"`
+	ProvinceName string `json:"province_name"`
+	CountryName  string `json:"country_name"`
 }
 
 type LocalityDataResponseDTO struct {
 	Id           string `json:"id"`
 	LocalityName string `json:"locality_name"`
-	ProvinceName string    `json:"province_name"`
-	CountryName  string    `json:"country_name"`
+	ProvinceName string `json:"province_name"`
+	CountryName  string `json:"country_name"`
 }
 
 type LocalityResponseDTO struct {
@@ -27,6 +27,12 @@ type LocalityResponseDTO struct {
 type LocalityRequestDTOPtr struct {
 	Id           *string `json:"id"`
 	LocalityName *string `json:"locality_name"`
-	ProvinceName *string    `json:"province_name"`
-	CountryName  *string    `json:"country_name"`
+	ProvinceName *string `json:"province_name"`
+	CountryName  *string `json:"country_name"`
+}
+
+type CarriersByLocalityReportResponseDTO struct {
+	LocalityID    int    `json:"locality_id"`
+	LocalityName  string `json:"locality_name"`
+	CarriersCount int    `json:"carriers_count"`
 }

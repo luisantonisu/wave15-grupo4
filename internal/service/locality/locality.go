@@ -11,21 +11,21 @@ import (
 	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
-func NewLocalityService(countryRp countryRepository.ICountry, provinceRp ProvinceRepository.IProvince, localityRp localityRepository.ILocality) *SellerService {
-	return &SellerService{
+func NewLocalityService(countryRp countryRepository.ICountry, provinceRp ProvinceRepository.IProvince, localityRp localityRepository.ILocality) *LocalityService {
+	return &LocalityService{
 		countryRp:  countryRp,
 		provinceRp: provinceRp,
 		localityRp: localityRp,
 	}
 }
 
-type SellerService struct {
+type LocalityService struct {
 	countryRp  countryRepository.ICountry
 	provinceRp ProvinceRepository.IProvince
 	localityRp localityRepository.ILocality
 }
 
-func (s *SellerService) Create(locality model.Locality) (model.Locality, error) {
+func (s *LocalityService) Create(locality model.Locality) (model.Locality, error) {
 	//validate locality
 	err := s.validateLocality(locality)
 	if err != nil {
@@ -74,7 +74,7 @@ func (s *SellerService) Create(locality model.Locality) (model.Locality, error) 
 	return respLocality, nil
 }
 
-func (s *SellerService) validateLocality(locality model.Locality) error {
+func (s *LocalityService) validateLocality(locality model.Locality) error {
 	//validate if locality_Id only contains numbers and is not empty
 	pattern := regexp.MustCompile("^[0-9]+$")
 	match := pattern.MatchString(locality.Id)
@@ -94,5 +94,8 @@ func (s *SellerService) validateLocality(locality model.Locality) error {
 	}
 
 	return nil
+}
 
+func (s *LocalityService) Report(id int) (map[int]model.CarriersByLocalityReport, error) {
+	return s.localityRp.Report(id)
 }
