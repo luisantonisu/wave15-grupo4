@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/bootcamp-go/web/response"
 
@@ -29,7 +30,7 @@ func (h *LocalityHandler) Create() http.HandlerFunc {
 		//mapping
 		var locality = helper.LocalityRequestDTOToLocality(newLocality)
 
-		//process 
+		//process
 		res, err := h.sv.Create(locality)
 		if err != nil {
 
@@ -37,13 +38,46 @@ func (h *LocalityHandler) Create() http.HandlerFunc {
 			response.Error(w, code, msg)
 			return
 		}
-		
-		//mapping 
+
+		//mapping
 		var data = helper.LocalityToLocalityDataResponseDTO(res)
 
 		//Response
 		response.JSON(w, http.StatusCreated, map[string]any{
-			"data" : data,
+			"data": data,
+		})
+	}
+}
+
+func (h *LocalityHandler) Report() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var id int
+		var err error
+		idStr := r.URL.Query().Get("id")
+		if idStr == "" {
+			id = -1
+		} else {
+			id, err = strconv.Atoi(idStr)
+			if err != nil {
+				response.Error(w, http.StatusBadRequest, eh.INVALID_ID)
+				return
+			}
+		}
+
+		report, err := h.sv.Report(id)
+		if err != nil {
+			code, message := eh.HandleError(err)
+			response.Error(w, code, message)
+			return
+		}
+
+		data := []dto.CarriersByLocalityReportResponseDTO{}
+		for _, record := range report {
+			data = append(data, helper.CarriersByLocalityReportToCarriersByLocalityReportResponseDTO(record))
+		}
+		response.JSON(w, http.StatusOK, map[string]any{
+			"message": "Success",
+			"data":    data,
 		})
 	}
 }
