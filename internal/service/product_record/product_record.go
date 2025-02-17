@@ -20,7 +20,7 @@ func NewProductRecordService(repositoryRecord repository.IProductRecord, reposit
 }
 
 func (s *ProductRecordService) CreateProductRecord(productRecord model.ProductRecordAtrributes) error {
-	_, err := s.repositoryProduct.GetProductByID(productRecord.ProductId)
+	_, err := s.repositoryProduct.GetProductByID(*productRecord.ProductId)
 
 	if err != nil {
 		return error_handler.GetErrForeignKey(error_handler.PRODUCT)

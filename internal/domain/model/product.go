@@ -5,27 +5,7 @@ type Product struct {
 	ProductAtrributes
 }
 
-type ProductRecordCount struct {
-	ProductID   int
-	Description string
-	Count       int
-}
-
 type ProductAtrributes struct {
-	ProductCode                    string
-	Description                    string
-	Width                          float64
-	Height                         float64
-	Length                         float64
-	NetWeight                      float64
-	ExpirationRate                 float64
-	RecommendedFreezingTemperature float64
-	FreezingRate                   float64
-	ProductTypeID                  int
-	SellerID                       int
-}
-
-type ProductAtrributesPtr struct {
 	ProductCode                    *string
 	Description                    *string
 	Width                          *float64
@@ -37,4 +17,10 @@ type ProductAtrributesPtr struct {
 	FreezingRate                   *float64
 	ProductTypeID                  *int
 	SellerID                       *int
+}
+
+type ProductRecordCount struct {
+	ProductID   int
+	Description string
+	Count       int
 }
