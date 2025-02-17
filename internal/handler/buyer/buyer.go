@@ -36,19 +36,20 @@ func (h *BuyerHandler) Create() http.HandlerFunc {
 			response.Error(w, code, message)
 			return
 		}
-		newBuyer := helper.BuyerRequestDTOToBuyerAttributes(buyerRequestDto)
+		newBuyerRequest := helper.BuyerRequestDTOToBuyerAttributes(buyerRequestDto)
 
 		// Call service
-		data, err := h.sv.Create(newBuyer)
+		newBuyer, err := h.sv.Create(newBuyerRequest)
 		if err != nil {
 			code, message := eh.HandleError(err)
 			response.Error(w, code, message)
 			return
 		}
+		data := helper.BuyerToBuyerResponseDTO(newBuyer)
 
 		// Return response
 		response.JSON(w, http.StatusCreated, map[string]any{
-			"message": "Buyer created",
+			"message": "success",
 			"data":    data,
 		})
 	}
@@ -90,17 +91,18 @@ func (h *BuyerHandler) GetByID() http.HandlerFunc {
 		}
 
 		// Call service
-		data, err := h.sv.GetByID(id)
+		buyer, err := h.sv.GetByID(id)
 		if err != nil {
 			code, message := eh.HandleError(err)
 			response.Error(w, code, message)
 			return
 		}
+		data := helper.BuyerToBuyerResponseDTO(buyer)
 
 		// Return response
 		response.JSON(w, http.StatusOK, map[string]any{
 			"message": "success",
-			"data":    helper.BuyerToBuyerResponseDTO(data),
+			"data":    data,
 		})
 	}
 }
@@ -149,17 +151,18 @@ func (h *BuyerHandler) Update() http.HandlerFunc {
 		newBuyer := helper.BuyerRequestDTOPtrToBuyerPtr(buyerRequestDto)
 
 		// Call service
-		data, err := h.sv.Update(id, newBuyer)
+		updatedBuyer, err := h.sv.Update(id, newBuyer)
 		if err != nil {
 			code, message := eh.HandleError(err)
 			response.Error(w, code, message)
 			return
 		}
+		data := helper.BuyerToBuyerResponseDTO(updatedBuyer)
 
 		// Return response
 		response.JSON(w, http.StatusOK, map[string]any{
 			"message": "success",
-			"data":    helper.BuyerToBuyerResponseDTO(data),
+			"data":    data,
 		})
 	}
 }
@@ -195,7 +198,7 @@ func (h *BuyerHandler) Report() http.HandlerFunc {
 			data = append(data, helper.ReportPurchaseOrdersToReportPurchaseOrdersResponseDTO(buyer))
 		}
 		response.JSON(w, http.StatusOK, map[string]any{
-			"message": "Success",
+			"message": "success",
 			"data":    data,
 		})
 	}
