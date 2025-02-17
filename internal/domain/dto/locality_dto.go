@@ -36,3 +36,9 @@ type CarriersByLocalityReportResponseDTO struct {
 	LocalityName  string `json:"locality_name"`
 	CarriersCount int    `json:"carriers_count"`
 }
+
+type LocalityReportResponseDTO struct {
+	Id           string `json:"locality_id"`
+	LocalityName string `json:"locality_name"`
+	SellerCount  int    `json:"sellers_count"`
+}

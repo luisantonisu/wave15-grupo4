@@ -12,6 +12,7 @@ func SellerToSellerResponseDTO(seller model.Seller) dto.SellerResponseDTO {
 		CompanyName: seller.CompanyName,
 		Address:     seller.Address,
 		Telephone:   seller.Telephone,
+		LocalityId:  seller.LocalityId,
 	}
 
 	return data
@@ -24,6 +25,7 @@ func SellerRequestDTOToSeller(sellerRequestDTO dto.SellerRequestDTO) model.Selle
 			CompanyName: sellerRequestDTO.CompanyName,
 			Address:     sellerRequestDTO.Address,
 			Telephone:   sellerRequestDTO.Telephone,
+			LocalityId:  sellerRequestDTO.LocalityId,
 		},
 	}
 
@@ -36,6 +38,7 @@ func SellerRequestDTOPtrToSellerPtr(seller dto.SellerRequestDTOPtr) model.Seller
 		CompanyName: seller.CompanyName,
 		Address:     seller.Address,
 		Telephone:   seller.Telephone,
+		LocalityId:  seller.LocalityId,
 	}
 	return data
 }

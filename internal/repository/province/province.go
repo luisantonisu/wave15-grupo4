@@ -20,7 +20,7 @@ func (r *ProvinceRepository) GetProvinceID(countryId int, provinceName string) (
 	//verify if province exist
 	hasProvinceAlreadyExist := r.provinceNameExist(provinceName)
 	if !hasProvinceAlreadyExist {
-		return 0, eh.GetErrInvalidData(eh.PROVINCE_NAME)
+		return 0, eh.GetErrNotFound(eh.PROVINCE_NAME)
 		
 	}
 

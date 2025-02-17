@@ -81,3 +81,39 @@ func (h *LocalityHandler) Report() http.HandlerFunc {
 		})
 	}
 }
+
+func (h *LocalityHandler) SellersReport() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		//request
+		queryParams := r.URL.Query()
+
+		var id *int
+		if queryParams.Has("id") {
+			hasId, err := strconv.Atoi(queryParams.Get("id"))
+			if err != nil {
+				response.Error(w, http.StatusBadRequest, eh.INVALID_ID)
+				return
+			}
+			id = &hasId
+		}
+
+		//process
+		localityReport, err := h.sv.SellersReport(id)
+		if err != nil {
+			code, msg := eh.HandleError(err)
+			response.Error(w, code, msg)
+			return
+		}
+
+		//mapping
+		var data []dto.LocalityReportResponseDTO
+		for _, value := range localityReport {
+			data = append(data, helper.LocalityReportToLocalityReportResponseDto(value))
+		}
+
+		//response
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data": data,
+		})
+	}
+}

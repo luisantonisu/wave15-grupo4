@@ -28,3 +28,9 @@ type CarriersByLocalityReport struct {
 	LocalityName  string
 	CarriersCount int
 }
+
+type LocalityReport struct {
+	Id           int 
+	LocalityName string 
+	SellerCount  int 
+}

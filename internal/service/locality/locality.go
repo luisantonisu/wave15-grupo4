@@ -74,6 +74,10 @@ func (s *LocalityService) Create(locality model.Locality) (model.Locality, error
 	return respLocality, nil
 }
 
+func (s *LocalityService) SellersReport(id *int) (map[int]model.LocalityReport, error) {
+	return s.localityRp.SellersReport(id)
+}
+
 func (s *LocalityService) validateLocality(locality model.Locality) error {
 	//validate if locality_Id only contains numbers and is not empty
 	pattern := regexp.MustCompile("^[0-9]+$")

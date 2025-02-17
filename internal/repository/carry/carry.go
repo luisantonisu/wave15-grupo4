@@ -46,7 +46,7 @@ func (r *CarryRepository) GetByID(id int) (model.Carry, error) {
 		var carry model.Carry
 
 		// Get carry from db
-		err := r.db.QueryRow("SELECT id, company_id, company_name, address, telephone, locality_id FROM carriers WHERE id = ?", id).Scan(
+		err := r.db.QueryRow("SELECT id, carry_id, company_name, address, telephone, locality_id FROM carriers WHERE id = ?", id).Scan(
 			&carry.ID, &carry.CarryID, &carry.CompanyName, &carry.Address, &carry.Telephone, &carry.LocalityID,
 		)
 		if err != nil {
