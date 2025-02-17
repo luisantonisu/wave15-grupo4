@@ -28,11 +28,11 @@ func (h *EmployeeService) GetByID(id int) (model.Employee, error) {
 }
 
 func (h *EmployeeService) Create(employee model.Employee) (model.Employee, error) {
-	if employee.FirstName == "" || employee.LastName == "" || employee.CardNumberID <= 0 || employee.WarehouseID <= 0 {
+	if employee.FirstName == nil || employee.LastName == nil || employee.CardNumberID == nil || employee.WarehouseID == nil || *employee.FirstName == "" || *employee.LastName == "" {
 		return model.Employee{}, eh.GetErrInvalidData(eh.EMPLOYEE)
 	}
 
-	_, err := h.warehouseRp.GetByID(employee.WarehouseID)
+	_, err := h.warehouseRp.GetByID(*employee.WarehouseID)
 	if err != nil {
 		return model.Employee{}, eh.GetErrForeignKey(eh.WAREHOUSE)
 	}
@@ -40,7 +40,7 @@ func (h *EmployeeService) Create(employee model.Employee) (model.Employee, error
 	return h.employeeRp.Create(employee.EmployeeAttributes)
 }
 
-func (h *EmployeeService) Update(id int, employee model.EmployeeAttributesPtr) (model.Employee, error) {
+func (h *EmployeeService) Update(id int, employee model.EmployeeAttributes) (model.Employee, error) {
 	if employee.WarehouseID != nil {
 		_, err := h.warehouseRp.GetByID(*employee.WarehouseID)
 		if err != nil {
