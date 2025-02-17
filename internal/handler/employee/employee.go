@@ -103,7 +103,7 @@ func (h *EmployeeHandler) Update() http.HandlerFunc {
 			return
 		}
 
-		var empDto dto.EmployeeRequestDTOPtr
+		var empDto dto.EmployeeRequestDTO
 		if err := json.NewDecoder(r.Body).Decode(&empDto); err != nil {
 			response.Error(w, http.StatusBadRequest, eh.INVALID_BODY)
 			return
