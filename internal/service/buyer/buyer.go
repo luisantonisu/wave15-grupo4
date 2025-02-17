@@ -2,15 +2,15 @@ package service
 
 import (
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
-	repository "github.com/luisantonisu/wave15-grupo4/internal/repository/buyer"
+	buyerRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/buyer"
 )
 
-func NewBuyerService(rp repository.IBuyer) *BuyerService {
+func NewBuyerService(rp buyerRepository.IBuyer) *BuyerService {
 	return &BuyerService{rp: rp}
 }
 
 type BuyerService struct {
-	rp repository.IBuyer
+	rp buyerRepository.IBuyer
 }
 
 // Create a new buyer
@@ -59,8 +59,8 @@ func (s *BuyerService) Update(id int, buyer model.BuyerAttributesPtr) (model.Buy
 }
 
 // Generate Purchase Order Report
-func (s *BuyerService) Report(id int) ([]model.ReportPurchaseOrders, error) {
-	report, err := s.rp.Report(id)
+func (s *BuyerService) PurchaseOrderReport(id int) ([]model.ReportPurchaseOrders, error) {
+	report, err := s.rp.PurchaseOrderReport(id)
 	if err != nil {
 		return nil, err
 	}

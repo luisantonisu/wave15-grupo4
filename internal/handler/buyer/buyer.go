@@ -185,7 +185,7 @@ func (h *BuyerHandler) Report() http.HandlerFunc {
 		}
 
 		// Call service
-		report, err := h.sv.Report(id)
+		report, err := h.sv.PurchaseOrderReport(id)
 		if err != nil {
 			code, message := eh.HandleError(err)
 			response.Error(w, code, message)

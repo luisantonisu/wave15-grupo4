@@ -138,7 +138,7 @@ func (r *BuyerRepository) Update(id int, buyer model.BuyerAttributesPtr) (model.
 }
 
 // Generate Purchase Order reports for buyer
-func (r *BuyerRepository) Report(id int) ([]model.ReportPurchaseOrders, error) {
+func (r *BuyerRepository) PurchaseOrderReport(id int) ([]model.ReportPurchaseOrders, error) {
 	// Make a "dynamic" query to get single or multiple buyers
 	query := "SELECT buyers.id, buyers.first_name, buyers.last_name, buyers.card_number_id, COUNT(*) AS purchase_orders_count FROM buyers JOIN purchase_orders ON buyers.id = purchase_orders.buyer_id GROUP BY buyers.id"
 
