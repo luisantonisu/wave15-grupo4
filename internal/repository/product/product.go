@@ -20,16 +20,16 @@ type ProductRepository struct {
 }
 
 func (r *ProductRepository) GetProduct() (productMap map[int]model.Product, err error) {
-	rows, err := r.db.Query("SELECT id, product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, product_type_id, seller_id FROM products")
+	rows, err := r.db.Query("SELECT id, product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, freezing_rate, product_type_id, seller_id FROM products")
 	if err != nil {
-		return nil, errorHandler.GetErrNotFound(errorHandler.PRODUCT)
+		return nil, errorHandler.GetErrDatabase(errorHandler.PRODUCT)
 	}
 	productMap = make(map[int]model.Product)
 	for rows.Next() {
 		var product model.Product
-		err := rows.Scan(&product.ID, &product.ProductAtrributes.ProductCode, &product.ProductAtrributes.Description, &product.ProductAtrributes.Width, &product.ProductAtrributes.Height, &product.ProductAtrributes.Length, &product.ProductAtrributes.NetWeight, &product.ProductAtrributes.ExpirationRate, &product.ProductAtrributes.RecommendedFreezingTemperature, &product.ProductAtrributes.ProductTypeID, &product.ProductAtrributes.SellerID)
+		err := rows.Scan(&product.ID, &product.ProductAtrributes.ProductCode, &product.ProductAtrributes.Description, &product.ProductAtrributes.Width, &product.ProductAtrributes.Height, &product.ProductAtrributes.Length, &product.ProductAtrributes.NetWeight, &product.ProductAtrributes.ExpirationRate, &product.ProductAtrributes.RecommendedFreezingTemperature, &product.ProductAtrributes.FreezingRate, &product.ProductAtrributes.ProductTypeID, &product.ProductAtrributes.SellerID)
 		if err != nil {
-			return nil, errorHandler.GetErrNotFound(errorHandler.PRODUCT)
+			return nil, errorHandler.GetErrParsingData(errorHandler.PRODUCT)
 		}
 		productMap[product.ID] = product
 	}
@@ -37,8 +37,8 @@ func (r *ProductRepository) GetProduct() (productMap map[int]model.Product, err 
 }
 
 func (r *ProductRepository) GetProductByID(id int) (product model.Product, err error) {
-	row := r.db.QueryRow("SELECT id, product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, product_type_id, seller_id FROM products WHERE id = ?", id)
-	err = row.Scan(&product.ID, &product.ProductAtrributes.ProductCode, &product.ProductAtrributes.Description, &product.ProductAtrributes.Width, &product.ProductAtrributes.Height, &product.ProductAtrributes.Length, &product.ProductAtrributes.NetWeight, &product.ProductAtrributes.ExpirationRate, &product.ProductAtrributes.RecommendedFreezingTemperature, &product.ProductAtrributes.ProductTypeID, &product.ProductAtrributes.SellerID)
+	row := r.db.QueryRow("SELECT id, product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, freezing_rate, product_type_id, seller_id FROM products WHERE id = ?", id)
+	err = row.Scan(&product.ID, &product.ProductAtrributes.ProductCode, &product.ProductAtrributes.Description, &product.ProductAtrributes.Width, &product.ProductAtrributes.Height, &product.ProductAtrributes.Length, &product.ProductAtrributes.NetWeight, &product.ProductAtrributes.ExpirationRate, &product.ProductAtrributes.RecommendedFreezingTemperature, &product.ProductAtrributes.FreezingRate, &product.ProductAtrributes.ProductTypeID, &product.ProductAtrributes.SellerID)
 	if err != nil {
 		return model.Product{}, errorHandler.GetErrNotFound(errorHandler.PRODUCT)
 	}
@@ -86,24 +86,38 @@ func (r *ProductRepository) productCodeExists(productCode string) bool {
 	return count > 0
 }
 
-func (r *ProductRepository) CreateProduct(productAtrributes *model.ProductAtrributes) (err error) {
+func (r *ProductRepository) CreateProduct(productAtrributes *model.ProductAtrributes) (prod model.Product, err error) {
 
-	if r.productCodeExists(productAtrributes.ProductCode) {
-		return errorHandler.GetErrAlreadyExists(errorHandler.PRODUCT)
+	if r.productCodeExists(*productAtrributes.ProductCode) {
+		return model.Product{}, errorHandler.GetErrAlreadyExists(errorHandler.PRODUCT)
 	}
-	_, err = r.db.Exec("INSERT INTO products (product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, product_type_id, seller_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", productAtrributes.ProductCode, productAtrributes.Description, productAtrributes.Width, productAtrributes.Height, productAtrributes.Length, productAtrributes.NetWeight, productAtrributes.ExpirationRate, productAtrributes.RecommendedFreezingTemperature, productAtrributes.ProductTypeID, productAtrributes.SellerID)
+	row, err := r.db.Exec("INSERT INTO products (product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, freezing_rate, product_type_id, seller_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", productAtrributes.ProductCode, productAtrributes.Description, productAtrributes.Width, productAtrributes.Height, productAtrributes.Length, productAtrributes.NetWeight, productAtrributes.ExpirationRate, productAtrributes.RecommendedFreezingTemperature, productAtrributes.FreezingRate, productAtrributes.ProductTypeID, productAtrributes.SellerID)
 
 	if err != nil {
-		return errorHandler.GetErrInvalidData(errorHandler.PRODUCT)
+		return model.Product{}, errorHandler.GetErrParsingData(errorHandler.PRODUCT)
 	}
 
-	return nil
+	id, err := row.LastInsertId()
+	if err != nil {
+		return model.Product{}, errorHandler.GetErrDatabase(errorHandler.PRODUCT)
+	}
+
+	var newProduct model.Product
+	newProduct.ID = int(id)
+	newProduct.ProductAtrributes = *productAtrributes
+
+	return newProduct, nil
 }
 
 func (r *ProductRepository) DeleteProduct(id int) (err error) {
-	_, err = r.registerExists(id)
+	exist, err := r.registerExists(id)
+
 	if err != nil {
 		return err
+	}
+
+	if !exist {
+		return errorHandler.GetErrNotFound(errorHandler.PRODUCT)
 	}
 	_, err = r.db.Exec("DELETE FROM products WHERE id = ?", id)
 	if err != nil {
@@ -112,57 +126,61 @@ func (r *ProductRepository) DeleteProduct(id int) (err error) {
 	return nil
 }
 
-func (r *ProductRepository) UpdateProduct(id int, productAtrributesPtr *model.ProductAtrributesPtr) (product *model.Product, err error) {
+func (r *ProductRepository) UpdateProduct(id int, productAtrributesPtr *model.ProductAtrributes) (product *model.Product, err error) {
 
-	_, err = r.registerExists(id)
+	exist, err := r.registerExists(id)
 	if err != nil {
 		return nil, err
 	}
-
+	if !exist {
+		return nil, errorHandler.GetErrNotFound(errorHandler.PRODUCT)
+	}
 	if productAtrributesPtr == nil {
 		return nil, errorHandler.GetErrInvalidData(errorHandler.PRODUCT)
 	}
 
-	if r.productCodeExists(*productAtrributesPtr.ProductCode) {
+	if productAtrributesPtr.ProductCode != nil && r.productCodeExists(*productAtrributesPtr.ProductCode) {
 		return nil, errorHandler.GetErrAlreadyExists(errorHandler.PRODUCT)
+
 	}
+
 	var patchedProduct model.ProductAtrributes
 	product = &model.Product{}
 	err = r.db.QueryRow("SELECT product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, product_type_id, seller_id FROM products WHERE id = ?", id).Scan(&patchedProduct.ProductCode, &patchedProduct.Description, &patchedProduct.Width, &patchedProduct.Height, &patchedProduct.Length, &patchedProduct.NetWeight, &patchedProduct.ExpirationRate, &patchedProduct.RecommendedFreezingTemperature, &patchedProduct.ProductTypeID, &patchedProduct.SellerID)
 
 	if err != nil {
-		return nil, errorHandler.GetErrNotFound(errorHandler.PRODUCT)
+		return nil, errorHandler.GetErrParsingData(errorHandler.PRODUCT)
 	}
 
 	if productAtrributesPtr.ProductCode != nil {
-		patchedProduct.ProductCode = *productAtrributesPtr.ProductCode
+		patchedProduct.ProductCode = productAtrributesPtr.ProductCode
 	}
 	if productAtrributesPtr.Description != nil {
-		patchedProduct.Description = *productAtrributesPtr.Description
+		patchedProduct.Description = productAtrributesPtr.Description
 	}
 	if productAtrributesPtr.Width != nil {
-		patchedProduct.Width = *productAtrributesPtr.Width
+		patchedProduct.Width = productAtrributesPtr.Width
 	}
 	if productAtrributesPtr.Height != nil {
-		patchedProduct.Height = *productAtrributesPtr.Height
+		patchedProduct.Height = productAtrributesPtr.Height
 	}
 	if productAtrributesPtr.Length != nil {
-		patchedProduct.Length = *productAtrributesPtr.Length
+		patchedProduct.Length = productAtrributesPtr.Length
 	}
 	if productAtrributesPtr.NetWeight != nil {
-		patchedProduct.NetWeight = *productAtrributesPtr.NetWeight
+		patchedProduct.NetWeight = productAtrributesPtr.NetWeight
 	}
 	if productAtrributesPtr.ExpirationRate != nil {
-		patchedProduct.ExpirationRate = *productAtrributesPtr.ExpirationRate
+		patchedProduct.ExpirationRate = productAtrributesPtr.ExpirationRate
 	}
 	if productAtrributesPtr.RecommendedFreezingTemperature != nil {
-		patchedProduct.RecommendedFreezingTemperature = *productAtrributesPtr.RecommendedFreezingTemperature
+		patchedProduct.RecommendedFreezingTemperature = productAtrributesPtr.RecommendedFreezingTemperature
 	}
 	if productAtrributesPtr.FreezingRate != nil {
-		patchedProduct.FreezingRate = *productAtrributesPtr.FreezingRate
+		patchedProduct.FreezingRate = productAtrributesPtr.FreezingRate
 	}
 	if productAtrributesPtr.ProductTypeID != nil {
-		patchedProduct.ProductTypeID = *productAtrributesPtr.ProductTypeID
+		patchedProduct.ProductTypeID = productAtrributesPtr.ProductTypeID
 	}
 
 	// Update the product in the repository after all fields have been patched
@@ -181,7 +199,21 @@ func (r *ProductRepository) registerExists(id int) (bool, error) {
 	query := "SELECT EXISTS(SELECT 1 FROM products WHERE ID = ?)"
 	err := r.db.QueryRow(query, id).Scan(&exist)
 	if err != nil {
-		return false, errorHandler.GetErrNotFound(errorHandler.PRODUCT)
+		return false, errorHandler.GetErrDatabase(errorHandler.PRODUCT)
 	}
 	return exist, nil
 }
+
+/* func (r *ProductRepository) registerExists(id int) (bool, error) {
+	var exist int
+	query := "SELECT COUNT(*) FROM products WHERE ID = ?"
+	err := r.db.QueryRow(query, id).Scan(&exist)
+	if err != nil {
+		return false, errorHandler.GetErrDatabase(errorHandler.PRODUCT)
+	}
+	if exist == 0 {
+		return false, errorHandler.GetErrNotFound(errorHandler.PRODUCT)
+	}
+	fmt.Println(exist)
+	return exist > 0, nil
+} */

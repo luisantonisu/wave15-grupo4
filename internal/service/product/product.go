@@ -31,15 +31,15 @@ func (s *ProductService) GetProductRecordByID(id int) (productRecord model.Produ
 }
 
 func ValueCheck(productAtrributes model.ProductAtrributes) (err error) {
-	if productAtrributes.ProductCode == "" || productAtrributes.Description == "" || productAtrributes.Width <= 0 || productAtrributes.Height <= 0 || productAtrributes.Length <= 0 || productAtrributes.NetWeight <= 0 || productAtrributes.ExpirationRate <= 0 || productAtrributes.RecommendedFreezingTemperature <= 0 || productAtrributes.FreezingRate <= 0 || productAtrributes.ProductTypeID <= 0 {
+	if *productAtrributes.ProductCode == "" || *productAtrributes.Description == "" || *productAtrributes.Width <= 0 || *productAtrributes.Height <= 0 || *productAtrributes.Length <= 0 || *productAtrributes.NetWeight <= 0 || *productAtrributes.ExpirationRate <= 0 || *productAtrributes.RecommendedFreezingTemperature <= 0 || *productAtrributes.FreezingRate <= 0 || *productAtrributes.ProductTypeID <= 0 {
 		return errorHandler.GetErrInvalidData(errorHandler.PRODUCT)
 	}
 	return
 }
 
-func (s *ProductService) CreateProduct(productAttributes *model.ProductAtrributes) (err error) {
+func (s *ProductService) CreateProduct(productAttributes *model.ProductAtrributes) (prod model.Product, err error) {
 	if err = ValueCheck(*productAttributes); err != nil {
-		return err
+		return model.Product{}, err
 	}
 	return s.repository.CreateProduct(productAttributes)
 }
@@ -48,6 +48,6 @@ func (s *ProductService) DeleteProduct(id int) (err error) {
 	return s.repository.DeleteProduct(id)
 }
 
-func (s *ProductService) UpdateProduct(id int, productAttributes *model.ProductAtrributesPtr) (producto *model.Product, err error) {
+func (s *ProductService) UpdateProduct(id int, productAttributes *model.ProductAtrributes) (producto *model.Product, err error) {
 	return s.repository.UpdateProduct(id, productAttributes)
 }

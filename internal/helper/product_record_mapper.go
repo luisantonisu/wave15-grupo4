@@ -9,11 +9,13 @@ func ProductRecordToProductRecordResponseDTO(product map[int]model.ProductRecord
 	data := make(map[int]dto.ProductRecordResponseDTO)
 	for _, value := range product {
 		data[value.ID] = dto.ProductRecordResponseDTO{
-			ID:             value.ID,
-			LastUpdateDate: value.ProductRecordAtrributes.LastUpdateDate,
-			PurchasePrice:  value.ProductRecordAtrributes.PurchasePrice,
-			SalePrice:      value.ProductRecordAtrributes.SalePrice,
-			ProductId:      value.ProductRecordAtrributes.ProductId,
+			ID: value.ID,
+			ProductRecordRequestDTO: dto.ProductRecordRequestDTO{
+				LastUpdateDate: value.LastUpdateDate,
+				PurchasePrice:  value.PurchasePrice,
+				SalePrice:      value.SalePrice,
+				ProductId:      value.ProductId,
+			},
 		}
 	}
 	return data
@@ -29,8 +31,8 @@ func ProductRecordRequestDTOToProductRecord(product dto.ProductRecordRequestDTO)
 	return data
 }
 
-func ProductRecordRequestDTOPtrToProductPtr(productRecord dto.ProductRecordRequestDTOPtr) model.ProductRecordAtrributesPtr {
-	data := model.ProductRecordAtrributesPtr{
+func ProductRecordRequestDTOPtrToProductPtr(productRecord dto.ProductRecordRequestDTO) model.ProductRecordAtrributes {
+	data := model.ProductRecordAtrributes{
 		LastUpdateDate: productRecord.LastUpdateDate,
 		PurchasePrice:  productRecord.PurchasePrice,
 		SalePrice:      productRecord.SalePrice,
