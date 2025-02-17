@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"strconv"
 
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
@@ -138,19 +137,24 @@ func (r *BuyerRepository) Update(id int, buyer model.BuyerAttributes) (model.Buy
 }
 
 // Generate Purchase Order reports for buyer
-func (r *BuyerRepository) PurchaseOrderReport(id int) ([]model.ReportPurchaseOrders, error) {
+func (r *BuyerRepository) PurchaseOrderReport(id *int) ([]model.ReportPurchaseOrders, error) {
+	var rows *sql.Rows
+	var err error
+
 	// Make a "dynamic" query to get single or multiple buyers
 	query := "SELECT buyers.id, buyers.first_name, buyers.last_name, buyers.card_number_id, COUNT(*) AS purchase_orders_count FROM buyers JOIN purchase_orders ON buyers.id = purchase_orders.buyer_id GROUP BY buyers.id"
 
-	if id != -1 {
+	if id != nil {
 		// Verify buyer exists
-		if !r.buyerExists(id) {
+		if !r.buyerExists(*id) {
 			return nil, eh.GetErrNotFound(eh.BUYER)
 		}
-		query += " HAVING buyers.id = " + strconv.Itoa(id)
+		query += " HAVING buyers.id = ?"
+		rows, err = r.db.Query(query, id)
+	} else {
+		rows, err = r.db.Query(query)
 	}
 	
-	rows, err := r.db.Query(query)
 	if err != nil {
 		return nil, eh.GetErrGettingData(eh.BUYER)
 	}

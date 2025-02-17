@@ -59,7 +59,7 @@ func (s *BuyerService) Update(id int, buyer model.BuyerAttributes) (model.Buyer,
 }
 
 // Generate Purchase Order Report
-func (s *BuyerService) PurchaseOrderReport(id int) ([]model.ReportPurchaseOrders, error) {
+func (s *BuyerService) PurchaseOrderReport(id *int) ([]model.ReportPurchaseOrders, error) {
 	report, err := s.rp.PurchaseOrderReport(id)
 	if err != nil {
 		return nil, err

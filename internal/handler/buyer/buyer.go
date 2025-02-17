@@ -148,7 +148,7 @@ func (h *BuyerHandler) Update() http.HandlerFunc {
 			response.Error(w, http.StatusBadRequest, eh.INVALID_BODY)
 			return
 		}
-		newBuyer := helper.BuyerRequestDTOToBuyer(buyerRequestDto)
+		newBuyer := helper.BuyerRequestDTOToBuyerAttributes(buyerRequestDto)
 
 		// Call service
 		updatedBuyer, err := h.sv.Update(id, newBuyer)
@@ -171,17 +171,15 @@ func (h *BuyerHandler) Update() http.HandlerFunc {
 func (h *BuyerHandler) Report() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Decode query params
-		var id int
-		var err error
-		idStr := r.URL.Query().Get("id")
-		if idStr == "" {
-			id = -1
-		} else {
-			id, err = strconv.Atoi(idStr)
+		var id *int
+		queryParams := r.URL.Query()
+		if queryParams.Has("id"){
+			hasId, err := strconv.Atoi(queryParams.Get("id"))
 			if err != nil {
 				response.Error(w, http.StatusBadRequest, eh.INVALID_ID)
 				return
 			}
+			id = &hasId
 		}
 
 		// Call service
