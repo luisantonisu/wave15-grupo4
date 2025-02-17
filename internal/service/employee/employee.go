@@ -28,7 +28,7 @@ func (h *EmployeeService) GetByID(id int) (model.Employee, error) {
 }
 
 func (h *EmployeeService) Create(employee model.Employee) (model.Employee, error) {
-	if employee.FirstName == nil || employee.LastName == nil || employee.CardNumberID == nil || employee.WarehouseID == nil {
+	if employee.FirstName == nil || employee.LastName == nil || employee.CardNumberID == nil || employee.WarehouseID == nil || *employee.FirstName == "" || *employee.LastName == "" {
 		return model.Employee{}, eh.GetErrInvalidData(eh.EMPLOYEE)
 	}
 
