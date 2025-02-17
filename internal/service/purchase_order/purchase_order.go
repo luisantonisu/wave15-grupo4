@@ -31,25 +31,25 @@ func NewPurchaseOrderService(purchaseOrderRp purchaseOrderRepository.IPurchaseOr
 // Create new purchase order
 func (s *PurchaseOrderService) Create(purchaseOrder model.PurchaseOrderAttributes) (model.PurchaseOrder, error) {
 	// Validate Buyer exist
-	_, err := s.buyerRp.GetByID(purchaseOrder.BuyerID)
+	_, err := s.buyerRp.GetByID(*purchaseOrder.BuyerID)
 	if err != nil {
 		return model.PurchaseOrder{}, eh.GetErrForeignKey(eh.BUYER)
 	}
 
 	// Validate Order Status exist
-	_, err = s.orderStatusRp.GetByID(purchaseOrder.OrderStatusID)
+	_, err = s.orderStatusRp.GetByID(*purchaseOrder.OrderStatusID)
 	if err != nil {
 		return model.PurchaseOrder{}, eh.GetErrForeignKey(eh.ORDER_STATUS)
 	}
 
 	// Validate Warehouse exist
-	_, err = s.warehouseRp.GetByID(purchaseOrder.WarehouseID)
+	_, err = s.warehouseRp.GetByID(*purchaseOrder.WarehouseID)
 	if err != nil {
 		return model.PurchaseOrder{}, eh.GetErrForeignKey(eh.WAREHOUSE)
 	}
 
 	// Validate Carrier exist
-	_, err = s.carryRp.GetByID(purchaseOrder.CarrierID)
+	_, err = s.carryRp.GetByID(*purchaseOrder.CarrierID)
 	if err != nil {
 		return model.PurchaseOrder{}, eh.GetErrForeignKey(eh.CARRY)
 	}
