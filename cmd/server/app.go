@@ -150,6 +150,12 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 			// - DELETE /api/v1/sellers/{id}
 			rt.Delete("/{id}", handlers.SellerHandler.Delete())
 		})
+		rt.Route("/localities", func(rt chi.Router) {
+			// - POST /api/v1/localities
+			rt.Post("/", handlers.LocalityHandler.Create())
+			// - GET /api/v1/localities
+			rt.Get("/reportSellers", handlers.LocalityHandler.SellersReport())
+		})
 		rt.Route("/warehouses", func(rt chi.Router) {
 			// - GET /api/v1/warehouses
 			rt.Get("/", handlers.WarehouseHandler.GetAll())
@@ -162,10 +168,7 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 			// - DELETE /api/v1/warehouses/{id}
 			rt.Delete("/{id}", handlers.WarehouseHandler.Delete())
 		})
-		rt.Route("/localities", func(rt chi.Router){
-			rt.Post("/", handlers.LocalityHandler.Create())
-		})
-		rt.Route("/carriers", func(rt chi.Router){
+		rt.Route("/carriers", func(rt chi.Router) {
 			// - POST /api/v1/carriers
 			rt.Post("/", handlers.CarryHandler.Create())
 		})
