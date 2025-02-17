@@ -1,6 +1,8 @@
 package helper
 
 import (
+	"strconv"
+
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/dto"
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 )
@@ -24,6 +26,17 @@ func LocalityToLocalityDataResponseDTO(locality model.Locality) dto.LocalityData
 		LocalityName: locality.LocalityName,
 		ProvinceName: locality.ProvinceName,
 		CountryName: locality.CountryName,
+	}
+
+	return data
+}
+
+
+func LocalityReportToLocalityReportResponseDto(locality model.LocalityReport) dto.LocalityReportResponseDTO {
+	data := dto.LocalityReportResponseDTO{
+		Id: strconv.Itoa(locality.Id),
+		LocalityName: locality.LocalityName,
+		SellerCount: locality.SellerCount,
 	}
 
 	return data

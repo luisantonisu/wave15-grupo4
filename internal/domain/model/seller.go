@@ -10,6 +10,7 @@ type SellerAttributes struct {
 	CompanyName string
 	Address     string
 	Telephone   string
+	LocalityId  string
 }
 
 type SellerAttributesPtr struct {
@@ -17,4 +18,5 @@ type SellerAttributesPtr struct {
 	CompanyName *string
 	Address     *string
 	Telephone   *string
+	LocalityId  *string
 }

@@ -20,7 +20,7 @@ func (r *CountryRepository) GetCountryIDByCountryName(countryName string) (int, 
 	//verify if country exist
 	hasCountryAlreadyExist := r.countryNameExist(countryName)
 	if !hasCountryAlreadyExist {
-		return 0, eh.GetErrInvalidData(eh.COUNTRY_NAME)
+		return 0, eh.GetErrNotFound(eh.COUNTRY_NAME)
 		
 	}
 

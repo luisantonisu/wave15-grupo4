@@ -51,18 +51,18 @@ func (r *SellerRepository) Create(seller model.SellerAttributes) (model.Seller, 
 
 	hasIdAlreadyExist := r.CompanyIDExist(seller.CompanyID)
 	if hasIdAlreadyExist {
-		return model.Seller{}, eh.GetErrAlreadyExists(eh.SELLER)
+		return model.Seller{}, eh.GetErrAlreadyExists(eh.COMPANY_ID)
 	}
 
-	row, err := r.db.Exec("INSERT INTO sellers (company_id, company_name, address, telephone) VALUES (?,?,?,?)",
-		seller.CompanyID, seller.CompanyName, seller.Address, seller.Telephone)
+	row, err := r.db.Exec("INSERT INTO sellers (company_id, company_name, address, telephone, locality_id) VALUES (?,?,?,?,?)",
+		seller.CompanyID, seller.CompanyName, seller.Address, seller.Telephone, seller.LocalityId)
 	if err != nil {
-		return model.Seller{}, err
+		return model.Seller{}, eh.GetErrInvalidData(eh.SELLER)
 	}
 
 	id, err := row.LastInsertId()
 	if err != nil {
-		return model.Seller{}, err
+		return model.Seller{}, eh.GetErrDatabase(eh.SELLER)
 	}
 
 	var newSeller model.Seller
@@ -76,8 +76,8 @@ func (r *SellerRepository) Create(seller model.SellerAttributes) (model.Seller, 
 func (r *SellerRepository) Update(id int, seller model.SellerAttributesPtr) (model.Seller, error) {
 	//Verify if seller exist
 	var updateSeller model.Seller
-	err := r.db.QueryRow("SELECT id, company_id, company_name, address, telephone FROM sellers WHERE id = ?", id).Scan(
-		&updateSeller.ID, &updateSeller.CompanyID, &updateSeller.CompanyName, &updateSeller.Address, &updateSeller.Telephone)
+	err := r.db.QueryRow("SELECT id, company_id, company_name, address, telephone, locality_id FROM sellers WHERE id = ?", id).Scan(
+		&updateSeller.ID, &updateSeller.CompanyID, &updateSeller.CompanyName, &updateSeller.Address, &updateSeller.Telephone, &updateSeller.LocalityId)
 	if err != nil {
 		return model.Seller{}, eh.GetErrNotFound(eh.SELLER)
 	}
@@ -103,8 +103,12 @@ func (r *SellerRepository) Update(id int, seller model.SellerAttributesPtr) (mod
 		updateSeller.Telephone = *seller.Telephone
 	}
 
-	_, err = r.db.Exec("UPDATE sellers SET company_id = ?, company_name = ?, address = ?, telephone = ? WHERE id = ?",
-		updateSeller.CompanyID, updateSeller.CompanyName, updateSeller.Address, updateSeller.Telephone, id)
+	if seller.LocalityId != nil {
+		updateSeller.LocalityId = *seller.LocalityId
+	}
+
+	_, err = r.db.Exec("UPDATE sellers SET company_id = ?, company_name = ?, address = ?, telephone = ?, locality_id = ? WHERE id = ?",
+		updateSeller.CompanyID, updateSeller.CompanyName, updateSeller.Address, updateSeller.Telephone, updateSeller.LocalityId, id)
 	if err != nil {
 		return model.Seller{}, eh.GetErrInvalidData(eh.SELLER)
 	}
@@ -120,7 +124,7 @@ func (r *SellerRepository) Delete(id int) error {
 
 	_, err := r.db.Exec("DELETE FROM sellers WHERE id = ?", id)
 	if err != nil {
-		return eh.GetErrNotFound(eh.SELLER) 
+		return eh.GetErrNotFound(eh.SELLER)
 	}
 
 	return nil
@@ -128,7 +132,7 @@ func (r *SellerRepository) Delete(id int) error {
 
 func (r *SellerRepository) CompanyIDExist(companyID string) bool {
 	var exist bool
-	err := r.db.QueryRow("SELECT EXISTS(SELECT 1 FROM sellers WHERE ID = ?)", companyID).Scan(&exist)
+	err := r.db.QueryRow("SELECT EXISTS(SELECT 1 FROM sellers WHERE company_id = ?)", companyID).Scan(&exist)
 	if err != nil {
 		return false
 	}
