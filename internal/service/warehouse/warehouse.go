@@ -83,7 +83,7 @@ func (s *WarehouseService) Update(id int, warehouse model.WarehouseAttributes) (
 		return model.Warehouse{}, err
 	}
 
-	if warehouse.WarehouseCode != nil && warehouse.WarehouseCode != existingWarehouse.WarehouseCode {
+	if warehouse.WarehouseCode != nil && *warehouse.WarehouseCode != *existingWarehouse.WarehouseCode {
 		// Check if warehouse code already exists
 		exists, err := s.warehouseRp.GetByCode(*warehouse.WarehouseCode)
 		if exists != (model.Warehouse{}) {
@@ -92,6 +92,7 @@ func (s *WarehouseService) Update(id int, warehouse model.WarehouseAttributes) (
 		if err != nil && !errors.Is(err, eh.ErrNotFound) {
 			return model.Warehouse{}, err
 		}
+		existingWarehouse.WarehouseCode = warehouse.WarehouseCode
 	}
 
 	if warehouse.Telephone != nil {
