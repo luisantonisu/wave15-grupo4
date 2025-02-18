@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"strconv"
 
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
@@ -85,32 +84,32 @@ func (r *LocalityRepository) SellersReport(id *int) ([]model.LocalityReport, err
 	return localities, nil
 }
 
-func (r *LocalityRepository) Report(id int) (map[int]model.CarriersByLocalityReport, error) {
+func (r *LocalityRepository) CarriersReport(id *int) ([]model.CarriersReport, error) {
+	var rows *sql.Rows
+	var err error
 	query := `SELECT l.id, l.locality_name, COUNT(c.id) as carriers_count 
 		FROM localities l 
 		INNER JOIN carriers c ON l.id = c.locality_id 
 		GROUP BY l.id, l.locality_name`
 
-	if id != -1 {
-		if !r.localityIDExist(id) {
-			return nil, eh.GetErrNotFound(eh.LOCALITY)
-		}
-		query += " HAVING l.id = " + strconv.Itoa(id)
+	if id != nil {
+		query += " HAVING l.id = ?"
+		rows, err = r.db.Query(query, id)
+	} else {
+		rows, err = r.db.Query(query)
 	}
-
-	rows, err := r.db.Query(query)
 	if err != nil {
 		return nil, eh.GetErrGettingData(eh.LOCALITY)
 	}
 
-	report := make(map[int]model.CarriersByLocalityReport)
+	var report []model.CarriersReport
 	for rows.Next() {
-		var record model.CarriersByLocalityReport
+		var record model.CarriersReport
 		err := rows.Scan(&record.LocalityID, &record.LocalityName, &record.CarriersCount)
 		if err != nil {
 			return nil, eh.GetErrParsingData(eh.LOCALITY)
 		}
-		report[record.LocalityID] = record
+		report = append(report, record)
 	}
 	return report, nil
 }

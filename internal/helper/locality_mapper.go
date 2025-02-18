@@ -31,8 +31,8 @@ func LocalityToLocalityDataResponseDTO(locality model.Locality) dto.LocalityData
 	return data
 }
 
-func CarriersByLocalityReportToCarriersByLocalityReportResponseDTO(carriersReport model.CarriersByLocalityReport) dto.CarriersByLocalityReportResponseDTO {
-	data := dto.CarriersByLocalityReportResponseDTO{
+func CarriersReportToCarriersReportResponseDTO(carriersReport model.CarriersReport) dto.CarriersReportResponseDTO {
+	data := dto.CarriersReportResponseDTO{
 		LocalityID:    carriersReport.LocalityID,
 		LocalityName:  carriersReport.LocalityName,
 		CarriersCount: carriersReport.CarriersCount,
