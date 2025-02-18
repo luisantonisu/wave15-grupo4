@@ -16,21 +16,21 @@ type SellerRepository struct {
 	db *sql.DB
 }
 
-func (r *SellerRepository) GetAll() (map[int]model.Seller, error) {
-	rows, err := r.db.Query("SELECT id, company_id, company_name, address, telephone FROM sellers")
+func (r *SellerRepository) GetAll() ([]model.Seller, error) {
+	rows, err := r.db.Query("SELECT id, company_id, company_name, address, telephone, locality_id FROM sellers")
 	if err != nil {
 		return nil, eh.GetErrNotFound(eh.SELLER)
 	}
 
-	sellersList := make(map[int]model.Seller)
+	var sellersList []model.Seller
 	for rows.Next() {
 		var seller model.Seller
-		err := rows.Scan(&seller.ID, &seller.CompanyID, &seller.CompanyName, &seller.Address, &seller.Telephone)
+		err := rows.Scan(&seller.ID, &seller.CompanyID, &seller.CompanyName, &seller.Address, &seller.Telephone, &seller.LocalityId)
 		if err != nil {
 			return nil, eh.GetErrNotFound(eh.SELLER)
 		}
 
-		sellersList[seller.ID] = seller
+		sellersList = append(sellersList, seller)
 	}
 
 	return sellersList, nil
@@ -38,8 +38,8 @@ func (r *SellerRepository) GetAll() (map[int]model.Seller, error) {
 
 func (r *SellerRepository) GetByID(id int) (model.Seller, error) {
 	var seller model.Seller
-	err := r.db.QueryRow("SELECT id, company_id, company_name, address, telephone FROM sellers WHERE id = ?", id).Scan(
-		&seller.ID, &seller.CompanyID, &seller.CompanyName, &seller.Address, &seller.Telephone)
+	err := r.db.QueryRow("SELECT id, company_id, company_name, address, telephone, locality_id FROM sellers WHERE id = ?", id).Scan(
+		&seller.ID, &seller.CompanyID, &seller.CompanyName, &seller.Address, &seller.Telephone, &seller.LocalityId)
 	if err != nil {
 		return model.Seller{}, eh.GetErrNotFound(eh.SELLER)
 	}
@@ -49,7 +49,7 @@ func (r *SellerRepository) GetByID(id int) (model.Seller, error) {
 
 func (r *SellerRepository) Create(seller model.SellerAttributes) (model.Seller, error) {
 
-	hasIdAlreadyExist := r.CompanyIDExist(seller.CompanyID)
+	hasIdAlreadyExist := r.CompanyIDExist(*seller.CompanyID)
 	if hasIdAlreadyExist {
 		return model.Seller{}, eh.GetErrAlreadyExists(eh.COMPANY_ID)
 	}
@@ -73,7 +73,7 @@ func (r *SellerRepository) Create(seller model.SellerAttributes) (model.Seller, 
 	return newSeller, nil
 }
 
-func (r *SellerRepository) Update(id int, seller model.SellerAttributesPtr) (model.Seller, error) {
+func (r *SellerRepository) Update(id int, seller model.SellerAttributes) (model.Seller, error) {
 	//Verify if seller exist
 	var updateSeller model.Seller
 	err := r.db.QueryRow("SELECT id, company_id, company_name, address, telephone, locality_id FROM sellers WHERE id = ?", id).Scan(
@@ -88,23 +88,23 @@ func (r *SellerRepository) Update(id int, seller model.SellerAttributesPtr) (mod
 			return model.Seller{}, eh.GetErrAlreadyExists(eh.COMPANY_ID)
 		}
 
-		updateSeller.CompanyID = *seller.CompanyID
+		updateSeller.CompanyID = seller.CompanyID
 	}
 
 	if seller.CompanyName != nil {
-		updateSeller.CompanyName = *seller.CompanyName
+		updateSeller.CompanyName = seller.CompanyName
 	}
 
 	if seller.Address != nil {
-		updateSeller.Address = *seller.Address
+		updateSeller.Address = seller.Address
 	}
 
 	if seller.Telephone != nil {
-		updateSeller.Telephone = *seller.Telephone
+		updateSeller.Telephone = seller.Telephone
 	}
 
 	if seller.LocalityId != nil {
-		updateSeller.LocalityId = *seller.LocalityId
+		updateSeller.LocalityId = seller.LocalityId
 	}
 
 	_, err = r.db.Exec("UPDATE sellers SET company_id = ?, company_name = ?, address = ?, telephone = ?, locality_id = ? WHERE id = ?",

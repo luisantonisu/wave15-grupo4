@@ -10,7 +10,7 @@ import (
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/dto"
 	"github.com/luisantonisu/wave15-grupo4/internal/helper"
 	service "github.com/luisantonisu/wave15-grupo4/internal/service/seller"
-	eh"github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
+	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
 func NewSellerHandler(sv service.ISeller) *SellerHandler {
@@ -66,9 +66,8 @@ func (h *SellerHandler) GetByID() http.HandlerFunc {
 		var data = helper.SellerToSellerResponseDTO(seller)
 
 		//response
-		var resp []dto.SellerResponseDTO
 		response.JSON(w, http.StatusOK, map[string]any{
-			"data": append(resp, data),
+			"data": data,
 		})
 	}
 }
@@ -83,7 +82,7 @@ func (h *SellerHandler) Create() http.HandlerFunc {
 		var seller = helper.SellerRequestDTOToSeller(newSeller)
 
 		//process
-		data, err := h.sv.Create(seller)
+		result, err := h.sv.Create(seller)
 		if err != nil {
 
 			code, msg := eh.HandleError(err)
@@ -93,12 +92,11 @@ func (h *SellerHandler) Create() http.HandlerFunc {
 		}
 
 		//mapping
-		var serializedData = helper.SellerToSellerResponseDTO(data)
+		var data = helper.SellerToSellerResponseDTO(result)
 
 		//response
-		var resp []dto.SellerResponseDTO
 		response.JSON(w, http.StatusCreated, map[string]any{
-			"data": append(resp, serializedData),
+			"data": data,
 		})
 	}
 }
@@ -112,14 +110,14 @@ func (h *SellerHandler) Update() http.HandlerFunc {
 			return
 		}
 
-		var updateSeller dto.SellerRequestDTOPtr
+		var updateSeller dto.SellerRequestDTO
 		json.NewDecoder(r.Body).Decode(&updateSeller)
 
 		//mapping
 		var seller = helper.SellerRequestDTOPtrToSellerPtr(updateSeller)
 
 		//process
-		data, err := h.sv.Update(id, seller)
+		result, err := h.sv.Update(id, seller)
 		if err != nil {
 
 			code, msg := eh.HandleError(err)
@@ -129,12 +127,11 @@ func (h *SellerHandler) Update() http.HandlerFunc {
 		}
 
 		//mapping
-		var serializedData = helper.SellerToSellerResponseDTO(data)
+		var data = helper.SellerToSellerResponseDTO(result)
 
 		//response
-		var resp []dto.SellerResponseDTO
 		response.JSON(w, http.StatusOK, map[string]any{
-			"data": append(resp, serializedData),
+			"data": data,
 		})
 	}
 }

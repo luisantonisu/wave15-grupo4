@@ -3,9 +3,9 @@ package repository
 import "github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 
 type ISeller interface {
-	GetAll() (map[int]model.Seller, error)
+	GetAll() ([]model.Seller, error)
 	GetByID(id int) (model.Seller, error)
 	Create(seller model.SellerAttributes) (model.Seller, error)
-	Update(id int, seller model.SellerAttributesPtr) (model.Seller, error)
+	Update(id int, seller model.SellerAttributes) (model.Seller, error)
 	Delete(id int) error
 }

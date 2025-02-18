@@ -65,21 +65,21 @@ func (r *LocalityRepository) Create(locality model.LocalityDBModel) (model.Local
 	return newLocality, nil
 }
 
-func (r *LocalityRepository) SellersReport(id *int) (map[int]model.LocalityReport, error) {
+func (r *LocalityRepository) SellersReport(id *int) ([]model.LocalityReport, error) {
 
 	rows, err := r.buildingReportQuery(id)
 	if err != nil {
 		return nil, err
 	}
 
-	localities := make(map[int]model.LocalityReport)
+	var localities []model.LocalityReport
 	for rows.Next() {
 		var locality model.LocalityReport
 		err := rows.Scan(&locality.Id, &locality.LocalityName, &locality.SellerCount)
 		if err != nil {
 			return nil, eh.GetErrParsingData(eh.LOCALITY)
 		}
-		localities[locality.Id] = locality
+		localities = append(localities, locality)
 	}
 
 	return localities, nil
