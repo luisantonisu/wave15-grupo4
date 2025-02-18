@@ -7,12 +7,14 @@ import (
 
 func SellerToSellerResponseDTO(seller model.Seller) dto.SellerResponseDTO {
 	data := dto.SellerResponseDTO{
-		ID:          seller.ID,
-		CompanyID:   seller.CompanyID,
-		CompanyName: seller.CompanyName,
-		Address:     seller.Address,
-		Telephone:   seller.Telephone,
-		LocalityId:  seller.LocalityId,
+		ID: seller.ID,
+		SellerRequestDTO: dto.SellerRequestDTO{
+			CompanyID:   seller.CompanyID,
+			CompanyName: seller.CompanyName,
+			Address:     seller.Address,
+			Telephone:   seller.Telephone,
+			LocalityId:  seller.LocalityId,
+		},
 	}
 
 	return data
@@ -32,8 +34,8 @@ func SellerRequestDTOToSeller(sellerRequestDTO dto.SellerRequestDTO) model.Selle
 	return data
 }
 
-func SellerRequestDTOPtrToSellerPtr(seller dto.SellerRequestDTOPtr) model.SellerAttributesPtr {
-	data := model.SellerAttributesPtr{
+func SellerRequestDTOPtrToSellerPtr(seller dto.SellerRequestDTO) model.SellerAttributes{
+	data := model.SellerAttributes{
 		CompanyID:   seller.CompanyID,
 		CompanyName: seller.CompanyName,
 		Address:     seller.Address,

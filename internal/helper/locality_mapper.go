@@ -9,7 +9,7 @@ import (
 
 func LocalityRequestDTOToLocality(localityDto dto.LocalityRequestDTO) model.Locality {
 	data := model.Locality{
-		Id: localityDto.Data.Id,
+		Id: *localityDto.Data.Id,
 		LocalityAttributes: model.LocalityAttributes{
 			LocalityName: localityDto.Data.LocalityName,
 			ProvinceName: localityDto.Data.ProvinceName,
@@ -20,9 +20,9 @@ func LocalityRequestDTOToLocality(localityDto dto.LocalityRequestDTO) model.Loca
 	return data
 }
 
-func LocalityToLocalityDataResponseDTO(locality model.Locality) dto.LocalityDataResponseDTO {
-	data := dto.LocalityDataResponseDTO{
-		Id:           locality.Id,
+func LocalityToLocalityDataResponseDTO(locality model.Locality) dto.LocalityDataDTO {
+	data := dto.LocalityDataDTO{
+		Id:           &locality.Id,
 		LocalityName: locality.LocalityName,
 		ProvinceName: locality.ProvinceName,
 		CountryName:  locality.CountryName,
@@ -41,12 +41,11 @@ func CarriersByLocalityReportToCarriersByLocalityReportResponseDTO(carriersRepor
 	return data
 }
 
-
 func LocalityReportToLocalityReportResponseDto(locality model.LocalityReport) dto.LocalityReportResponseDTO {
 	data := dto.LocalityReportResponseDTO{
-		Id: strconv.Itoa(locality.Id),
+		Id:           strconv.Itoa(locality.Id),
 		LocalityName: locality.LocalityName,
-		SellerCount: locality.SellerCount,
+		SellerCount:  locality.SellerCount,
 	}
 
 	return data
