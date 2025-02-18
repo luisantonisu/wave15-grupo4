@@ -33,13 +33,13 @@ func (s *LocalityService) Create(locality model.Locality) (model.Locality, error
 	}
 
 	//validate CountryName and get countryID
-	countryId, err := s.countryRp.GetCountryIDByCountryName(locality.CountryName)
+	countryId, err := s.countryRp.GetCountryIDByCountryName(*locality.CountryName)
 	if err != nil {
 		return model.Locality{}, err
 	}
 
 	//validate ProvinceName and get ProvinceID
-	provinceID, err := s.provinceRp.GetProvinceID(countryId, locality.ProvinceName)
+	provinceID, err := s.provinceRp.GetProvinceID(countryId, *locality.ProvinceName)
 	if err != nil {
 		return model.Locality{}, err
 	}
@@ -53,7 +53,7 @@ func (s *LocalityService) Create(locality model.Locality) (model.Locality, error
 	//create model localityDb
 	var localityDb = model.LocalityDBModel{
 		Id:           localityID,
-		LocalityName: locality.LocalityName,
+		LocalityName: *locality.LocalityName,
 		ProvinceID:   provinceID,
 	}
 
@@ -65,7 +65,7 @@ func (s *LocalityService) Create(locality model.Locality) (model.Locality, error
 	var respLocality = model.Locality{
 		Id: strconv.Itoa(newLocality.Id),
 		LocalityAttributes: model.LocalityAttributes{
-			LocalityName: newLocality.LocalityName,
+			LocalityName: &newLocality.LocalityName,
 			ProvinceName: locality.ProvinceName,
 			CountryName:  locality.CountryName,
 		},
@@ -74,21 +74,21 @@ func (s *LocalityService) Create(locality model.Locality) (model.Locality, error
 	return respLocality, nil
 }
 
-func (s *LocalityService) SellersReport(id *int) (map[int]model.LocalityReport, error) {
+func (s *LocalityService) SellersReport(id *int) ([]model.LocalityReport, error) {
 	return s.localityRp.SellersReport(id)
 }
 
 func (s *LocalityService) validateLocality(locality model.Locality) error {
 	//validate if locality_Id only contains numbers and is not empty
-	pattern := regexp.MustCompile("^[0-9]+$")
+	pattern := regexp.MustCompile("^[1-9]+[0-9]*$")
 	match := pattern.MatchString(locality.Id)
 	if !match {
 		return eh.GetErrInvalidData(eh.LOCALITY)
 	}
 
-	hasLocalityName := locality.LocalityName != ""
-	hasProvinceName := locality.ProvinceName != ""
-	hasCountryName := locality.CountryName != ""
+	hasLocalityName := locality.LocalityName != nil && *locality.LocalityName != ""
+	hasProvinceName := locality.ProvinceName != nil && *locality.ProvinceName != ""
+	hasCountryName := locality.CountryName != nil && *locality.CountryName != ""
 
 	var validators = []bool{hasLocalityName, hasProvinceName, hasCountryName}
 	for _, item := range validators {

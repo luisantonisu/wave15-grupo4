@@ -22,7 +22,7 @@ type SellerService struct {
 	localityRp localityRepository.ILocality
 }
 
-func (s *SellerService) GetAll() (sellers map[int]model.Seller, err error) {
+func (s *SellerService) GetAll() (sellers []model.Seller, err error) {
 	sellers, err = s.sellerRp.GetAll()
 	if len(sellers) == 0 {
 		return nil, eh.GetErrNotFound(eh.SELLER)
@@ -54,7 +54,7 @@ func (s *SellerService) Create(seller model.Seller) (model.Seller, error) {
 	}
 
 	//Validate if locality exist
-	err = s.validateLocality(seller.LocalityId)
+	err = s.validateLocality(*seller.LocalityId)
 	if err != nil {
 		return model.Seller{}, eh.GetErrForeignKey(eh.LOCALITY)
 	}
@@ -68,7 +68,7 @@ func (s *SellerService) Create(seller model.Seller) (model.Seller, error) {
 	return newSeller, nil
 }
 
-func (s *SellerService) Update(id int, seller model.SellerAttributesPtr) (model.Seller, error) {
+func (s *SellerService) Update(id int, seller model.SellerAttributes) (model.Seller, error) {
 	if seller.LocalityId != nil {
 		//Validate if locality exist
 		err := s.validateLocality(*seller.LocalityId)
@@ -77,7 +77,7 @@ func (s *SellerService) Update(id int, seller model.SellerAttributesPtr) (model.
 		}
 	}
 
-	pattern := regexp.MustCompile("^[0-9]+$")
+	pattern := regexp.MustCompile("^[1-9]+[0-9]*$")
 	matchCompanyID := pattern.MatchString(*seller.CompanyID)
 	if !matchCompanyID {
 		return model.Seller{}, eh.GetErrInvalidData(eh.SELLER)
@@ -101,21 +101,21 @@ func (s *SellerService) Delete(id int) error {
 
 func (s *SellerService) validateSeller(seller model.Seller) error {
 	//validate if company_id only contains numbers and is not empty
-	pattern := regexp.MustCompile("^[0-9]+$")
-	matchCompanyID := pattern.MatchString(seller.CompanyID)
+	pattern := regexp.MustCompile("^[1-9]+[0-9]*$")
+	matchCompanyID := pattern.MatchString(*seller.CompanyID)
 	if !matchCompanyID {
 		return eh.GetErrInvalidData(eh.SELLER)
 	}
 
 	//validate if locality_id only contains numbers and is not empty
-	matchLocalityId := pattern.MatchString(seller.LocalityId)
+	matchLocalityId := pattern.MatchString(*seller.LocalityId)
 	if !matchLocalityId {
 		return eh.GetErrInvalidData(eh.SELLER)
 	}
 
-	hasCompanyName := seller.CompanyName != ""
-	hasAddress := seller.Address != ""
-	hasTelephone := seller.Telephone != ""
+	hasCompanyName := seller.CompanyName != nil && *seller.CompanyName != ""
+	hasAddress := seller.Address != nil && *seller.Address != ""
+	hasTelephone := seller.Telephone != nil && *seller.Telephone != ""
 
 	var validators = []bool{hasCompanyName, hasAddress, hasTelephone}
 	for _, item := range validators {
