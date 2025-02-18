@@ -77,7 +77,7 @@ func (s *SellerService) Update(id int, seller model.SellerAttributes) (model.Sel
 		}
 	}
 
-	pattern := regexp.MustCompile("^[0-9]+$")
+	pattern := regexp.MustCompile("^[1-9]+[0-9]*$")
 	matchCompanyID := pattern.MatchString(*seller.CompanyID)
 	if !matchCompanyID {
 		return model.Seller{}, eh.GetErrInvalidData(eh.SELLER)
@@ -101,7 +101,7 @@ func (s *SellerService) Delete(id int) error {
 
 func (s *SellerService) validateSeller(seller model.Seller) error {
 	//validate if company_id only contains numbers and is not empty
-	pattern := regexp.MustCompile("^[0-9]+$")
+	pattern := regexp.MustCompile("^[1-9]+[0-9]*$")
 	matchCompanyID := pattern.MatchString(*seller.CompanyID)
 	if !matchCompanyID {
 		return eh.GetErrInvalidData(eh.SELLER)

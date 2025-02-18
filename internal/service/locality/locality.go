@@ -80,7 +80,7 @@ func (s *LocalityService) SellersReport(id *int) ([]model.LocalityReport, error)
 
 func (s *LocalityService) validateLocality(locality model.Locality) error {
 	//validate if locality_Id only contains numbers and is not empty
-	pattern := regexp.MustCompile("^[0-9]+$")
+	pattern := regexp.MustCompile("^[1-9]+[0-9]*$")
 	match := pattern.MatchString(locality.Id)
 	if !match {
 		return eh.GetErrInvalidData(eh.LOCALITY)
