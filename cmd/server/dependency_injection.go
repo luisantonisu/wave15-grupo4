@@ -90,7 +90,7 @@ func GetHandlers(db *sql.DB) Handlers {
 	sellerSv := sellerService.NewSellerService(sellerRp, localityRp)
 	warehouseSv := warehouseService.NewWarehouseService(warehouseRp, localityRp)
 	localitySv := localityService.NewLocalityService(countryRp, provinceRp, localityRp)
-	carrySv := carryService.NewCarryService(carryRp)
+	carrySv := carryService.NewCarryService(carryRp, localityRp)
 
 	// - handler
 	buyerHd := buyerHandler.NewBuyerHandler(buyerSv)

@@ -35,6 +35,7 @@ const (
 	PRODUCT_BATCH_ID = "product batch ID"
 	CARRY            = "carry"
 	LOCALITY_NAME    = "locality name"
+	CARRY_ID         = "carry ID"
 )
 
 var (
