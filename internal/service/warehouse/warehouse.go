@@ -4,61 +4,50 @@ import (
 	"errors"
 
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
-	repository "github.com/luisantonisu/wave15-grupo4/internal/repository/warehouse"
+	localityRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/locality"
+	warehouseRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/warehouse"
 	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
-var (
-	ErrWarehouseCodeEmpty           = errors.New("warehouse code is empty")
-	ErrTelephoneEmptyOrInvalid      = errors.New("telephone is empty or invalid")
-	ErrMinimumCapacityNegative      = errors.New("minimum capacity is negative")
-	ErrMinimumTemperatureOutOfRange = errors.New("minimum temperature is out of range")
+const (
+	ErrWarehouseCodeEmpty           = "warehouse code is empty"
+	ErrTelephoneEmptyOrInvalid      = "telephone is empty or invalid"
+	ErrMinimumCapacityNegative      = "minimum capacity is negative"
+	ErrMinimumTemperatureOutOfRange = "minimum temperature is out of range"
 )
 
-func NewWarehouseService(rp repository.IWarehouse) *WarehouseService {
-	return &WarehouseService{rp: rp}
+func NewWarehouseService(warehouseRp warehouseRepository.IWarehouse, localityRp localityRepository.ILocality) *WarehouseService {
+	return &WarehouseService{
+		warehouseRp: warehouseRp,
+		localityRp:  localityRp,
+	}
 }
 
 type WarehouseService struct {
-	rp repository.IWarehouse
+	warehouseRp warehouseRepository.IWarehouse
+	localityRp  localityRepository.ILocality
 }
 
-func (ws *WarehouseService) GetAll() (map[int]model.Warehouse, error) {
-	return ws.rp.GetAll()
+func (s *WarehouseService) GetAll() ([]model.Warehouse, error) {
+	return s.warehouseRp.GetAll()
 }
 
-func (ws *WarehouseService) GetByID(id int) (model.Warehouse, error) {
-	return ws.rp.GetByID(id)
+func (s *WarehouseService) GetByID(id int) (model.Warehouse, error) {
+	return s.warehouseRp.GetByID(id)
 }
 
-func (ws *WarehouseService) Create(warehouse model.Warehouse) (model.Warehouse, error) {
-	if err := validateCode(warehouse.WarehouseCode); err != nil {
+func (s *WarehouseService) Create(warehouse model.Warehouse) (model.Warehouse, error) {
+	if warehouse.WarehouseCode == nil || *warehouse.WarehouseCode == "" {
+		return model.Warehouse{}, eh.GetErrInvalidData(ErrWarehouseCodeEmpty)
+	}
+
+	// Check if warehouse code already exists
+	exists, err := s.warehouseRp.GetByCode(*warehouse.WarehouseCode)
+	if exists != (model.Warehouse{}) {
+		return model.Warehouse{}, eh.GetErrAlreadyExists(eh.WAREHOUSE_CODE)
+	}
+	if err != nil && !errors.Is(err, eh.ErrNotFound) {
 		return model.Warehouse{}, err
-	}
-
-	if warehouse.Telephone != 0 {
-		if err := validatePhone(warehouse.Telephone); err != nil {
-			return model.Warehouse{}, err
-		}
-	}
-
-	if warehouse.MinimumCapacity != 0 {
-		if err := validateCapacity(warehouse.MinimumCapacity); err != nil {
-			return model.Warehouse{}, err
-		}
-	}
-
-	if err := validateTemperature(warehouse.MinimumTemperature); err != nil {
-		return model.Warehouse{}, err
-	}
-	return ws.rp.Create(warehouse)
-}
-
-func (ws *WarehouseService) Update(id int, warehouse model.WarehouseAttributesPtr) (model.Warehouse, error) {
-	if warehouse.WarehouseCode != nil {
-		if err := validateCode(*warehouse.WarehouseCode); err != nil {
-			return model.Warehouse{}, err
-		}
 	}
 
 	if warehouse.Telephone != nil {
@@ -78,38 +67,87 @@ func (ws *WarehouseService) Update(id int, warehouse model.WarehouseAttributesPt
 			return model.Warehouse{}, err
 		}
 	}
-	return ws.rp.Update(id, warehouse)
-}
 
-func (ws *WarehouseService) Delete(id int) error {
-	return ws.rp.Delete(id)
-}
-
-func validateCode(code string) error {
-	if code == "" {
-		return eh.GetErrInvalidData(ErrWarehouseCodeEmpty.Error())
+	if warehouse.LocalityID != nil {
+		if _, err := s.localityRp.GetByID(*warehouse.LocalityID); err != nil {
+			return model.Warehouse{}, eh.GetErrForeignKey(eh.LOCALITY)
+		}
 	}
-	return nil
+
+	return s.warehouseRp.Create(warehouse)
+}
+
+func (s *WarehouseService) Update(id int, warehouse model.WarehouseAttributes) (model.Warehouse, error) {
+	existingWarehouse, err := s.warehouseRp.GetByID(id)
+	if err != nil {
+		return model.Warehouse{}, err
+	}
+
+	if warehouse.WarehouseCode != nil && warehouse.WarehouseCode != existingWarehouse.WarehouseCode {
+		// Check if warehouse code already exists
+		exists, err := s.warehouseRp.GetByCode(*warehouse.WarehouseCode)
+		if exists != (model.Warehouse{}) {
+			return model.Warehouse{}, eh.GetErrAlreadyExists(eh.WAREHOUSE_CODE)
+		}
+		if err != nil && !errors.Is(err, eh.ErrNotFound) {
+			return model.Warehouse{}, err
+		}
+	}
+
+	if warehouse.Telephone != nil {
+		if err := validatePhone(*warehouse.Telephone); err != nil {
+			return model.Warehouse{}, err
+		}
+		existingWarehouse.Telephone = warehouse.Telephone
+	}
+
+	if warehouse.MinimumCapacity != nil {
+		if err := validateCapacity(*warehouse.MinimumCapacity); err != nil {
+			return model.Warehouse{}, err
+		}
+		existingWarehouse.MinimumCapacity = warehouse.MinimumCapacity
+	}
+
+	if warehouse.MinimumTemperature != nil {
+		if err := validateTemperature(*warehouse.MinimumTemperature); err != nil {
+			return model.Warehouse{}, err
+		}
+		existingWarehouse.MinimumTemperature = warehouse.MinimumTemperature
+	}
+
+	if warehouse.LocalityID != nil {
+		if _, err := s.localityRp.GetByID(*warehouse.LocalityID); err != nil {
+			return model.Warehouse{}, eh.GetErrForeignKey(eh.LOCALITY)
+		}
+	}
+
+	return s.warehouseRp.Update(id, existingWarehouse)
+}
+
+func (s *WarehouseService) Delete(id int) error {
+	if _, err := s.warehouseRp.GetByID(id); err != nil {
+		return eh.GetErrNotFound(eh.WAREHOUSE)
+	}
+	return s.warehouseRp.Delete(id)
 }
 
 func validatePhone(phone uint) error {
 	if phone < 1000000 || phone > 9999999999 {
-		return eh.GetErrInvalidData(ErrTelephoneEmptyOrInvalid.Error())
+		return eh.GetErrInvalidData(ErrTelephoneEmptyOrInvalid)
 	}
 	return nil
 }
 
-func validateCapacity(minimumCapacity int) error {
-	if minimumCapacity < 0 {
-		return eh.GetErrInvalidData(ErrMinimumCapacityNegative.Error())
+func validateCapacity(capacity int) error {
+	if capacity < 0 {
+		return eh.GetErrInvalidData(ErrMinimumCapacityNegative)
 	}
 	return nil
 }
 
 func validateTemperature(temperature float32) error {
 	if temperature < -20 || temperature > 40 {
-		return eh.GetErrInvalidData(ErrMinimumTemperatureOutOfRange.Error())
+		return eh.GetErrInvalidData(ErrMinimumTemperatureOutOfRange)
 	}
-
 	return nil
 }
