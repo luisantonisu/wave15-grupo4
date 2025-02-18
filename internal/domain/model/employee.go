@@ -6,13 +6,6 @@ type Employee struct {
 }
 
 type EmployeeAttributes struct {
-	CardNumberID int
-	FirstName    string
-	LastName     string
-	WarehouseID  int
-}
-
-type EmployeeAttributesPtr struct {
 	CardNumberID *int
 	FirstName    *string
 	LastName     *string
