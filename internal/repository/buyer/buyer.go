@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"strconv"
 
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
@@ -21,12 +20,12 @@ type BuyerRepository struct {
 // Create a new buyer
 func (r *BuyerRepository) Create(buyer model.BuyerAttributes) (model.Buyer, error) {
 	// Validate card number id doesnt already exist
-	if r.cardNumberIdExists(buyer.CardNumberId) {
+	if r.cardNumberIdExists(*buyer.CardNumberId) {
 		return model.Buyer{}, eh.GetErrAlreadyExists(eh.CARD_NUMBER)
 	}
 	// Create new buyer in DB
 	row, err := r.db.Exec("INSERT INTO buyers (first_name, last_name, card_number_id) VALUES (?, ?, ?)",
-		buyer.FirstName, buyer.LastName, buyer.CardNumberId,
+		*buyer.FirstName, *buyer.LastName, *buyer.CardNumberId,
 	)
 	if err != nil {
 		return model.Buyer{}, eh.GetErrInvalidData(eh.BUYER)
@@ -45,7 +44,7 @@ func (r *BuyerRepository) Create(buyer model.BuyerAttributes) (model.Buyer, erro
 }
 
 // List all buyers
-func (r *BuyerRepository) GetAll() (map[int]model.Buyer, error) {
+func (r *BuyerRepository) GetAll() ([]model.Buyer, error) {
 	// Get buyers from db
 	rows, err := r.db.Query("SELECT id, first_name, last_name, card_number_id FROM buyers")
 	if err != nil {
@@ -54,14 +53,14 @@ func (r *BuyerRepository) GetAll() (map[int]model.Buyer, error) {
 	defer rows.Close()
 
 	// Parse buyers and create response
-	buyers := make(map[int]model.Buyer)
+	var buyers []model.Buyer
 	for rows.Next() {
 		var buyer model.Buyer
 		err := rows.Scan(&buyer.ID, &buyer.FirstName, &buyer.LastName, &buyer.CardNumberId)
 		if err != nil {
 			return nil, eh.GetErrParsingData(eh.BUYER)
 		}
-		buyers[buyer.ID] = buyer
+		buyers = append(buyers, buyer)
 	}
 	return buyers, nil
 }
@@ -97,7 +96,7 @@ func (r *BuyerRepository) Delete(id int) error {
 }
 
 // Update a buyer by id
-func (r *BuyerRepository) Update(id int, buyer model.BuyerAttributesPtr) (model.Buyer, error) {
+func (r *BuyerRepository) Update(id int, buyer model.BuyerAttributes) (model.Buyer, error) {
 	// Validate buyer exists
 	if !r.buyerExists(id) {
 		return model.Buyer{}, eh.GetErrNotFound(eh.BUYER)
@@ -113,22 +112,22 @@ func (r *BuyerRepository) Update(id int, buyer model.BuyerAttributesPtr) (model.
 
 	// Update buyer entity with new values
 	if buyer.FirstName != nil {
-		newBuyer.FirstName = *buyer.FirstName
+		newBuyer.FirstName = buyer.FirstName
 	}
 	if buyer.LastName != nil {
-		newBuyer.LastName = *buyer.LastName
+		newBuyer.LastName = buyer.LastName
 	}
 	if buyer.CardNumberId != nil {
 		// Validate card number id already exist
 		if r.cardNumberIdIsMine(*buyer.CardNumberId, id) {
 			return model.Buyer{}, eh.GetErrAlreadyExists(eh.CARD_NUMBER)
 		}
-		newBuyer.CardNumberId = *buyer.CardNumberId
+		newBuyer.CardNumberId = buyer.CardNumberId
 	}
 
 	// Update buyer in db
 	_, err = r.db.Exec("UPDATE buyers SET first_name = ?, last_name = ?, card_number_id = ? WHERE id = ?",
-		newBuyer.FirstName, newBuyer.LastName, newBuyer.CardNumberId, id,
+		*newBuyer.FirstName, *newBuyer.LastName, *newBuyer.CardNumberId, id,
 	)
 	if err != nil {
 		return model.Buyer{}, eh.GetErrInvalidData(eh.BUYER)
@@ -138,32 +137,37 @@ func (r *BuyerRepository) Update(id int, buyer model.BuyerAttributesPtr) (model.
 }
 
 // Generate Purchase Order reports for buyer
-func (r *BuyerRepository) Report(id int) (map[int]model.ReportPurchaseOrders, error) {
+func (r *BuyerRepository) PurchaseOrderReport(id *int) ([]model.ReportPurchaseOrders, error) {
+	var rows *sql.Rows
+	var err error
+
 	// Make a "dynamic" query to get single or multiple buyers
 	query := "SELECT buyers.id, buyers.first_name, buyers.last_name, buyers.card_number_id, COUNT(*) AS purchase_orders_count FROM buyers JOIN purchase_orders ON buyers.id = purchase_orders.buyer_id GROUP BY buyers.id"
 
-	if id != -1 {
+	if id != nil {
 		// Verify buyer exists
-		if !r.buyerExists(id) {
+		if !r.buyerExists(*id) {
 			return nil, eh.GetErrNotFound(eh.BUYER)
 		}
-		query += " HAVING buyers.id = " + strconv.Itoa(id)
+		query += " HAVING buyers.id = ?"
+		rows, err = r.db.Query(query, id)
+	} else {
+		rows, err = r.db.Query(query)
 	}
 	
-	rows, err := r.db.Query(query)
 	if err != nil {
 		return nil, eh.GetErrGettingData(eh.BUYER)
 	}
 
 	// Response
-	buyers := make(map[int]model.ReportPurchaseOrders)
+	var buyers []model.ReportPurchaseOrders
 	for rows.Next() {
 		var buyer model.ReportPurchaseOrders
 		err := rows.Scan(&buyer.ID, &buyer.FirstName, &buyer.LastName, &buyer.CardNumberId, &buyer.PurchaseOrdersCount)
 		if err != nil {
 			return nil, eh.GetErrParsingData(eh.BUYER)
 		}
-		buyers[buyer.ID] = buyer
+		buyers = append(buyers, buyer)
 	}
 	return buyers, nil
 

@@ -34,15 +34,16 @@ func (h *PurchaseOrderHandler) Create() http.HandlerFunc {
 			response.Error(w, code, message)
 			return
 		}
-		newPurchaseOrder := helper.PurchaseOrderRequestDTOToPurchaseOrderAttributes(purchaseOrderRequestDto)
+		purchaseOrderRequest := helper.PurchaseOrderRequestDTOToPurchaseOrderAttributes(purchaseOrderRequestDto)
 
 		// Call service
-		data, err := h.sv.Create(newPurchaseOrder)
+		newPurchaseOrder, err := h.sv.Create(purchaseOrderRequest)
 		if err != nil {
 			code, message := eh.HandleError(err)
 			response.Error(w, code, message)
 			return
 		}
+		data := helper.PurchaseOrderToPurchaseOrderResponseDTO(newPurchaseOrder)
 
 		// Return response
 		response.JSON(w, http.StatusCreated, map[string]any{

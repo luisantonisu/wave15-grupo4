@@ -20,7 +20,7 @@ func NewPurchaseOrderRepository(defaultDB *sql.DB) *PurchaseOrderRepository {
 // Create a new purchase order
 func (r *PurchaseOrderRepository) Create(purchaseOrder model.PurchaseOrderAttributes) (model.PurchaseOrder, error) {
 	// Validate order number doesnt already exist
-	if r.orderNumberExists(purchaseOrder.OrderNumber) {
+	if r.orderNumberExists(*purchaseOrder.OrderNumber) {
 		return model.PurchaseOrder{}, eh.GetErrAlreadyExists(eh.ORDER_NUMBER)
 	}
 	

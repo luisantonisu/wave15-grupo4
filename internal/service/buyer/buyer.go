@@ -2,15 +2,15 @@ package service
 
 import (
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
-	repository "github.com/luisantonisu/wave15-grupo4/internal/repository/buyer"
+	buyerRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/buyer"
 )
 
-func NewBuyerService(rp repository.IBuyer) *BuyerService {
+func NewBuyerService(rp buyerRepository.IBuyer) *BuyerService {
 	return &BuyerService{rp: rp}
 }
 
 type BuyerService struct {
-	rp repository.IBuyer
+	rp buyerRepository.IBuyer
 }
 
 // Create a new buyer
@@ -23,7 +23,7 @@ func (s *BuyerService) Create(buyer model.BuyerAttributes) (model.Buyer, error) 
 }
 
 // List all buyers
-func (s *BuyerService) GetAll() (map[int]model.Buyer, error) {
+func (s *BuyerService) GetAll() ([]model.Buyer, error) {
 	allBuyers, err := s.rp.GetAll()
 	if err != nil {
 		return nil, err
@@ -50,7 +50,7 @@ func (s *BuyerService) Delete(id int) error {
 }
 
 // Update a buyer by id
-func (s *BuyerService) Update(id int, buyer model.BuyerAttributesPtr) (model.Buyer, error) {
+func (s *BuyerService) Update(id int, buyer model.BuyerAttributes) (model.Buyer, error) {
 	updatedBuyer, err := s.rp.Update(id, buyer)
 	if err != nil {
 		return model.Buyer{}, err
@@ -59,8 +59,8 @@ func (s *BuyerService) Update(id int, buyer model.BuyerAttributesPtr) (model.Buy
 }
 
 // Generate Purchase Order Report
-func (s *BuyerService) Report(id int) (map[int]model.ReportPurchaseOrders, error) {
-	report, err := s.rp.Report(id)
+func (s *BuyerService) PurchaseOrderReport(id *int) ([]model.ReportPurchaseOrders, error) {
+	report, err := s.rp.PurchaseOrderReport(id)
 	if err != nil {
 		return nil, err
 	}
