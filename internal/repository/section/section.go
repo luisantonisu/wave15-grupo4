@@ -26,7 +26,7 @@ func (s *SectionRepository) sectionExists(id int) bool {
 	return exists
 }
 
-func (s *SectionRepository) sectionNumberExist(sectionNumber int) bool {
+func (s *SectionRepository) sectionNumberExist(sectionNumber string) bool {
 	var exists bool
 	err := s.db.QueryRow("SELECT EXISTS(SELECT 1 FROM sections WHERE section_number = ?)", sectionNumber).Scan(&exists)
 	if err != nil {
@@ -35,19 +35,21 @@ func (s *SectionRepository) sectionNumberExist(sectionNumber int) bool {
 	return exists
 }
 
-func (s *SectionRepository) GetAll() (map[int]model.Section, error) {
+func (s *SectionRepository) GetAll() ([]model.Section, error) {
 	rows, err := s.db.Query("SELECT id, section_number, current_temperature, minimum_temperature, current_capacity, minimum_capacity, maximum_capacity, warehouse_id, product_type_id FROM sections")
 	if err != nil {
 		return nil, eh.GetErrGettingData(eh.SECTION)
 	}
-	sections := make(map[int]model.Section)
+	defer rows.Close()
+
+	var sections []model.Section
 	for rows.Next() {
 		var section model.Section
 		err := rows.Scan(&section.ID, &section.SectionNumber, &section.CurrentTemperature, &section.MinimumTemperature, &section.CurrentCapacity, &section.MinimumCapacity, &section.MaximumCapacity, &section.WarehouseID, &section.ProductTypeID)
 		if err != nil {
 			return nil, eh.GetErrParsingData(eh.SECTION)
 		}
-		sections[section.ID] = section
+		sections = append(sections, section)
 	}
 	return sections, nil
 }
@@ -62,7 +64,7 @@ func (s *SectionRepository) GetByID(id int) (section model.Section, err error) {
 }
 
 func (s *SectionRepository) Create(section model.SectionAttributes) (model.Section, error) {
-	if s.sectionNumberExist(section.SectionNumber) {
+	if s.sectionNumberExist(*section.SectionNumber) {
 		return model.Section{}, eh.GetErrAlreadyExists(eh.SECTION_NUMBER)
 	}
 
@@ -84,14 +86,14 @@ func (s *SectionRepository) Create(section model.SectionAttributes) (model.Secti
 	return sect, nil
 }
 
-func (s *SectionRepository) Patch(id int, section model.SectionAttributesPtr) (model.Section, error) {
+func (s *SectionRepository) Patch(id int, section model.SectionAttributes) (model.Section, error) {
 	if !s.sectionExists(id) {
 		return model.Section{}, eh.GetErrNotFound(eh.SECTION)
 	}
 
-	if section.SectionNumber != nil && s.sectionNumberExist(*section.SectionNumber) {
-		return model.Section{}, eh.GetErrAlreadyExists(eh.SECTION_NUMBER)
-	}
+	// if section.SectionNumber != nil && s.sectionNumberExist(*section.SectionNumber) {
+	// 	return model.Section{}, eh.GetErrAlreadyExists(eh.SECTION_NUMBER)
+	// }
 
 	var sec model.Section
 	err := s.db.QueryRow("SELECT id, section_number, current_temperature, minimum_temperature, current_capacity, minimum_capacity, maximum_capacity, warehouse_id, product_type_id FROM sections WHERE id = ?", id).Scan(
@@ -102,31 +104,32 @@ func (s *SectionRepository) Patch(id int, section model.SectionAttributesPtr) (m
 	}
 
 	if section.SectionNumber != nil {
-		sec.SectionNumber = *section.SectionNumber
+		sec.SectionNumber = section.SectionNumber
 	}
 	if section.CurrentTemperature != nil {
-		sec.CurrentTemperature = *section.CurrentTemperature
+		sec.CurrentTemperature = section.CurrentTemperature
 	}
 	if section.MinimumTemperature != nil {
-		sec.MinimumTemperature = *section.MinimumTemperature
+		sec.MinimumTemperature = section.MinimumTemperature
 	}
 	if section.CurrentCapacity != nil {
-		sec.CurrentCapacity = *section.CurrentCapacity
+		sec.CurrentCapacity = section.CurrentCapacity
 	}
 	if section.MinimumCapacity != nil {
-		sec.MinimumCapacity = *section.MinimumCapacity
+		sec.MinimumCapacity = section.MinimumCapacity
 	}
 	if section.MaximumCapacity != nil {
-		sec.MaximumCapacity = *section.MaximumCapacity
+		sec.MaximumCapacity = section.MaximumCapacity
 	}
 	if section.WarehouseID != nil {
-		sec.WarehouseID = *section.WarehouseID
+		sec.WarehouseID = section.WarehouseID
 	}
 	if section.ProductTypeID != nil {
-		sec.ProductTypeID = *section.ProductTypeID
+		sec.ProductTypeID = section.ProductTypeID
 	}
-	_, err = s.db.Exec("UPDATE sections SET section_number = ?, current_temperature = ?, minimum_temperature = ?, current_capacity = ?, minimum_capacity = ?, maximum_capacity = ?, warehouse_id = ?, product_type_id = ?, WHERE id = ?",
-		sec.SectionNumber, sec.CurrentTemperature, sec.MinimumTemperature, sec.CurrentCapacity, sec.MinimumCapacity, sec.MaximumCapacity, sec.WarehouseID, sec.ProductTypeID, id)
+
+	_, err = s.db.Exec("UPDATE sections SET section_number = ?, current_temperature = ?, minimum_temperature = ?, current_capacity = ?, minimum_capacity = ?, maximum_capacity = ?, warehouse_id = ?, product_type_id = ? WHERE id = ?",
+		*sec.SectionNumber, *sec.CurrentTemperature, *sec.MinimumTemperature, *sec.CurrentCapacity, *sec.MinimumCapacity, *sec.MaximumCapacity, *sec.WarehouseID, *sec.ProductTypeID, id)
 
 	if err != nil {
 		return model.Section{}, eh.GetErrInvalidData(eh.SECTION)
@@ -148,15 +151,15 @@ func (s *SectionRepository) Delete(id int) error {
 	return nil
 }
 
-func (s *SectionRepository) Report(id int) (map[int]model.ReportProductsBatches, error) {
+func (s *SectionRepository) Report(id *int) ([]model.ReportProductsBatches, error) {
 
 	var rows *sql.Rows
 	var err error
 
 	query := "SELECT sections.id, sections.section_number, COUNT(*) AS products_count FROM sections JOIN product_batches ON sections.id = product_batches.section_id "
 
-	if id != -1 {
-		if !s.sectionExists(id) {
+	if id != nil {
+		if !s.sectionExists(*id) {
 			return nil, eh.GetErrNotFound(eh.SECTION)
 		}
 		query += "WHERE sections.id = ? GROUP BY sections.id"
@@ -170,14 +173,14 @@ func (s *SectionRepository) Report(id int) (map[int]model.ReportProductsBatches,
 		return nil, eh.GetErrGettingData(eh.SECTION)
 	}
 
-	productsBatches := make(map[int]model.ReportProductsBatches)
+	var productsBatches []model.ReportProductsBatches
 	for rows.Next() {
 		var productBatch model.ReportProductsBatches
 		err := rows.Scan(&productBatch.SectionID, &productBatch.SectionNumber, &productBatch.ProductsCount)
 		if err != nil {
 			return nil, eh.GetErrParsingData(eh.SECTION)
 		}
-		productsBatches[productBatch.SectionID] = productBatch
+		productsBatches = append(productsBatches, productBatch)
 	}
 	return productsBatches, nil
 }
