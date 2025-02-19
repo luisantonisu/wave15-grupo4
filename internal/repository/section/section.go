@@ -132,7 +132,6 @@ func (s *SectionRepository) Patch(id int, section model.SectionAttributes) (mode
 		*sec.SectionNumber, *sec.CurrentTemperature, *sec.MinimumTemperature, *sec.CurrentCapacity, *sec.MinimumCapacity, *sec.MaximumCapacity, *sec.WarehouseID, *sec.ProductTypeID, id)
 
 	if err != nil {
-		println("AAAAAA", err.Error())
 		return model.Section{}, eh.GetErrInvalidData(eh.SECTION)
 	}
 

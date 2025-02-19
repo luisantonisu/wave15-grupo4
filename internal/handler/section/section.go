@@ -35,8 +35,6 @@ func (h *SectionHandler) GetAll() http.HandlerFunc {
 			data = append(data, helper.SectionToSectionResponseDTO(value))
 		}
 
-		println("AAAAAAAA")
-
 		response.JSON(w, http.StatusOK, map[string]any{
 			"data": data,
 		})
