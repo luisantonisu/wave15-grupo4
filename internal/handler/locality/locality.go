@@ -49,31 +49,29 @@ func (h *LocalityHandler) Create() http.HandlerFunc {
 	}
 }
 
-func (h *LocalityHandler) Report() http.HandlerFunc {
+func (h *LocalityHandler) CarriersReport() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var id int
-		var err error
-		idStr := r.URL.Query().Get("id")
-		if idStr == "" {
-			id = -1
-		} else {
-			id, err = strconv.Atoi(idStr)
+		var localityID *int
+		queryParams := r.URL.Query()
+		if queryParams.Has("id") {
+			id, err := strconv.Atoi(queryParams.Get("id"))
 			if err != nil {
 				response.Error(w, http.StatusBadRequest, eh.INVALID_ID)
 				return
 			}
+			localityID = &id
 		}
 
-		report, err := h.sv.Report(id)
+		report, err := h.sv.CarriersReport(localityID)
 		if err != nil {
 			code, message := eh.HandleError(err)
 			response.Error(w, code, message)
 			return
 		}
 
-		data := []dto.CarriersByLocalityReportResponseDTO{}
+		data := []dto.CarriersReportResponseDTO{}
 		for _, record := range report {
-			data = append(data, helper.CarriersByLocalityReportToCarriersByLocalityReportResponseDTO(record))
+			data = append(data, helper.CarriersReportToCarriersReportResponseDTO(record))
 		}
 		response.JSON(w, http.StatusOK, map[string]any{
 			"message": "Success",

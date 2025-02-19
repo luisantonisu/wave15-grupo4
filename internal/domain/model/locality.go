@@ -16,7 +16,7 @@ type LocalityDBModel struct {
 	ProvinceID   int
 }
 
-type CarriersByLocalityReport struct {
+type CarriersReport struct {
 	LocalityID    int
 	LocalityName  string
 	CarriersCount int

@@ -162,7 +162,7 @@ func (a *ServerChi) Run(cfg config.Config) (err error) {
 			// - GET /api/v1/localities
 			rt.Get("/reportSellers", handlers.LocalityHandler.SellersReport())
 			// - GET /api/v1/localities/reportCarriers?id=?
-			rt.Get("/reportCarriers", handlers.LocalityHandler.Report())
+			rt.Get("/reportCarriers", handlers.LocalityHandler.CarriersReport())
 		})
 		rt.Route("/warehouses", func(rt chi.Router) {
 			// - GET /api/v1/warehouses

@@ -7,12 +7,14 @@ import (
 
 func CarryToCarryResponseDTO(carry model.Carry) dto.CarryResponseDTO {
 	data := dto.CarryResponseDTO{
-		ID:          carry.ID,
-		CarryID:     carry.CarryID,
-		CompanyName: carry.CompanyName,
-		Address:     carry.Address,
-		Telephone:   carry.Telephone,
-		LocalityID:  carry.LocalityID,
+		ID: carry.ID,
+		CarryRequestDTO: dto.CarryRequestDTO{
+			CarryID:     carry.CarryID,
+			CompanyName: carry.CompanyName,
+			Address:     carry.Address,
+			Telephone:   carry.Telephone,
+			LocalityID:  carry.LocalityID,
+		},
 	}
 	return data
 }
@@ -26,17 +28,6 @@ func CarryRequestDTOToCarry(carryRequestDTO dto.CarryRequestDTO) model.Carry {
 			Telephone:   carryRequestDTO.Telephone,
 			LocalityID:  carryRequestDTO.LocalityID,
 		},
-	}
-	return data
-}
-
-func CarryRequestDTOPtrToCarryAttributesPtr(carryRequestDTOPtr dto.CarryRequestDTOPtr) model.CarryAttributesPtr {
-	data := model.CarryAttributesPtr{
-		CarryID:     carryRequestDTOPtr.CarryID,
-		CompanyName: carryRequestDTOPtr.CompanyName,
-		Address:     carryRequestDTOPtr.Address,
-		Telephone:   carryRequestDTOPtr.Telephone,
-		LocalityID:  carryRequestDTOPtr.LocalityID,
 	}
 	return data
 }

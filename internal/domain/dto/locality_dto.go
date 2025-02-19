@@ -10,7 +10,7 @@ type LocalityDataDTO struct {
 	CountryName  *string `json:"country_name"`
 }
 
-type CarriersByLocalityReportResponseDTO struct {
+type CarriersReportResponseDTO struct {
 	LocalityID    int    `json:"locality_id"`
 	LocalityName  string `json:"locality_name"`
 	CarriersCount int    `json:"carriers_count"`

@@ -100,6 +100,11 @@ func (s *LocalityService) validateLocality(locality model.Locality) error {
 	return nil
 }
 
-func (s *LocalityService) Report(id int) (map[int]model.CarriersByLocalityReport, error) {
-	return s.localityRp.Report(id)
+func (s *LocalityService) CarriersReport(id *int) ([]model.CarriersReport, error) {
+	if id != nil {
+		if _, err := s.localityRp.GetByID(*id); err != nil {
+			return nil, err
+		}
+	}
+	return s.localityRp.CarriersReport(id)
 }
