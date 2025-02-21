@@ -237,19 +237,6 @@ func TestDeleteProduct(t *testing.T) {
 
 }
 
-// func TestDeleteProductNotFound(t *testing.T) {
-// 	mockRepo := new(repository.MockProductRepository)
-// 	service := NewProductService(mockRepo)
-// 	t.Run("Delete product error", func(t *testing.T) {
-// 		mockRepo.On("DeleteProduct", 1).Return(errorHandler.GetErrNotFound(errorHandler.PRODUCT))
-
-// 		err := service.DeleteProduct(1)
-// 		assert.Error(t, err)
-// 		mockRepo.AssertExpectations(t)
-// 	})
-
-// }
-
 func TestUpdateProduct(t *testing.T) {
 	mockRepo := new(repository.MockProductRepository)
 	service := NewProductService(mockRepo)
@@ -273,17 +260,3 @@ func TestUpdateProduct(t *testing.T) {
 		mockRepo.AssertExpectations(t)
 	})
 }
-
-// func TestUpdateProductNotFound(t *testing.T) {
-// 	mockRepo := new(repository.MockProductRepository)
-// 	service := NewProductService(mockRepo)
-
-// 	productAttributes := &model.ProductAttributes{ProductCode: new(string)}
-
-// 	mockRepo.On("UpdateProduct", 4, productAttributes).Return(&model.Product{}, errorHandler.GetErrNotFound(errorHandler.PRODUCT))
-
-// 	product, err := service.UpdateProduct(4, productAttributes)
-// 	assert.Error(t, err)
-// 	assert.Equal(t, &model.Product{}, product)
-// 	mockRepo.AssertExpectations(t)
-// }
