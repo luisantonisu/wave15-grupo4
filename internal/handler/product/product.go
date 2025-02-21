@@ -50,7 +50,7 @@ func (h *ProductHandler) GetByID() http.HandlerFunc {
 		// request
 		id := chi.URLParam(r, "id")
 		if id == "" || id == "0" {
-			response.JSON(w, http.StatusBadRequest, errorHandler.INVALID_ID)
+			response.Error(w, http.StatusBadRequest, errorHandler.INVALID_ID)
 			return
 		}
 
@@ -65,7 +65,7 @@ func (h *ProductHandler) GetByID() http.HandlerFunc {
 		vResponse := helper.ProductToProductResponseDTO(v)
 		if err != nil {
 			code, msg := errorHandler.HandleError(err)
-			response.JSON(w, code, msg)
+			response.Error(w, code, msg)
 			return
 		}
 
@@ -87,7 +87,7 @@ func (h *ProductHandler) GetRecord() http.HandlerFunc {
 			v, err := h.service.GetProductRecord()
 			if err != nil {
 				code, msg := errorHandler.HandleError(err)
-				response.JSON(w, code, msg)
+				response.Error(w, code, msg)
 				return
 			}
 			vResponse := []dto.ProductRecordCountResponseDTO{}
@@ -111,7 +111,7 @@ func (h *ProductHandler) GetRecord() http.HandlerFunc {
 		v, err := h.service.GetProductRecordByID(idInt)
 		if err != nil {
 			code, msg := errorHandler.HandleError(err)
-			response.JSON(w, code, msg)
+			response.Error(w, code, msg)
 			return
 		}
 		vResponse := []dto.ProductRecordCountResponseDTO{}
@@ -141,7 +141,7 @@ func (h *ProductHandler) Create() http.HandlerFunc {
 		prod, err := h.service.CreateProduct(&request)
 		if err != nil {
 			code, msg := errorHandler.HandleError(err)
-			response.JSON(w, code, msg)
+			response.Error(w, code, msg)
 			return
 		}
 
@@ -203,7 +203,7 @@ func (h *ProductHandler) Update() http.HandlerFunc {
 		v, err := h.service.UpdateProduct(id, &request)
 		if err != nil {
 			code, msg := errorHandler.HandleError(err)
-			response.JSON(w, code, msg)
+			response.Error(w, code, msg)
 			return
 		}
 		var vResponse []dto.ProductResponseDTO

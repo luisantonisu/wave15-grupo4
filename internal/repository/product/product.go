@@ -27,7 +27,7 @@ func (r *ProductRepository) GetProduct() (productMap map[int]model.Product, err 
 	productMap = make(map[int]model.Product)
 	for rows.Next() {
 		var product model.Product
-		err := rows.Scan(&product.ID, &product.ProductAtrributes.ProductCode, &product.ProductAtrributes.Description, &product.ProductAtrributes.Width, &product.ProductAtrributes.Height, &product.ProductAtrributes.Length, &product.ProductAtrributes.NetWeight, &product.ProductAtrributes.ExpirationRate, &product.ProductAtrributes.RecommendedFreezingTemperature, &product.ProductAtrributes.FreezingRate, &product.ProductAtrributes.ProductTypeID, &product.ProductAtrributes.SellerID)
+		err := rows.Scan(&product.ID, &product.ProductAttributes.ProductCode, &product.ProductAttributes.Description, &product.ProductAttributes.Width, &product.ProductAttributes.Height, &product.ProductAttributes.Length, &product.ProductAttributes.NetWeight, &product.ProductAttributes.ExpirationRate, &product.ProductAttributes.RecommendedFreezingTemperature, &product.ProductAttributes.FreezingRate, &product.ProductAttributes.ProductTypeID, &product.ProductAttributes.SellerID)
 		if err != nil {
 			return nil, errorHandler.GetErrParsingData(errorHandler.PRODUCT)
 		}
@@ -38,7 +38,7 @@ func (r *ProductRepository) GetProduct() (productMap map[int]model.Product, err 
 
 func (r *ProductRepository) GetProductByID(id int) (product model.Product, err error) {
 	row := r.db.QueryRow("SELECT id, product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, freezing_rate, product_type_id, seller_id FROM products WHERE id = ?", id)
-	err = row.Scan(&product.ID, &product.ProductAtrributes.ProductCode, &product.ProductAtrributes.Description, &product.ProductAtrributes.Width, &product.ProductAtrributes.Height, &product.ProductAtrributes.Length, &product.ProductAtrributes.NetWeight, &product.ProductAtrributes.ExpirationRate, &product.ProductAtrributes.RecommendedFreezingTemperature, &product.ProductAtrributes.FreezingRate, &product.ProductAtrributes.ProductTypeID, &product.ProductAtrributes.SellerID)
+	err = row.Scan(&product.ID, &product.ProductAttributes.ProductCode, &product.ProductAttributes.Description, &product.ProductAttributes.Width, &product.ProductAttributes.Height, &product.ProductAttributes.Length, &product.ProductAttributes.NetWeight, &product.ProductAttributes.ExpirationRate, &product.ProductAttributes.RecommendedFreezingTemperature, &product.ProductAttributes.FreezingRate, &product.ProductAttributes.ProductTypeID, &product.ProductAttributes.SellerID)
 	if err != nil {
 		return model.Product{}, errorHandler.GetErrNotFound(errorHandler.PRODUCT)
 	}
@@ -86,7 +86,7 @@ func (r *ProductRepository) productCodeExists(productCode string) bool {
 	return count > 0
 }
 
-func (r *ProductRepository) CreateProduct(productAtrributes *model.ProductAtrributes) (prod model.Product, err error) {
+func (r *ProductRepository) CreateProduct(productAtrributes *model.ProductAttributes) (prod model.Product, err error) {
 
 	if r.productCodeExists(*productAtrributes.ProductCode) {
 		return model.Product{}, errorHandler.GetErrAlreadyExists(errorHandler.PRODUCT)
@@ -104,7 +104,7 @@ func (r *ProductRepository) CreateProduct(productAtrributes *model.ProductAtrrib
 
 	var newProduct model.Product
 	newProduct.ID = int(id)
-	newProduct.ProductAtrributes = *productAtrributes
+	newProduct.ProductAttributes = *productAtrributes
 
 	return newProduct, nil
 }
@@ -126,7 +126,7 @@ func (r *ProductRepository) DeleteProduct(id int) (err error) {
 	return nil
 }
 
-func (r *ProductRepository) UpdateProduct(id int, productAtrributesPtr *model.ProductAtrributes) (product *model.Product, err error) {
+func (r *ProductRepository) UpdateProduct(id int, productAtrributesPtr *model.ProductAttributes) (product *model.Product, err error) {
 
 	exist, err := r.registerExists(id)
 	if err != nil {
@@ -144,7 +144,7 @@ func (r *ProductRepository) UpdateProduct(id int, productAtrributesPtr *model.Pr
 
 	}
 
-	var patchedProduct model.ProductAtrributes
+	var patchedProduct model.ProductAttributes
 	product = &model.Product{}
 	err = r.db.QueryRow("SELECT product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, product_type_id, seller_id FROM products WHERE id = ?", id).Scan(&patchedProduct.ProductCode, &patchedProduct.Description, &patchedProduct.Width, &patchedProduct.Height, &patchedProduct.Length, &patchedProduct.NetWeight, &patchedProduct.ExpirationRate, &patchedProduct.RecommendedFreezingTemperature, &patchedProduct.ProductTypeID, &patchedProduct.SellerID)
 
@@ -190,7 +190,7 @@ func (r *ProductRepository) UpdateProduct(id int, productAtrributesPtr *model.Pr
 		return nil, errorHandler.GetErrInvalidData(errorHandler.PRODUCT)
 	}
 	product.ID = id
-	product.ProductAtrributes = patchedProduct
+	product.ProductAttributes = patchedProduct
 	return product, nil
 }
 

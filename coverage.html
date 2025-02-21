@@ -1,0 +1,221 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>product: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/luisantonisu/wave15-grupo4/internal/service/product/product.go (92.3%)</option>
+				
+				<option value="file1">github.com/luisantonisu/wave15-grupo4/internal/service/product/product_mock.go (0.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package service
+
+import (
+        "github.com/luisantonisu/wave15-grupo4/internal/domain/model"
+        repository "github.com/luisantonisu/wave15-grupo4/internal/repository/product"
+        errorHandler "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
+)
+
+func NewProductService(repository repository.IProduct) *ProductService <span class="cov8" title="1">{
+        return &amp;ProductService{repository: repository}
+}</span>
+
+type ProductService struct {
+        repository repository.IProduct
+}
+
+func (s *ProductService) GetProduct() (productMap map[int]model.Product, err error) <span class="cov8" title="1">{
+        return s.repository.GetProduct()
+}</span>
+
+func (s *ProductService) GetProductByID(id int) (product model.Product, err error) <span class="cov8" title="1">{
+        return s.repository.GetProductByID(id)
+}</span>
+
+func (s *ProductService) GetProductRecord() (productRecordMap map[int]model.ProductRecordCount, err error) <span class="cov8" title="1">{
+        return s.repository.GetProductRecord()
+}</span>
+
+func (s *ProductService) GetProductRecordByID(id int) (productRecord model.ProductRecordCount, err error) <span class="cov8" title="1">{
+        return s.repository.GetProductRecordByID(id)
+}</span>
+
+func ValueCheck(productAtrributes model.ProductAttributes) (err error) <span class="cov8" title="1">{
+        if *productAtrributes.ProductCode == "" || *productAtrributes.Description == "" || *productAtrributes.Width &lt;= 0 || *productAtrributes.Height &lt;= 0 || *productAtrributes.Length &lt;= 0 || *productAtrributes.NetWeight &lt;= 0 || *productAtrributes.ExpirationRate &lt;= 0 || productAtrributes.RecommendedFreezingTemperature == nil || *productAtrributes.FreezingRate &lt;= 0 || *productAtrributes.ProductTypeID &lt;= 0 || *productAtrributes.SellerID &lt;= 0 </span><span class="cov8" title="1">{
+                return errorHandler.GetErrInvalidData(errorHandler.PRODUCT)
+        }</span>
+        <span class="cov8" title="1">return</span>
+}
+
+func (s *ProductService) CreateProduct(productAttributes *model.ProductAttributes) (prod model.Product, err error) <span class="cov8" title="1">{
+        if err = ValueCheck(*productAttributes); err != nil </span><span class="cov0" title="0">{
+                return model.Product{}, err
+        }</span>
+        <span class="cov8" title="1">return s.repository.CreateProduct(productAttributes)</span>
+}
+
+func (s *ProductService) DeleteProduct(id int) (err error) <span class="cov8" title="1">{
+        return s.repository.DeleteProduct(id)
+}</span>
+
+func (s *ProductService) UpdateProduct(id int, productAttributes *model.ProductAttributes) (producto *model.Product, err error) <span class="cov8" title="1">{
+        return s.repository.UpdateProduct(id, productAttributes)
+}</span>
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package service
+
+import (
+        "github.com/luisantonisu/wave15-grupo4/internal/domain/model"
+        "github.com/stretchr/testify/mock"
+)
+
+// type ProductServiceMock struct {
+//         // FuncSearchProducts is the function that proxy the SearchProducts method.
+//         FuncGetProduct           func() (productMap map[int]model.Product, err error)
+//         FuncGetProductByID       func(id int) (product model.Product, err error)
+//         FuncGetProductRecord     func() (productRecordMap map[int]model.ProductRecordCount, err error)
+//         FuncGetProductRecordByID func(id int) (productRecord model.ProductRecordCount, err error)
+//         FuncCreateProduct        func(productAtrributes *model.ProductAttributes) (prod model.Product, err error)
+//         FuncDeleteProduct        func(id int) (err error)
+//         FuncUpdateProduct        func(id int, productAtrributes *model.ProductAttributes) (producto *model.Product, err error)
+//         // Spy
+//         Spy struct {
+//                 // SearchProducts is the number of times the SearchProducts method is called.
+//                 CreateProduct int
+//         }
+// }
+
+type MockProductService struct {
+        mock.Mock
+}
+
+func (m *MockProductService) GetProduct() (map[int]model.Product, error) <span class="cov0" title="0">{
+        args := m.Called()
+        return args.Get(0).(map[int]model.Product), args.Error(1)
+}</span>
+
+func (m *MockProductService) GetProductByID(id int) (model.Product, error) <span class="cov0" title="0">{
+        args := m.Called(id)
+        return args.Get(0).(model.Product), args.Error(1)
+}</span>
+
+func (m *MockProductService) GetProductRecord() (map[int]model.ProductRecordCount, error) <span class="cov0" title="0">{
+        args := m.Called()
+        return args.Get(0).(map[int]model.ProductRecordCount), args.Error(1)
+}</span>
+
+func (m *MockProductService) GetProductRecordByID(id int) (model.ProductRecordCount, error) <span class="cov0" title="0">{
+        args := m.Called(id)
+        return args.Get(0).(model.ProductRecordCount), args.Error(1)
+}</span>
+
+func (m *MockProductService) CreateProduct(product *model.ProductAttributes) (model.Product, error) <span class="cov0" title="0">{
+        args := m.Called(product)
+        return args.Get(0).(model.Product), args.Error(1)
+}</span>
+
+func (m *MockProductService) DeleteProduct(id int) error <span class="cov0" title="0">{
+        args := m.Called(id)
+        return args.Error(0)
+}</span>
+
+func (m *MockProductService) UpdateProduct(id int, product *model.ProductAttributes) (*model.Product, error) <span class="cov0" title="0">{
+        args := m.Called(id, product)
+        return args.Get(0).(*model.Product), args.Error(1)
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

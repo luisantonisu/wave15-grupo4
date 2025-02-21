@@ -7,7 +7,7 @@ type IProduct interface {
 	GetProductByID(id int) (product model.Product, err error)
 	GetProductRecord() (productRecordMap map[int]model.ProductRecordCount, err error)
 	GetProductRecordByID(id int) (productRecord model.ProductRecordCount, err error)
-	CreateProduct(productAtrributes *model.ProductAtrributes) (prod model.Product, err error)
+	CreateProduct(productAtrributes *model.ProductAttributes) (prod model.Product, err error)
 	DeleteProduct(id int) (err error)
-	UpdateProduct(id int, productAtrributes *model.ProductAtrributes) (producto *model.Product, err error)
+	UpdateProduct(id int, productAtrributes *model.ProductAttributes) (producto *model.Product, err error)
 }
