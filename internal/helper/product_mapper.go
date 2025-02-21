@@ -25,8 +25,8 @@ func ProductToProductResponseDTO(product model.Product) dto.ProductResponseDTO {
 	return data
 }
 
-func ProductRequestDTOToProduct(product dto.ProductRequestDTO) model.ProductAtrributes {
-	data := model.ProductAtrributes{
+func ProductRequestDTOToProduct(product dto.ProductRequestDTO) model.ProductAttributes {
+	data := model.ProductAttributes{
 		ProductCode:                    product.ProductCode,
 		Description:                    product.Description,
 		Width:                          product.Width,

@@ -2,10 +2,10 @@ package model
 
 type Product struct {
 	ID int
-	ProductAtrributes
+	ProductAttributes
 }
 
-type ProductAtrributes struct {
+type ProductAttributes struct {
 	ProductCode                    *string
 	Description                    *string
 	Width                          *float64
