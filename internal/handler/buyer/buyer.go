@@ -36,19 +36,20 @@ func (h *BuyerHandler) Create() http.HandlerFunc {
 			response.Error(w, code, message)
 			return
 		}
-		newBuyer := helper.BuyerRequestDTOToBuyer(buyerRequestDto)
+		newBuyerRequest := helper.BuyerRequestDTOToBuyerAttributes(buyerRequestDto)
 
 		// Call service
-		data, err := h.sv.Create(newBuyer)
+		newBuyer, err := h.sv.Create(newBuyerRequest)
 		if err != nil {
 			code, message := eh.HandleError(err)
 			response.Error(w, code, message)
 			return
 		}
+		data := helper.BuyerToBuyerResponseDTO(newBuyer)
 
 		// Return response
 		response.JSON(w, http.StatusCreated, map[string]any{
-			"message": "Buyer created",
+			"message": "success",
 			"data":    data,
 		})
 	}
@@ -90,17 +91,18 @@ func (h *BuyerHandler) GetByID() http.HandlerFunc {
 		}
 
 		// Call service
-		data, err := h.sv.GetByID(id)
+		buyer, err := h.sv.GetByID(id)
 		if err != nil {
 			code, message := eh.HandleError(err)
 			response.Error(w, code, message)
 			return
 		}
+		data := helper.BuyerToBuyerResponseDTO(buyer)
 
 		// Return response
 		response.JSON(w, http.StatusOK, map[string]any{
 			"message": "success",
-			"data":    helper.BuyerToBuyerResponseDTO(data),
+			"data":    data,
 		})
 	}
 }
@@ -141,15 +143,47 @@ func (h *BuyerHandler) Update() http.HandlerFunc {
 		}
 
 		// Decode body
-		var buyerRequestDto dto.BuyerRequestDTOPtr
+		var buyerRequestDto dto.BuyerRequestDTO
 		if err := json.NewDecoder(r.Body).Decode(&buyerRequestDto); err != nil {
 			response.Error(w, http.StatusBadRequest, eh.INVALID_BODY)
 			return
 		}
-		newBuyer := helper.BuyerRequestDTOPtrToBuyerPtr(buyerRequestDto)
+		newBuyer := helper.BuyerRequestDTOToBuyerAttributes(buyerRequestDto)
 
 		// Call service
-		data, err := h.sv.Update(id, newBuyer)
+		updatedBuyer, err := h.sv.Update(id, newBuyer)
+		if err != nil {
+			code, message := eh.HandleError(err)
+			response.Error(w, code, message)
+			return
+		}
+		data := helper.BuyerToBuyerResponseDTO(updatedBuyer)
+
+		// Return response
+		response.JSON(w, http.StatusOK, map[string]any{
+			"message": "success",
+			"data":    data,
+		})
+	}
+}
+
+// Generate Purchase Order Report
+func (h *BuyerHandler) Report() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Decode query params
+		var id *int
+		queryParams := r.URL.Query()
+		if queryParams.Has("id"){
+			hasId, err := strconv.Atoi(queryParams.Get("id"))
+			if err != nil {
+				response.Error(w, http.StatusBadRequest, eh.INVALID_ID)
+				return
+			}
+			id = &hasId
+		}
+
+		// Call service
+		report, err := h.sv.PurchaseOrderReport(id)
 		if err != nil {
 			code, message := eh.HandleError(err)
 			response.Error(w, code, message)
@@ -157,9 +191,13 @@ func (h *BuyerHandler) Update() http.HandlerFunc {
 		}
 
 		// Return response
+		data := []dto.ReportPurchaseOrdersResponseDTO{}
+		for _, buyer := range report {
+			data = append(data, helper.ReportPurchaseOrdersToReportPurchaseOrdersResponseDTO(buyer))
+		}
 		response.JSON(w, http.StatusOK, map[string]any{
 			"message": "success",
-			"data":    helper.BuyerToBuyerResponseDTO(data),
+			"data":    data,
 		})
 	}
 }

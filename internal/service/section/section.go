@@ -2,45 +2,64 @@ package service
 
 import (
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
-	repository "github.com/luisantonisu/wave15-grupo4/internal/repository/section"
-	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
+	sectionRp "github.com/luisantonisu/wave15-grupo4/internal/repository/section"
 )
 
-func NewSectionService(rp repository.ISection) *SectionService {
-	return &SectionService{rp: rp}
+func NewSectionService(sectionRp sectionRp.ISection) *SectionService {
+	return &SectionService{
+		sectionRp: sectionRp,
+	}
 }
 
 type SectionService struct {
-	rp repository.ISection
+	sectionRp sectionRp.ISection
+	// productRepo repositoryProduct.IProduct
 }
 
-func (h *SectionService) GetAll() (map[int]model.Section, error) {
-	return h.rp.GetAll()
+func (h *SectionService) GetAll() ([]model.Section, error) {
+	allSections, err := h.sectionRp.GetAll()
+	if err != nil {
+		return nil, err
+	}
+	return allSections, nil
 }
 
 func (h *SectionService) GetByID(id int) (model.Section, error) {
-	return h.rp.GetByID(id)
-}
-
-func (h *SectionService) Create(section model.Section) (model.Section, error) {
-	if section.SectionNumber <= 0 ||
-		section.CurrentTemperature <= 0 ||
-		section.MinimumTemperature <= 0 ||
-		section.CurrentCapacity <= 0 ||
-		section.MinimumCapacity <= 0 ||
-		section.MaximumCapacity <= 0 ||
-		section.WarehouseID <= 0 ||
-		section.ProductTypeID <= 0 ||
-		len(section.ProductBatchID) == 0 {
-		return model.Section{}, eh.GetErrInvalidData(eh.SECTION)
+	section, err := h.sectionRp.GetByID(id)
+	if err != nil {
+		return model.Section{}, err
 	}
-	return h.rp.Create(section)
+	return section, nil
 }
 
-func (h *SectionService) Patch(id int, section model.SectionAttributesPtr) (model.Section, error) {
-	return h.rp.Patch(id, section)
+func (h *SectionService) Create(section model.SectionAttributes) (model.Section, error) {
+	newSection, err := h.sectionRp.Create(section)
+	if err != nil {
+		return model.Section{}, err
+	}
+	return newSection, nil
+}
+
+func (h *SectionService) Patch(id int, section model.SectionAttributes) (model.Section, error) {
+	updateSection, err := h.sectionRp.Patch(id, section)
+	if err != nil {
+		return model.Section{}, err
+	}
+	return updateSection, nil
 }
 
 func (h *SectionService) Delete(id int) error {
-	return h.rp.Delete(id)
+	err := h.sectionRp.Delete(id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (h *SectionService) Report(id *int) ([]model.ReportProductsBatches, error) {
+	report, err := h.sectionRp.Report(id)
+	if err != nil {
+		return nil, err
+	}
+	return report, nil
 }

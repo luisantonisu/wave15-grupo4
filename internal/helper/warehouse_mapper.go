@@ -7,12 +7,15 @@ import (
 
 func WarehouseToWarehouseResponseDTO(warehouse model.Warehouse) dto.WarehouseResponseDTO {
 	data := dto.WarehouseResponseDTO{
-		ID:                 warehouse.ID,
-		WarehouseCode:      warehouse.WarehouseCode,
-		Address:            warehouse.Address,
-		Telephone:          warehouse.Telephone,
-		MinimumCapacity:    warehouse.MinimumCapacity,
-		MinimumTemperature: warehouse.MinimumTemperature,
+		ID: warehouse.ID,
+		WarehouseRequestDTO: dto.WarehouseRequestDTO{
+			WarehouseCode:      warehouse.WarehouseCode,
+			Address:            warehouse.Address,
+			Telephone:          warehouse.Telephone,
+			MinimumCapacity:    warehouse.MinimumCapacity,
+			MinimumTemperature: warehouse.MinimumTemperature,
+			LocalityID:         warehouse.LocalityID,
+		},
 	}
 	return data
 }
@@ -25,18 +28,8 @@ func WarehouseRequestDTOToWarehouse(warehouseRequestDTO dto.WarehouseRequestDTO)
 			Telephone:          warehouseRequestDTO.Telephone,
 			MinimumCapacity:    warehouseRequestDTO.MinimumCapacity,
 			MinimumTemperature: warehouseRequestDTO.MinimumTemperature,
+			LocalityID:         warehouseRequestDTO.LocalityID,
 		},
 	}
-	return data
-}
-
-func WarehouseRequestDTOPtrToWarehouseAttributesPtr(warehouseRequestDTOPtr dto.WarehouseRequestDTOPtr) model.WarehouseAttributesPtr {
-	data := model.WarehouseAttributesPtr{
-			WarehouseCode:      warehouseRequestDTOPtr.WarehouseCode,
-			Address:            warehouseRequestDTOPtr.Address,
-			Telephone:          warehouseRequestDTOPtr.Telephone,
-			MinimumCapacity:    warehouseRequestDTOPtr.MinimumCapacity,
-			MinimumTemperature: warehouseRequestDTOPtr.MinimumTemperature,
-		}
 	return data
 }

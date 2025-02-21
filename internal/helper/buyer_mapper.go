@@ -18,19 +18,41 @@ func BuyerRequestDTOToBuyer(buyerRequestDto dto.BuyerRequestDTO) model.Buyer {
 
 func BuyerToBuyerResponseDTO(buyer model.Buyer) dto.BuyerResponseDTO {
 	data := dto.BuyerResponseDTO{
-		ID:           buyer.ID,
-		CardNumberId: buyer.CardNumberId,
-		FirstName:    buyer.FirstName,
-		LastName:     buyer.LastName,
+		ID: buyer.ID,
+		BuyerRequestDTO: dto.BuyerRequestDTO{
+			CardNumberId: buyer.CardNumberId,
+			FirstName:    buyer.FirstName,
+			LastName:     buyer.LastName,
+		},
 	}
 	return data
 }
 
-func BuyerRequestDTOPtrToBuyerPtr(buyerRequestDto dto.BuyerRequestDTOPtr) model.BuyerAttributesPtr {
-	data := model.BuyerAttributesPtr{
-		CardNumberId: buyerRequestDto.CardNumberId,
-		FirstName:    buyerRequestDto.FirstName,
-		LastName:     buyerRequestDto.LastName,
+func BuyerRequestDTOToBuyerAttributes(buyerRuquestDto dto.BuyerRequestDTO) model.BuyerAttributes {
+	data := model.BuyerAttributes{
+		CardNumberId: buyerRuquestDto.CardNumberId,
+		FirstName:    buyerRuquestDto.FirstName,
+		LastName:     buyerRuquestDto.LastName,
+	}
+	return data
+}
+
+// func BuyerRequestDTOPtrToBuyerPtr(buyerRequestDto dto.BuyerRequestDTOPtr) model.BuyerAttributesPtr {
+// 	data := model.BuyerAttributesPtr{
+// 		CardNumberId: buyerRequestDto.CardNumberId,
+// 		FirstName:    buyerRequestDto.FirstName,
+// 		LastName:     buyerRequestDto.LastName,
+// 	}
+// 	return data
+// }
+
+func ReportPurchaseOrdersToReportPurchaseOrdersResponseDTO(report model.ReportPurchaseOrders) dto.ReportPurchaseOrdersResponseDTO {
+	data := dto.ReportPurchaseOrdersResponseDTO{
+		ID:                  report.ID,
+		CardNumberId:        report.CardNumberId,
+		FirstName:           report.FirstName,
+		LastName:            report.LastName,
+		PurchaseOrdersCount: report.PurchaseOrdersCount,
 	}
 	return data
 }

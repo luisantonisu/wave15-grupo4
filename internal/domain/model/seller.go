@@ -2,19 +2,12 @@ package model
 
 type Seller struct {
 	ID int
-	SellerAtrributes
+	SellerAttributes
 }
-
-type SellerAtrributes struct {
-	CompanyID   int
-	CompanyName string
-	Address     string
-	Telephone   string
-}
-
-type SellerAtrributesPtr struct {
-	CompanyID   *int
+type SellerAttributes struct {
+	CompanyID   *string
 	CompanyName *string
 	Address     *string
 	Telephone   *string
+	LocalityId  *string
 }

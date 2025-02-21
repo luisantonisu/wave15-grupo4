@@ -1,30 +1,23 @@
 package model
 
 type Section struct {
-	ID int `json:"id"`
+	ID int
 	SectionAttributes
 }
 
 type SectionAttributes struct {
-	SectionNumber      int     `json:"section_number"`
-	CurrentTemperature float64 `json:"current_temperature"`
-	MinimumTemperature float64 `json:"minimum_temperature"`
-	CurrentCapacity    int     `json:"current_capacity"`
-	MinimumCapacity    int     `json:"minimum_capacity"`
-	MaximumCapacity    int     `json:"maximum_capacity"`
-	WarehouseID        int     `json:"warehouse_id"`
-	ProductTypeID      int     `json:"product_type_id"`
-	ProductBatchID     []int   `json:"product_batch_id"`
+	SectionNumber      *string
+	CurrentTemperature *float64
+	MinimumTemperature *float64
+	CurrentCapacity    *int
+	MinimumCapacity    *int
+	MaximumCapacity    *int
+	WarehouseID        *int
+	ProductTypeID      *int
 }
 
-type SectionAttributesPtr struct {
-	SectionNumber      *int     `json:"section_number"`
-	CurrentTemperature *float64 `json:"current_temperature"`
-	MinimumTemperature *float64 `json:"minimum_temperature"`
-	CurrentCapacity    *int     `json:"current_capacity"`
-	MinimumCapacity    *int     `json:"minimum_capacity"`
-	MaximumCapacity    *int     `json:"maximum_capacity"`
-	WarehouseID        *int     `json:"warehouse_id"`
-	ProductTypeID      *int     `json:"product_type_id"`
-	ProductBatchID     *[]int   `json:"product_batch_id"`
+type ReportProductsBatches struct {
+	SectionID     int `json:"section_id"`
+	SectionNumber int `json:"section_number"`
+	ProductsCount int `json:"products_count"`
 }

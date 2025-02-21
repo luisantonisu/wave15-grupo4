@@ -7,11 +7,13 @@ import (
 
 func EmployeeToEmployeeResponseDTO(employee model.Employee) dto.EmployeeResponseDTO {
 	return dto.EmployeeResponseDTO{
-		ID:           employee.ID,
-		CardNumberID: employee.CardNumberID,
-		FirstName:    employee.FirstName,
-		LastName:     employee.LastName,
-		WarehouseID:  employee.WarehouseID,
+		ID: employee.ID,
+		EmployeeRequestDTO: dto.EmployeeRequestDTO{
+			CardNumberID: employee.CardNumberID,
+			FirstName:    employee.FirstName,
+			LastName:     employee.LastName,
+			WarehouseID:  employee.WarehouseID,
+		},
 	}
 }
 
@@ -38,11 +40,22 @@ func EmployeeResponseDTOToEmployee(employee dto.EmployeeResponseDTO) model.Emplo
 	}
 }
 
-func EmployeeRequestDTOPtrToEmployeePtr(employee dto.EmployeeRequestDTOPtr) model.EmployeeAttributesPtr {
-	return model.EmployeeAttributesPtr{
+func EmployeeRequestDTOPtrToEmployeePtr(employee dto.EmployeeRequestDTO) model.EmployeeAttributes {
+	return model.EmployeeAttributes{
 		CardNumberID: employee.CardNumberID,
 		FirstName:    employee.FirstName,
 		LastName:     employee.LastName,
 		WarehouseID:  employee.WarehouseID,
+	}
+}
+
+func InboundOrderToInboundOrderDTO(employees model.InboundOrdersReport) dto.InboundOrdersReportDTO {
+	return dto.InboundOrdersReportDTO{
+		ID:                 employees.ID,
+		CardNumberID:       employees.CardNumberID,
+		FirstName:          employees.FirstName,
+		LastName:           employees.LastName,
+		WarehouseID:        employees.WarehouseID,
+		InboundOrdersCount: employees.InboundOrdersCount,
 	}
 }

@@ -37,6 +37,7 @@ func (h *EmployeeHandler) GetAll() http.HandlerFunc {
 
 		response.JSON(w, http.StatusOK, map[string]any{
 			"data": data,
+			"message": "Success",
 		})
 	}
 }
@@ -61,6 +62,7 @@ func (h *EmployeeHandler) GetByID() http.HandlerFunc {
 
 		response.JSON(w, http.StatusOK, map[string]any{
 			"data": data,
+			"message": "Success",
 		})
 	}
 }
@@ -88,6 +90,7 @@ func (h *EmployeeHandler) Create() http.HandlerFunc {
 
 		response.JSON(w, http.StatusCreated, map[string]any{
 			"data": data,
+			"message": "Success",
 		})
 	}
 }
@@ -100,7 +103,7 @@ func (h *EmployeeHandler) Update() http.HandlerFunc {
 			return
 		}
 
-		var empDto dto.EmployeeRequestDTOPtr
+		var empDto dto.EmployeeRequestDTO
 		if err := json.NewDecoder(r.Body).Decode(&empDto); err != nil {
 			response.Error(w, http.StatusBadRequest, eh.INVALID_BODY)
 			return
@@ -139,5 +142,39 @@ func (h *EmployeeHandler) Delete() http.HandlerFunc {
 		}
 
 		response.JSON(w, http.StatusNoContent, nil)
+	}
+}
+
+func (h *EmployeeHandler) Report() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var err error
+		var id int
+		query := r.URL.Query().Get("id")
+		if query == "" {
+			id = -1
+		} else {
+			id, err = strconv.Atoi(query)
+			if err != nil {
+				response.Error(w, http.StatusBadRequest, eh.INVALID_ID)
+				return
+			}
+		}
+
+		employees, err := h.sv.Report(id)
+		if err != nil {
+			code, msg := eh.HandleError(err)
+			response.Error(w, code, msg)
+			return
+		}
+
+		data := []dto.InboundOrdersReportDTO{}
+		for _, employee := range employees {
+			data = append(data, helper.InboundOrderToInboundOrderDTO(employee))
+		}
+
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data": data,
+			"message": "Success",
+		})
 	}
 }

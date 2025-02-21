@@ -6,13 +6,15 @@ import (
 )
 
 func SellerToSellerResponseDTO(seller model.Seller) dto.SellerResponseDTO {
-
 	data := dto.SellerResponseDTO{
-		ID:          seller.ID,
-		CompanyID:   seller.CompanyID,
-		CompanyName: seller.CompanyName,
-		Address:     seller.Address,
-		Telephone:   seller.Telephone,
+		ID: seller.ID,
+		SellerRequestDTO: dto.SellerRequestDTO{
+			CompanyID:   seller.CompanyID,
+			CompanyName: seller.CompanyName,
+			Address:     seller.Address,
+			Telephone:   seller.Telephone,
+			LocalityId:  seller.LocalityId,
+		},
 	}
 
 	return data
@@ -20,23 +22,25 @@ func SellerToSellerResponseDTO(seller model.Seller) dto.SellerResponseDTO {
 
 func SellerRequestDTOToSeller(sellerRequestDTO dto.SellerRequestDTO) model.Seller {
 	data := model.Seller{
-		SellerAtrributes: model.SellerAtrributes{
+		SellerAttributes: model.SellerAttributes{
 			CompanyID:   sellerRequestDTO.CompanyID,
 			CompanyName: sellerRequestDTO.CompanyName,
 			Address:     sellerRequestDTO.Address,
 			Telephone:   sellerRequestDTO.Telephone,
+			LocalityId:  sellerRequestDTO.LocalityId,
 		},
 	}
 
 	return data
 }
 
-func SellerRequestDTOPtrToSellerPtr(seller dto.SellerRequestDTOPtr) model.SellerAtrributesPtr {
-	data := model.SellerAtrributesPtr{
+func SellerRequestDTOPtrToSellerPtr(seller dto.SellerRequestDTO) model.SellerAttributes{
+	data := model.SellerAttributes{
 		CompanyID:   seller.CompanyID,
 		CompanyName: seller.CompanyName,
 		Address:     seller.Address,
 		Telephone:   seller.Telephone,
+		LocalityId:  seller.LocalityId,
 	}
 	return data
 }

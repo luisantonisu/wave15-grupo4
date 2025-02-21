@@ -1,5 +1,7 @@
 package loader
 
+import "database/sql"
+
 type Loader interface {
-	Load() (*DB, error)
+	Load(db *sql.DB) error
 }

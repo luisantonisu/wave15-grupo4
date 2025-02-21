@@ -1,0 +1,17 @@
+DROP TABLE `grupo4`.`order_details`;
+DROP TABLE `grupo4`.`product_records`;
+DROP TABLE `grupo4`.`inbound_orders`;
+DROP TABLE `grupo4`.`product_batches`;
+DROP TABLE `grupo4`.`sections`;
+DROP TABLE `grupo4`.`purchase_orders`;
+DROP TABLE `grupo4`.`order_status`;
+DROP TABLE `grupo4`.`buyers`;
+DROP TABLE `grupo4`.`employees`;
+DROP TABLE `grupo4`.`warehouses`;
+DROP TABLE `grupo4`.`products`;
+DROP TABLE `grupo4`.`product_types`;
+DROP TABLE `grupo4`.`sellers`;
+DROP TABLE `grupo4`.`carriers`;
+DROP TABLE `grupo4`.`localities`;
+DROP TABLE `grupo4`.`provinces`;
+DROP TABLE `grupo4`.`countries`;

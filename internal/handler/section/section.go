@@ -30,9 +30,9 @@ func (h *SectionHandler) GetAll() http.HandlerFunc {
 			return
 		}
 
-		data := make(map[int]dto.SectionResponseDTO)
-		for key, value := range sections {
-			data[key] = helper.SectionToSectionResponseDTO(value)
+		var data []dto.SectionResponseDTO
+		for _, value := range sections {
+			data = append(data, helper.SectionToSectionResponseDTO(value))
 		}
 
 		response.JSON(w, http.StatusOK, map[string]any{
@@ -66,24 +66,30 @@ func (h *SectionHandler) GetByID() http.HandlerFunc {
 
 func (h *SectionHandler) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var sectionRequest dto.SectionRequestDTO
+		var sectionRequestDto dto.SectionRequestDTO
 
-		err := json.NewDecoder(r.Body).Decode(&sectionRequest)
+		err := json.NewDecoder(r.Body).Decode(&sectionRequestDto)
 		if err != nil {
 			response.Error(w, http.StatusBadRequest, eh.INVALID_BODY)
 			return
 		}
 
-		section := helper.SectionRequestDTOToSection(sectionRequest)
-		section, err = h.sv.Create(section)
+		err = sectionRequestDto.Validate()
+		if err != nil {
+			code, message := eh.HandleError(err)
+			response.Error(w, code, message)
+			return
+		}
+		newSectionRequest := helper.SectionRequestDTOToSection(sectionRequestDto)
 
+		newSection, err := h.sv.Create(newSectionRequest)
 		if err != nil {
 			code, msg := eh.HandleError(err)
 			response.Error(w, code, msg)
 			return
 		}
 
-		data := helper.SectionToSectionResponseDTO(section)
+		data := helper.SectionToSectionResponseDTO(newSection)
 
 		response.JSON(w, http.StatusCreated, map[string]any{
 			"data": data,
@@ -100,13 +106,13 @@ func (h *SectionHandler) Patch() http.HandlerFunc {
 			return
 		}
 
-		var secDto dto.SectionRequestDTOPtr
-		err = json.NewDecoder(r.Body).Decode(&secDto)
+		var sectionRequestDTO dto.SectionRequestDTO
+		err = json.NewDecoder(r.Body).Decode(&sectionRequestDTO)
 		if err != nil {
 			response.Error(w, http.StatusBadRequest, eh.INVALID_BODY)
 			return
 		}
-		section := helper.SectionRequestDTOPtrToSectionPtr(secDto)
+		section := helper.SectionRequestDTOPtrToSectionPtr(sectionRequestDTO)
 
 		updatedSection, err := h.sv.Patch(id, section)
 		if err != nil {
@@ -114,8 +120,8 @@ func (h *SectionHandler) Patch() http.HandlerFunc {
 			response.Error(w, code, msg)
 			return
 		}
-
 		data := helper.SectionToSectionResponseDTO(updatedSection)
+
 		response.JSON(w, http.StatusOK, map[string]any{
 			"data": data,
 		})
@@ -138,5 +144,36 @@ func (h *SectionHandler) Delete() http.HandlerFunc {
 		}
 
 		response.JSON(w, http.StatusNoContent, nil)
+	}
+}
+
+func (h *SectionHandler) Report() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var id *int
+		var err error
+		idStr := r.URL.Query()
+		if idStr.Has("id") {
+			hasId, err := strconv.Atoi(idStr.Get("id"))
+			if err != nil {
+				response.Error(w, http.StatusBadRequest, eh.INVALID_ID)
+			}
+			id = &hasId
+		}
+
+		report, err := h.sv.Report(id)
+		if err != nil {
+			code, msg := eh.HandleError(err)
+			response.Error(w, code, msg)
+			return
+		}
+
+		data := []dto.ReportProductsBatchesResponseDTO{}
+		for _, value := range report {
+			data = append(data, helper.ReportProductsBatchesToReportProductsBatchesResponseDTO(value))
+		}
+
+		response.JSON(w, http.StatusOK, map[string]any{
+			"data": data,
+		})
 	}
 }

@@ -1,25 +1,27 @@
 package main
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/luisantonisu/wave15-grupo4/cmd/server"
+	"github.com/luisantonisu/wave15-grupo4/internal/config"
 )
 
 func main() {
 	// env
 	// ...
-
-	// app
-	// - config
-	cfg := &server.ConfigServerChi{
-		ServerAddress:  ":8080",
-		LoaderFilePath: "infrastructure/json/mock.json", // todo
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		log.Printf("error loading config: %v", err)
+		return
 	}
+	// app
+	log.Println("Starting server on " + cfg.ServerAddress)
+	// - config
 	app := server.NewServerChi(cfg)
 	// - run
-	if err := app.Run(); err != nil {
-		fmt.Println(err)
+	if err := app.Run(*cfg); err != nil {
+		log.Println(err)
 		return
 	}
 }

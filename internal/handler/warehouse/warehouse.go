@@ -21,16 +21,16 @@ type WarehouseHandler struct {
 	sv service.IWarehouse
 }
 
-func (wh *WarehouseHandler) GetAll() http.HandlerFunc {
+func (h *WarehouseHandler) GetAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		warehouses, err := wh.sv.GetAll()
+		warehouses, err := h.sv.GetAll()
 		if err != nil {
 			code, msg := eh.HandleError(err)
 			response.Error(w, code, msg)
 			return
 		}
 
-		var data []dto.WarehouseResponseDTO
+		data := []dto.WarehouseResponseDTO{}
 		for _, value := range warehouses {
 			data = append(data, helper.WarehouseToWarehouseResponseDTO(value))
 		}
@@ -42,7 +42,7 @@ func (wh *WarehouseHandler) GetAll() http.HandlerFunc {
 	}
 }
 
-func (wh *WarehouseHandler) GetByID() http.HandlerFunc {
+func (h *WarehouseHandler) GetByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
@@ -50,7 +50,7 @@ func (wh *WarehouseHandler) GetByID() http.HandlerFunc {
 			return
 		}
 
-		warehouse, err := wh.sv.GetByID(id)
+		warehouse, err := h.sv.GetByID(id)
 		if err != nil {
 			code, msg := eh.HandleError(err)
 			response.Error(w, code, msg)
@@ -66,7 +66,7 @@ func (wh *WarehouseHandler) GetByID() http.HandlerFunc {
 	}
 }
 
-func (wh *WarehouseHandler) Create() http.HandlerFunc {
+func (h *WarehouseHandler) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var warehouseRequest dto.WarehouseRequestDTO
 		if err := json.NewDecoder(r.Body).Decode(&warehouseRequest); err != nil {
@@ -75,7 +75,7 @@ func (wh *WarehouseHandler) Create() http.HandlerFunc {
 		}
 
 		warehouse := helper.WarehouseRequestDTOToWarehouse(warehouseRequest)
-		createdWarehouse, err := wh.sv.Create(warehouse)
+		createdWarehouse, err := h.sv.Create(warehouse)
 		if err != nil {
 			code, msg := eh.HandleError(err)
 			response.Error(w, code, msg)
@@ -91,7 +91,7 @@ func (wh *WarehouseHandler) Create() http.HandlerFunc {
 	}
 }
 
-func (wh *WarehouseHandler) Update() http.HandlerFunc {
+func (h *WarehouseHandler) Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
@@ -99,14 +99,14 @@ func (wh *WarehouseHandler) Update() http.HandlerFunc {
 			return
 		}
 
-		var warehouseRequest dto.WarehouseRequestDTOPtr
+		var warehouseRequest dto.WarehouseRequestDTO
 		if err := json.NewDecoder(r.Body).Decode(&warehouseRequest); err != nil {
 			response.Error(w, http.StatusBadRequest, eh.INVALID_BODY)
 			return
 		}
 
-		warehouse := helper.WarehouseRequestDTOPtrToWarehouseAttributesPtr(warehouseRequest)
-		updatedWarehouse, err := wh.sv.Update(id, warehouse)
+		warehouse := helper.WarehouseRequestDTOToWarehouse(warehouseRequest)
+		updatedWarehouse, err := h.sv.Update(id, warehouse.WarehouseAttributes)
 		if err != nil {
 			code, msg := eh.HandleError(err)
 			response.Error(w, code, msg)
@@ -122,7 +122,7 @@ func (wh *WarehouseHandler) Update() http.HandlerFunc {
 	}
 }
 
-func (wh *WarehouseHandler) Delete() http.HandlerFunc {
+func (h *WarehouseHandler) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
@@ -130,7 +130,7 @@ func (wh *WarehouseHandler) Delete() http.HandlerFunc {
 			return
 		}
 
-		err = wh.sv.Delete(id)
+		err = h.sv.Delete(id)
 		if err != nil {
 			code, msg := eh.HandleError(err)
 			response.Error(w, code, msg)
