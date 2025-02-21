@@ -362,12 +362,10 @@ func TestCreate(t *testing.T) {
 	// 	req.Header.Set("Content-Type", "application/json")
 
 	// 	rr := httptest.NewRecorder()
-	// 	fmt.Println("PRINT LINEEEEEEE------", rr)
 
 	// 	r := chi.NewRouter()
 	// 	r.Post("/products", testHandler.Create())
 	// 	r.ServeHTTP(rr, req)
-	// 	fmt.Println("OMGGGGGG", rr)
 
 	// 	assert.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 	// 	expected := `{
@@ -580,11 +578,3 @@ func TestUpdate(t *testing.T) {
 		assert.JSONEq(t, expected, rr.Body.String())
 	})
 }
-
-/* {
-    "product_code": "122",
-    "width": 2.1,
-    "height": 0,
-    "description": ""
-    aaa
-} */
