@@ -1,0 +1,21 @@
+mode: set
+github.com/luisantonisu/wave15-grupo4/internal/service/product/product.go:9.72,11.2 1 1
+github.com/luisantonisu/wave15-grupo4/internal/service/product/product.go:17.85,19.2 1 1
+github.com/luisantonisu/wave15-grupo4/internal/service/product/product.go:21.84,23.2 1 1
+github.com/luisantonisu/wave15-grupo4/internal/service/product/product.go:25.108,27.2 1 1
+github.com/luisantonisu/wave15-grupo4/internal/service/product/product.go:29.107,31.2 1 1
+github.com/luisantonisu/wave15-grupo4/internal/service/product/product.go:33.72,34.438 1 1
+github.com/luisantonisu/wave15-grupo4/internal/service/product/product.go:34.438,36.3 1 1
+github.com/luisantonisu/wave15-grupo4/internal/service/product/product.go:37.2,37.8 1 1
+github.com/luisantonisu/wave15-grupo4/internal/service/product/product.go:40.116,41.54 1 1
+github.com/luisantonisu/wave15-grupo4/internal/service/product/product.go:41.54,43.3 1 0
+github.com/luisantonisu/wave15-grupo4/internal/service/product/product.go:44.2,44.54 1 1
+github.com/luisantonisu/wave15-grupo4/internal/service/product/product.go:47.60,49.2 1 1
+github.com/luisantonisu/wave15-grupo4/internal/service/product/product.go:51.129,53.2 1 1
+github.com/luisantonisu/wave15-grupo4/internal/service/product/product_mock.go:28.74,31.2 2 0
+github.com/luisantonisu/wave15-grupo4/internal/service/product/product_mock.go:33.76,36.2 2 0
+github.com/luisantonisu/wave15-grupo4/internal/service/product/product_mock.go:38.91,41.2 2 0
+github.com/luisantonisu/wave15-grupo4/internal/service/product/product_mock.go:43.93,46.2 2 0
+github.com/luisantonisu/wave15-grupo4/internal/service/product/product_mock.go:48.101,51.2 2 0
+github.com/luisantonisu/wave15-grupo4/internal/service/product/product_mock.go:53.58,56.2 2 0
+github.com/luisantonisu/wave15-grupo4/internal/service/product/product_mock.go:58.110,61.2 2 0

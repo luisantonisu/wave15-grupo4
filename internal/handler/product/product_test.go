@@ -580,11 +580,3 @@ func TestUpdate(t *testing.T) {
 		assert.JSONEq(t, expected, rr.Body.String())
 	})
 }
-
-/* {
-    "product_code": "122",
-    "width": 2.1,
-    "height": 0,
-    "description": ""
-    aaa
-} */
