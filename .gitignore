@@ -7,3 +7,12 @@ tmp/main
 
 #ide settings
 .idea
+
+#Makefile
+Makefile
+
+#coverage
+coverage.html
+
+#Compiled files
+coverage.out

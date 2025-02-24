@@ -31,7 +31,7 @@ func (s *ProductService) GetProductRecordByID(id int) (productRecord model.Produ
 }
 
 func ValueCheck(productAtrributes model.ProductAttributes) (err error) {
-	if *productAtrributes.ProductCode == "" || *productAtrributes.Description == "" || *productAtrributes.Width <= 0 || *productAtrributes.Height <= 0 || *productAtrributes.Length <= 0 || *productAtrributes.NetWeight <= 0 || *productAtrributes.ExpirationRate <= 0 || productAtrributes.RecommendedFreezingTemperature == nil || *productAtrributes.FreezingRate <= 0 || *productAtrributes.ProductTypeID <= 0 {
+	if *productAtrributes.ProductCode == "" || *productAtrributes.Description == "" || *productAtrributes.Width <= 0 || *productAtrributes.Height <= 0 || *productAtrributes.Length <= 0 || *productAtrributes.NetWeight <= 0 || *productAtrributes.ExpirationRate <= 0 || productAtrributes.RecommendedFreezingTemperature == nil || *productAtrributes.FreezingRate <= 0 || *productAtrributes.ProductTypeID <= 0 || *productAtrributes.SellerID <= 0 {
 		return errorHandler.GetErrInvalidData(errorHandler.PRODUCT)
 	}
 	return
