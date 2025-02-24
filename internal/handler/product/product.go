@@ -158,7 +158,7 @@ func (h *ProductHandler) Delete() http.HandlerFunc {
 		// request
 		id := chi.URLParam(r, "id")
 		if id == "" || id == "0" {
-			response.JSON(w, http.StatusBadRequest, errorHandler.INVALID_ID)
+			response.Error(w, http.StatusBadRequest, errorHandler.INVALID_ID)
 			return
 		}
 
