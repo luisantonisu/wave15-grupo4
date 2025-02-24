@@ -44,19 +44,14 @@ func (r *LocalityRepository) Create(locality model.LocalityDBModel) (model.Local
 		return model.LocalityDBModel{}, eh.GetErrAlreadyExists(eh.LOCALITY_NAME)
 	}
 
-	row, err := r.db.Exec("INSERT INTO localities (id, locality_name, province_id) VALUES (?,?,?)",
+	_, err := r.db.Exec("INSERT INTO localities (id, locality_name, province_id) VALUES (?,?,?)",
 		locality.Id, locality.LocalityName, locality.ProvinceID)
 	if err != nil {
 		return model.LocalityDBModel{}, err
 	}
 
-	id, err := row.LastInsertId()
-	if err != nil {
-		return model.LocalityDBModel{}, err
-	}
-
 	var newLocality model.LocalityDBModel
-	newLocality.Id = int(id)
+	newLocality.Id = locality.Id
 	newLocality.LocalityName = locality.LocalityName
 	newLocality.ProvinceID = locality.ProvinceID
 
