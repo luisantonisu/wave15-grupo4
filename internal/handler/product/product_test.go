@@ -362,12 +362,10 @@ func TestCreate(t *testing.T) {
 	// 	req.Header.Set("Content-Type", "application/json")
 
 	// 	rr := httptest.NewRecorder()
-	// 	fmt.Println("PRINT LINEEEEEEE------", rr)
 
 	// 	r := chi.NewRouter()
 	// 	r.Post("/products", testHandler.Create())
 	// 	r.ServeHTTP(rr, req)
-	// 	fmt.Println("OMGGGGGG", rr)
 
 	// 	assert.Equal(t, http.StatusUnprocessableEntity, rr.Code)
 	// 	expected := `{
