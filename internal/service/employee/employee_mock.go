@@ -13,30 +13,38 @@ func NewEmployeeMock() *MockEmployeeService {
 	return &MockEmployeeService{}
 }
 
-func (m *MockEmployeeService) GetEmployee() (map[int]model.Employee, error) {
+// Create implements IEmployee.
+func (m *MockEmployeeService) Create(employee model.Employee) (model.Employee, error) {
+	args := m.Called(employee)
+	return args.Get(0).(model.Employee), args.Error(1)
+}
+
+// Delete implements IEmployee.
+func (m *MockEmployeeService) Delete(id int) error {
+	args := m.Called(id)
+	return args.Error(0)
+}
+
+// GetAll implements IEmployee.
+func (m *MockEmployeeService) GetAll() (map[int]model.Employee, error) {
 	args := m.Called()
 	return args.Get(0).(map[int]model.Employee), args.Error(1)
 }
 
-func (m *MockEmployeeService) GetEmployeeByID(id int) (*model.Employee, error) {
+// GetByID implements IEmployee.
+func (m *MockEmployeeService) GetByID(id int) (model.Employee, error) {
 	args := m.Called(id)
-	return args.Get(0).(*model.Employee), args.Error(1)
+	return args.Get(0).(model.Employee), args.Error(1)
 }
 
-func (m *MockEmployeeService) CreateEmployee(employee *model.Employee) error {
-	args := m.Called(employee)
-	return args.Error(0)
-}
-
-func (m *MockEmployeeService) DeleteEmployee(id int) error {
+// Report implements IEmployee.
+func (m *MockEmployeeService) Report(id int) (map[int]model.InboundOrdersReport, error) {
 	args := m.Called(id)
-	return args.Error(0)
+	return args.Get(0).(map[int]model.InboundOrdersReport), args.Error(1)
 }
 
-func (m *MockEmployeeService) UpdateEmployee(id int, employee *model.Employee) (*model.Employee, error ){
+// Update implements IEmployee.
+func (m *MockEmployeeService) Update(id int, employee model.EmployeeAttributes) (model.Employee, error) {
 	args := m.Called(id, employee)
-	return args.Get(0).(*model.Employee), args.Error(0)
+	return args.Get(0).(model.Employee), args.Error(1)
 }
-
-
-
