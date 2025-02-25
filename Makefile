@@ -7,3 +7,9 @@ template: test
 
 cover-full:
 	go tool cover -func=coverage.out
+
+coverage:
+	go test -cover -coverprofile=full_coverage.out ./...
+	grep -v '_mock.go' full_coverage.out > coverage.out
+	go tool cover -html=coverage.out
+	rm -r full_coverage.out
