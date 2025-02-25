@@ -48,8 +48,8 @@ var (
 		LastName:     &lastName,
 	}
 	buyerRequestUpdate = dto.BuyerRequestDTO{
-		FirstName:    &firstName,
-		LastName:     &lastName,
+		FirstName: &firstName,
+		LastName:  &lastName,
 	}
 	buyerUpdate = model.Buyer{
 		ID: 1,
@@ -100,7 +100,7 @@ func TestBuyerHandler_Create(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 		buyerService.AssertExpectations(t)
 	})
-	t.Run("case 2: bad buyer request - invalid card number ID", func(t *testing.T) {
+	t.Run("case 2: unprocesable entity - invalid card number id", func(t *testing.T) {
 		// Arrange
 		buyerService := service.NewBuyerServiceMock()
 		buyerHandler := handler.NewBuyerHandler(buyerService)
@@ -128,7 +128,7 @@ func TestBuyerHandler_Create(t *testing.T) {
 		buyerService.AssertNotCalled(t, "Create")
 	})
 
-	t.Run("case 3: conflict - card number ID already exists", func(t *testing.T) {
+	t.Run("case 3: conflict - card number id already exists", func(t *testing.T) {
 		// Arrange
 		buyerService := service.NewBuyerServiceMock()
 		buyerHandler := handler.NewBuyerHandler(buyerService)
@@ -207,7 +207,7 @@ func TestBuyerHandler_GetAll(t *testing.T) {
 		buyerService.AssertExpectations(t)
 	})
 
-	t.Run("case 2: get all buyers successfully no buyers found", func(t *testing.T) {
+	t.Run("case 2: get all buyers successfully, no buyers found", func(t *testing.T) {
 		// Arrange
 		buyerService := service.NewBuyerServiceMock()
 		buyerHandler := handler.NewBuyerHandler(buyerService)
@@ -227,7 +227,7 @@ func TestBuyerHandler_GetAll(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 		buyerService.AssertExpectations(t)
 	})
-	t.Run("case 3: Internal Server Error - get all buyers  but error occurred", func(t *testing.T) {
+	t.Run("case 3: internal Server Error - get all buyers  but error occurred", func(t *testing.T) {
 		// Arrange
 		buyerService := service.NewBuyerServiceMock()
 		buyerHandler := handler.NewBuyerHandler(buyerService)
@@ -270,7 +270,7 @@ func TestBuyerHandler_GetByID(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 		buyerService.AssertExpectations(t)
 	})
-	t.Run("case 2: not found - get buyer by id non existent", func(t *testing.T) {
+	t.Run("case 2: not found - get buyer by id, id non existent", func(t *testing.T) {
 		// Arrange
 		buyerService := service.NewBuyerServiceMock()
 		buyerHandler := handler.NewBuyerHandler(buyerService)
@@ -290,7 +290,7 @@ func TestBuyerHandler_GetByID(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 		buyerService.AssertExpectations(t)
 	})
-	t.Run("case 3: bad request - get buyer by invalid id", func(t *testing.T) {
+	t.Run("case 3: bad request - get buyer by, invalid id", func(t *testing.T) {
 		// Arrange
 		buyerService := service.NewBuyerServiceMock()
 		buyerHandler := handler.NewBuyerHandler(buyerService)
@@ -336,7 +336,7 @@ func TestBuyerHandler_Update(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 		buyerService.AssertExpectations(t)
 	})
-	t.Run("case 2: not found - update buyer by id non existent", func(t *testing.T) {
+	t.Run("case 2: not found - update buyer, id non existent", func(t *testing.T) {
 		// Arrange
 		buyerService := service.NewBuyerServiceMock()
 		buyerHandler := handler.NewBuyerHandler(buyerService)
@@ -359,7 +359,7 @@ func TestBuyerHandler_Update(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 		buyerService.AssertExpectations(t)
 	})
-	t.Run("case 3: bad request - update buyer invalid id", func(t *testing.T) {
+	t.Run("case 3: bad request - update buyer, invalid id", func(t *testing.T) {
 		// Arrange
 		buyerService := service.NewBuyerServiceMock()
 		buyerHandler := handler.NewBuyerHandler(buyerService)
@@ -367,7 +367,7 @@ func TestBuyerHandler_Update(t *testing.T) {
 
 		body, err := json.Marshal(buyerRequestUpdate)
 		require.NoError(t, err)
-		
+
 		rt := chi.NewRouter()
 		rt.Patch("/buyers/{id}", buyerHandler.Update())
 
@@ -383,7 +383,7 @@ func TestBuyerHandler_Update(t *testing.T) {
 		buyerService.AssertNotCalled(t, "Update")
 	})
 
-	t.Run("case 4: bad request - update buyer invalid body", func(t *testing.T) {
+	t.Run("case 4: bad request - update buyer, invalid body", func(t *testing.T) {
 		// Arrange
 		buyerService := service.NewBuyerServiceMock()
 		buyerHandler := handler.NewBuyerHandler(buyerService)
@@ -412,7 +412,7 @@ func TestBuyerHandler_Update(t *testing.T) {
 		buyerService.AssertNotCalled(t, "Update")
 	})
 
-	t.Run("case 5: conflict - card number id already exists", func(t *testing.T) {
+	t.Run("case 5: conflict - update buyer, card number id already exists", func(t *testing.T) {
 		// Arrange
 		buyerService := service.NewBuyerServiceMock()
 		buyerHandler := handler.NewBuyerHandler(buyerService)
@@ -424,7 +424,7 @@ func TestBuyerHandler_Update(t *testing.T) {
 		rt := chi.NewRouter()
 		rt.Patch("/buyers/{id}", buyerHandler.Update())
 
-		// Act 
+		// Act
 		req, res := httptest.NewRequest(http.MethodPatch, "/buyers/2", bytes.NewReader(body)), httptest.NewRecorder()
 		rt.ServeHTTP(res, req)
 
@@ -437,8 +437,8 @@ func TestBuyerHandler_Update(t *testing.T) {
 	})
 }
 
-func TestBuyerHandler_Delete(t *testing.T){
-	t.Run("case 1: delete buyer successfully", func(t *testing.T){
+func TestBuyerHandler_Delete(t *testing.T) {
+	t.Run("case 1: delete buyer successfully", func(t *testing.T) {
 		// Arrange
 		buyerService := service.NewBuyerServiceMock()
 		buyerHandler := handler.NewBuyerHandler(buyerService)
@@ -455,7 +455,7 @@ func TestBuyerHandler_Delete(t *testing.T){
 		require.Equal(t, http.StatusNoContent, res.Code)
 		buyerService.AssertExpectations(t)
 	})
-	t.Run("case 2: not found - delete buyer by id non existent", func(t *testing.T){
+	t.Run("case 2: not found - delete buyer, id non existent", func(t *testing.T) {
 		// Arrange
 		buyerService := service.NewBuyerServiceMock()
 		buyerHandler := handler.NewBuyerHandler(buyerService)
@@ -476,7 +476,7 @@ func TestBuyerHandler_Delete(t *testing.T){
 		buyerService.AssertExpectations(t)
 	})
 
-	t.Run("case 3: bad request - delete buyer invalid id", func(t *testing.T){
+	t.Run("case 3: bad request - delete buyer, invalid id", func(t *testing.T) {
 		// Arrange
 		buyerService := service.NewBuyerServiceMock()
 		buyerHandler := handler.NewBuyerHandler(buyerService)
@@ -497,8 +497,8 @@ func TestBuyerHandler_Delete(t *testing.T){
 	})
 }
 
-func TestBuyerHanlder_Report(t *testing.T){
-	t.Run("case 1: get purchase order report successfully, all buyers", func(t *testing.T){
+func TestBuyerHanlder_Report(t *testing.T) {
+	t.Run("case 1: get purchase order report successfully, all buyers", func(t *testing.T) {
 		// Arrange
 		buyerService := service.NewBuyerServiceMock()
 		buyerHandler := handler.NewBuyerHandler(buyerService)
@@ -523,7 +523,7 @@ func TestBuyerHanlder_Report(t *testing.T){
 		require.JSONEq(t, expectedBody, res.Body.String())
 		buyerService.AssertExpectations(t)
 	})
-	t.Run("case 2: get purchase order report successfully, specific id", func(t *testing.T){
+	t.Run("case 2: get purchase order report successfully, specific id", func(t *testing.T) {
 		// Arrange
 		buyerService := service.NewBuyerServiceMock()
 		buyerHandler := handler.NewBuyerHandler(buyerService)
@@ -548,7 +548,7 @@ func TestBuyerHanlder_Report(t *testing.T){
 		buyerService.AssertExpectations(t)
 	})
 
-	t.Run("case 3: get purchase order report successfully but empty, specific id", func(t *testing.T){
+	t.Run("case 3: get purchase order report successfully but empty, specific id", func(t *testing.T) {
 		// Arrange
 		buyerService := service.NewBuyerServiceMock()
 		buyerHandler := handler.NewBuyerHandler(buyerService)
@@ -569,7 +569,7 @@ func TestBuyerHanlder_Report(t *testing.T){
 		require.JSONEq(t, expectedBody, res.Body.String())
 		buyerService.AssertExpectations(t)
 	})
-	t.Run("case 4: Bad request -  get purchase order report, invalid id", func(t *testing.T){
+	t.Run("case 4: Bad request -  get purchase order report, invalid id", func(t *testing.T) {
 		// Arrange
 		buyerService := service.NewBuyerServiceMock()
 		buyerHandler := handler.NewBuyerHandler(buyerService)
@@ -588,7 +588,7 @@ func TestBuyerHanlder_Report(t *testing.T){
 		require.JSONEq(t, expectedBody, res.Body.String())
 		buyerService.AssertNotCalled(t, "PurchaseOrderReport")
 	})
-	t.Run("case 5: Not found - get purchase order report, id non existent", func(t *testing.T){
+	t.Run("case 5: Not found - get purchase order report, id non existent", func(t *testing.T) {
 		// Arrange
 		buyerService := service.NewBuyerServiceMock()
 		buyerHandler := handler.NewBuyerHandler(buyerService)

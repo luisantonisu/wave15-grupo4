@@ -112,7 +112,7 @@ func TestBuyerService_GetAll(t *testing.T) {
 		require.Equal(t, buyers, buyersResult)
 		repo.AssertExpectations(t)
 	})
-	t.Run("case 2: get all buyers successfully but empty", func(t *testing.T) {
+	t.Run("case 2: get all buyers successfully, no buyers found", func(t *testing.T) {
 		// Arrange
 		repo := repository.NewBuyerRepositoryMock()
 		buyerService := service.NewBuyerService(repo)
@@ -130,7 +130,7 @@ func TestBuyerService_GetAll(t *testing.T) {
 }
 
 func TestBuyerService_GetById(t *testing.T) {
-	t.Run("case 1: get buyer by ID successfully", func(t *testing.T) {
+	t.Run("case 1: get buyer by id successfully", func(t *testing.T) {
 		// Arrange
 		repo := repository.NewBuyerRepositoryMock()
 		buyerService := service.NewBuyerService(repo)
@@ -149,7 +149,7 @@ func TestBuyerService_GetById(t *testing.T) {
 		require.Equal(t, buyer, buyerResult)
 		repo.AssertExpectations(t)
 	})
-	t.Run("case 2: not found - get buyer by ID non existent", func(t *testing.T) {
+	t.Run("case 2: not found - get buyer by id, id non existent", func(t *testing.T) {
 		// Arrange
 		repo := repository.NewBuyerRepositoryMock()
 		buyerService := service.NewBuyerService(repo)
@@ -188,7 +188,7 @@ func TestBuyerService_Update(t *testing.T) {
 		require.Equal(t, buyer, buyerResult)
 		repo.AssertExpectations(t)
 	})
-	t.Run("case 2: not found - update buyer non existent", func(t *testing.T) {
+	t.Run("case 2: not found - update buyer, id non existent", func(t *testing.T) {
 		// Arrange
 		repo := repository.NewBuyerRepositoryMock()
 		buyerService := service.NewBuyerService(repo)
@@ -221,7 +221,7 @@ func TestBuyerService_Delete(t *testing.T) {
 		require.NoError(t, err)
 		repo.AssertExpectations(t)
 	})
-	t.Run("case 2: not found - delete buyer non existent", func(t *testing.T) {
+	t.Run("case 2: not found - delete buyer, id non existent", func(t *testing.T) {
 		// Arrange
 		repo := repository.NewBuyerRepositoryMock()
 		buyerService := service.NewBuyerService(repo)
@@ -280,7 +280,7 @@ func TestBuyerService_ReportPurchaseOrder(t *testing.T) {
 		require.Equal(t, report, reportResult)
 		repo.AssertExpectations(t)
 	})
-	t.Run("case 3: get purchase order report with id succesfully but empty", func(t *testing.T) {
+	t.Run("case 3: get purchase order report succesfully but empty, specific id", func(t *testing.T) {
 		// Arrange
 		repo := repository.NewBuyerRepositoryMock()
 		buyerService := service.NewBuyerService(repo)
@@ -295,7 +295,7 @@ func TestBuyerService_ReportPurchaseOrder(t *testing.T) {
 		require.Empty(t, reportResult)
 		repo.AssertExpectations(t)
 	})
-	t.Run("case 4: not found - get purchase order report with id non existent", func(t *testing.T) {
+	t.Run("case 4: not found - get purchase order report, id non existent", func(t *testing.T) {
 		// Arrange
 		repo := repository.NewBuyerRepositoryMock()
 		buyerService := service.NewBuyerService(repo)
