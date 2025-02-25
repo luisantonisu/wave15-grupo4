@@ -326,7 +326,7 @@ func TestEmployeeHandler_Get(t *testing.T) {
 func TestEmployeeHandler_Update(t *testing.T) {
 
 	t.Run("case 1: update employee successfully", func(t *testing.T) {
-		//Assert
+		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
 		employeeService.On("Update", 1, mock.Anything).Return(mockEmployeeUpdate, nil)
@@ -354,7 +354,7 @@ func TestEmployeeHandler_Update(t *testing.T) {
 	})
 
 	t.Run("case 2: update employee, id not found", func(t *testing.T) {
-		//Assert
+		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
 		employeeService.On("Update", 2, mock.Anything).Return(model.Employee{}, eh.GetErrNotFound(eh.EMPLOYEE))
@@ -383,7 +383,7 @@ func TestEmployeeHandler_Update(t *testing.T) {
 	})
 
 	t.Run("case 3: update employee, invalid id", func(t *testing.T) {
-		//Assert
+		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
 		employeeService.On("Update", "hi", mock.Anything).Return(model.Employee{}, eh.INVALID_ID)
@@ -412,7 +412,7 @@ func TestEmployeeHandler_Update(t *testing.T) {
 	})
 
 	t.Run("case 4: update employee, invalid request body", func(t *testing.T) {
-		//Assert
+		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
 		employeeService.On("Update", 1, mock.Anything).Return(model.Employee{}, eh.INVALID_BODY)
@@ -441,7 +441,7 @@ func TestEmployeeHandler_Update(t *testing.T) {
 	})
 
 	t.Run("case 5: update employee, invalid warehouse id", func(t *testing.T) {
-		//Assert
+		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
 		employeeService.On("Update", 1, mock.Anything).Return(model.Employee{}, eh.GetErrForeignKey(eh.WAREHOUSE))
@@ -473,7 +473,7 @@ func TestEmployeeHandler_Update(t *testing.T) {
 
 func TestEmployeeHandler_Delete(t *testing.T) {
 	t.Run("case 1: delete employee successfully", func(t *testing.T) {
-		//Assert
+		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
 		employeeService.On("Delete", 1).Return(nil)
@@ -490,7 +490,7 @@ func TestEmployeeHandler_Delete(t *testing.T) {
 	})
 	
 	t.Run("case 2: delete employee, id not found", func(t *testing.T) {
-		//Assert
+		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
 		employeeService.On("Delete", 2).Return(eh.GetErrNotFound(eh.EMPLOYEE))
@@ -512,7 +512,7 @@ func TestEmployeeHandler_Delete(t *testing.T) {
 	})
 
 	t.Run("case 3: delete employee, invalid id", func(t *testing.T) {
-		//Assert
+		//Arranq
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
 		employeeService.On("Delete", "hi").Return(eh.INVALID_ID)
@@ -536,7 +536,7 @@ func TestEmployeeHandler_Delete(t *testing.T) {
 
 func TestEmployeeHandler_Report(t *testing.T) {
 	t.Run("case 1: get report successfully, specific employee id", func(t *testing.T) {
-		//Assert
+		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
 
@@ -568,7 +568,7 @@ func TestEmployeeHandler_Report(t *testing.T) {
 	})
 	
 	t.Run("case 2: get report successfully, all employees", func(t *testing.T) {
-		//Assert
+		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
 
