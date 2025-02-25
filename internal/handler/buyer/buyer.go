@@ -49,7 +49,6 @@ func (h *BuyerHandler) Create() http.HandlerFunc {
 
 		// Return response
 		response.JSON(w, http.StatusCreated, map[string]any{
-			"message": "success",
 			"data":    data,
 		})
 	}
@@ -101,7 +100,6 @@ func (h *BuyerHandler) GetByID() http.HandlerFunc {
 
 		// Return response
 		response.JSON(w, http.StatusOK, map[string]any{
-			"message": "success",
 			"data":    data,
 		})
 	}
@@ -161,7 +159,6 @@ func (h *BuyerHandler) Update() http.HandlerFunc {
 
 		// Return response
 		response.JSON(w, http.StatusOK, map[string]any{
-			"message": "success",
 			"data":    data,
 		})
 	}
@@ -196,7 +193,6 @@ func (h *BuyerHandler) Report() http.HandlerFunc {
 			data = append(data, helper.ReportPurchaseOrdersToReportPurchaseOrdersResponseDTO(buyer))
 		}
 		response.JSON(w, http.StatusOK, map[string]any{
-			"message": "success",
 			"data":    data,
 		})
 	}
