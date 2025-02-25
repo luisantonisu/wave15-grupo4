@@ -66,7 +66,7 @@ func TestGetAll(t *testing.T) {
 	testHandler := NewProductHandler(mockService)
 
 	// Mock the service response
-	mockService.On("GetProduct").Return(map[int]model.Product{}, nil)
+	mockService.On("GetProduct").Return([]model.Product{}, nil)
 
 	req, err := http.NewRequest("GET", "/products", nil)
 	require.NoError(t, err)
@@ -179,14 +179,14 @@ func TestGetRecord(t *testing.T) {
 		mockService := service.NewMockService()
 		testHandler := NewProductHandler(mockService)
 		// Mock the service response
-		mockRecords := map[int]model.ProductRecordCount{
+		mockRecords := []model.ProductRecordCount{
 
-			1: {
+			{
 				ProductID:   1,
 				Description: "Record 1",
 				Count:       10,
 			},
-			2: {
+			{
 				ProductID:   2,
 				Description: "Record 2",
 				Count:       20,

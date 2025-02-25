@@ -113,9 +113,9 @@ func TestGetProduct(t *testing.T) {
 	mockRepo := repository.NewMockRepository()
 	service := NewProductService(mockRepo)
 
-	mockProducts := map[int]model.Product{
-		1: {ID: 1, ProductAttributes: model.ProductAttributes{ProductCode: new(string)}},
-	}
+	mockProducts := []model.Product{
+		{ID: 1, ProductAttributes: model.ProductAttributes{ProductCode: new(string)}},
+		{ID: 2, ProductAttributes: model.ProductAttributes{ProductCode: new(string)}}}
 	mockRepo.On("GetProduct").Return(mockProducts, nil)
 
 	products, err := service.GetProduct()
@@ -152,7 +152,7 @@ func TestGetProductRecord(t *testing.T) {
 	mockRepo := repository.NewMockRepository()
 	service := NewProductService(mockRepo)
 
-	mockRecords := map[int]model.ProductRecordCount{
+	mockRecords := []model.ProductRecordCount{
 		1: {ProductID: 1, Description: "Record 1", Count: 10},
 	}
 	mockRepo.On("GetProductRecord").Return(mockRecords, nil)
