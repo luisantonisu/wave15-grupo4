@@ -14,7 +14,7 @@ type ProductService struct {
 	repository repository.IProduct
 }
 
-func (s *ProductService) GetProduct() (productMap map[int]model.Product, err error) {
+func (s *ProductService) GetProduct() (productMap []model.Product, err error) {
 	return s.repository.GetProduct()
 }
 
@@ -22,7 +22,7 @@ func (s *ProductService) GetProductByID(id int) (product model.Product, err erro
 	return s.repository.GetProductByID(id)
 }
 
-func (s *ProductService) GetProductRecord() (productRecordMap map[int]model.ProductRecordCount, err error) {
+func (s *ProductService) GetProductRecord() (productRecordMap []model.ProductRecordCount, err error) {
 	return s.repository.GetProductRecord()
 }
 
