@@ -9,6 +9,10 @@ type MockProductService struct {
 	mock.Mock
 }
 
+func NewMockService() *MockProductService {
+	return &MockProductService{}
+}
+
 func (m *MockProductService) GetProduct() (map[int]model.Product, error) {
 	args := m.Called()
 	return args.Get(0).(map[int]model.Product), args.Error(1)
