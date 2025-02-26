@@ -26,7 +26,7 @@ var (
 	mockRecord                     = model.ProductRecordCount{ProductID: 1, Description: "Record", Count: 1}
 )
 
-func TestValueCheck(t *testing.T) {
+func TestProductService_ValueCheck(t *testing.T) {
 	productAttributes := model.ProductAttributes{
 		ProductCode:                    &productCode,
 		Description:                    &description,
@@ -109,7 +109,7 @@ func TestValueCheck(t *testing.T) {
 	})
 }
 
-func TestGetProduct(t *testing.T) {
+func TestProductService_Get(t *testing.T) {
 	mockRepo := repository.NewMockRepository()
 	service := NewProductService(mockRepo)
 
@@ -128,7 +128,7 @@ func TestGetProductByID(t *testing.T) {
 	mockRepo := repository.NewMockRepository()
 	service := NewProductService(mockRepo)
 
-	t.Run("Get product by ID success", func(t *testing.T) {
+	t.Run("case 1: get product by id successfully", func(t *testing.T) {
 		mockRepo.On("GetProductByID", 1).Return(mockProduct, nil)
 
 		product, err := service.GetProductByID(1)
@@ -137,7 +137,7 @@ func TestGetProductByID(t *testing.T) {
 		mockRepo.AssertExpectations(t)
 	})
 
-	t.Run("Get product by ID not found", func(t *testing.T) {
+	t.Run("case 2: get product by id, id not found", func(t *testing.T) {
 		mockRepo.On("GetProductByID", 2).Return(model.Product{}, errorHandler.GetErrNotFound(errorHandler.PRODUCT))
 
 		product, err := service.GetProductByID(2)
@@ -148,34 +148,38 @@ func TestGetProductByID(t *testing.T) {
 	})
 }
 
-func TestGetProductRecord(t *testing.T) {
-	mockRepo := repository.NewMockRepository()
-	service := NewProductService(mockRepo)
+func TestProductService_Record(t *testing.T) {
+	t.Run("case 1: get product record successfully", func(t *testing.T) {
+		mockRepo := repository.NewMockRepository()
+		service := NewProductService(mockRepo)
 
-	mockRecords := []model.ProductRecordCount{
-		1: {ProductID: 1, Description: "Record 1", Count: 10},
-	}
-	mockRepo.On("GetProductRecord").Return(mockRecords, nil)
+		mockRecords := []model.ProductRecordCount{
+			1: {ProductID: 1, Description: "Record 1", Count: 10},
+		}
+		mockRepo.On("GetProductRecord").Return(mockRecords, nil)
 
-	records, err := service.GetProductRecord()
-	require.NoError(t, err)
-	require.Equal(t, mockRecords, records)
-	mockRepo.AssertExpectations(t)
+		records, err := service.GetProductRecord()
+		require.NoError(t, err)
+		require.Equal(t, mockRecords, records)
+		mockRepo.AssertExpectations(t)
+	})
 }
 
-func TestGetProductRecordByID(t *testing.T) {
-	mockRepo := repository.NewMockRepository()
-	service := NewProductService(mockRepo)
+func TestProductService_GetRecordByID(t *testing.T) {
+	t.Run("case 1: get product record by id successfully", func(t *testing.T) {
+		mockRepo := repository.NewMockRepository()
+		service := NewProductService(mockRepo)
 
-	mockRepo.On("GetProductRecordByID", 1).Return(mockRecord, nil)
+		mockRepo.On("GetProductRecordByID", 1).Return(mockRecord, nil)
 
-	record, err := service.GetProductRecordByID(1)
-	require.NoError(t, err)
-	require.Equal(t, mockRecord, record)
-	mockRepo.AssertExpectations(t)
+		record, err := service.GetProductRecordByID(1)
+		require.NoError(t, err)
+		require.Equal(t, mockRecord, record)
+		mockRepo.AssertExpectations(t)
+	})
 }
 
-func TestCreateProduct(t *testing.T) {
+func TestProductService_CreateProduct(t *testing.T) {
 
 	// mockProduct := model.Product{ID: 1, ProductAttributes: model.ProductAttributes{ProductCode: new(string)}}
 	mockProduct := model.Product{
@@ -207,7 +211,7 @@ func TestCreateProduct(t *testing.T) {
 		SellerID:                       &sellerId,
 	}
 
-	t.Run("Create product success", func(t *testing.T) {
+	t.Run("case 1: create product successfully", func(t *testing.T) {
 		mockRepo := repository.NewMockRepository()
 		service := NewProductService(mockRepo)
 		mockRepo.On("CreateProduct", productAttributes).Return(mockProduct, nil)
@@ -217,7 +221,7 @@ func TestCreateProduct(t *testing.T) {
 		require.Equal(t, mockProduct, product)
 		mockRepo.AssertExpectations(t)
 	})
-	t.Run("Create product error", func(t *testing.T) {
+	t.Run("case 2: bad product request/creation", func(t *testing.T) {
 		mockRepo := repository.NewMockRepository()
 		service := NewProductService(mockRepo)
 		mockRepo.On("CreateProduct", productAttributes).Return(model.Product{}, errorHandler.GetErrInvalidData(errorHandler.PRODUCT))
@@ -229,17 +233,17 @@ func TestCreateProduct(t *testing.T) {
 	})
 }
 
-func TestDeleteProduct(t *testing.T) {
+func TestProductService_Delete(t *testing.T) {
 	mockRepo := repository.NewMockRepository()
 	service := NewProductService(mockRepo)
-	t.Run("Delete product success", func(t *testing.T) {
+	t.Run("case 1: delete product successfully", func(t *testing.T) {
 		mockRepo.On("DeleteProduct", 1).Return(nil)
 
 		err := service.DeleteProduct(1)
 		require.NoError(t, err)
 		mockRepo.AssertExpectations(t)
 	})
-	t.Run("Delete product error", func(t *testing.T) {
+	t.Run("case 2: delete product, id not found", func(t *testing.T) {
 		mockRepo.On("DeleteProduct", 2).Return(errorHandler.GetErrNotFound(errorHandler.PRODUCT))
 
 		err := service.DeleteProduct(2)
@@ -249,13 +253,13 @@ func TestDeleteProduct(t *testing.T) {
 
 }
 
-func TestUpdateProduct(t *testing.T) {
+func TestProductService_Update(t *testing.T) {
 	mockRepo := repository.NewMockRepository()
 	service := NewProductService(mockRepo)
 
 	mockProduct.ProductAttributes.Description = new(string)
 	productAttributes := &model.ProductAttributes{ProductCode: new(string)}
-	t.Run("Update product success", func(t *testing.T) {
+	t.Run("case 1: update product successfully", func(t *testing.T) {
 		mockRepo.On("UpdateProduct", 1, productAttributes).Return(&mockProduct, nil)
 
 		product, err := service.UpdateProduct(1, productAttributes)
@@ -263,7 +267,7 @@ func TestUpdateProduct(t *testing.T) {
 		require.Equal(t, &mockProduct, product)
 		mockRepo.AssertExpectations(t)
 	})
-	t.Run("Update product error", func(t *testing.T) {
+	t.Run("case 2: update product, id not found", func(t *testing.T) {
 		mockRepo.On("UpdateProduct", 4, productAttributes).Return(&model.Product{}, errorHandler.GetErrNotFound(errorHandler.PRODUCT))
 
 		product, err := service.UpdateProduct(4, productAttributes)
