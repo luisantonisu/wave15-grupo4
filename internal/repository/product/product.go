@@ -19,19 +19,19 @@ type ProductRepository struct {
 	db *sql.DB
 }
 
-func (r *ProductRepository) GetProduct() (productMap map[int]model.Product, err error) {
+func (r *ProductRepository) GetProduct() (productMap []model.Product, err error) {
 	rows, err := r.db.Query("SELECT id, product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, freezing_rate, product_type_id, seller_id FROM products")
 	if err != nil {
 		return nil, errorHandler.GetErrDatabase(errorHandler.PRODUCT)
 	}
-	productMap = make(map[int]model.Product)
+	productMap = []model.Product{}
 	for rows.Next() {
 		var product model.Product
 		err := rows.Scan(&product.ID, &product.ProductAttributes.ProductCode, &product.ProductAttributes.Description, &product.ProductAttributes.Width, &product.ProductAttributes.Height, &product.ProductAttributes.Length, &product.ProductAttributes.NetWeight, &product.ProductAttributes.ExpirationRate, &product.ProductAttributes.RecommendedFreezingTemperature, &product.ProductAttributes.FreezingRate, &product.ProductAttributes.ProductTypeID, &product.ProductAttributes.SellerID)
 		if err != nil {
 			return nil, errorHandler.GetErrParsingData(errorHandler.PRODUCT)
 		}
-		productMap[product.ID] = product
+		productMap = append(productMap, product)
 	}
 	return
 }
@@ -45,14 +45,14 @@ func (r *ProductRepository) GetProductByID(id int) (product model.Product, err e
 	return product, nil
 }
 
-func (r *ProductRepository) GetProductRecord() (map[int]model.ProductRecordCount, error) {
+func (r *ProductRepository) GetProductRecord() ([]model.ProductRecordCount, error) {
 	rows, err := r.db.Query("SELECT prod.id as product_id, prod.description, COUNT(*) as records_count FROM products as prod INNER JOIN product_records as pr ON prod.id = pr.product_id GROUP BY prod.id")
 	if err != nil {
 		return nil, errorHandler.GetErrNotFound(errorHandler.PRODUCT_RECORD)
 	}
 	defer rows.Close()
 
-	var productRecords = make(map[int]model.ProductRecordCount)
+	var productRecords = []model.ProductRecordCount{}
 	for rows.Next() {
 		var productRecord model.ProductRecordCount
 		err := rows.Scan(&productRecord.ProductID, &productRecord.Description, &productRecord.Count)
@@ -60,7 +60,7 @@ func (r *ProductRepository) GetProductRecord() (map[int]model.ProductRecordCount
 		if err != nil {
 			return nil, errorHandler.GetErrNotFound(errorHandler.PRODUCT_RECORD)
 		}
-		productRecords[productRecord.ProductID] = productRecord
+		productRecords = append(productRecords, productRecord)
 	}
 
 	return productRecords, nil

@@ -24,11 +24,7 @@ func (s *BuyerService) Create(buyer model.BuyerAttributes) (model.Buyer, error) 
 
 // List all buyers
 func (s *BuyerService) GetAll() ([]model.Buyer, error) {
-	allBuyers, err := s.rp.GetAll()
-	if err != nil {
-		return nil, err
-	}
-	return allBuyers, nil
+	return s.rp.GetAll()
 }
 
 // Get a buyer by id
