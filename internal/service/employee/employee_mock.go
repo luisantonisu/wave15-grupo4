@@ -26,9 +26,9 @@ func (m *MockEmployeeService) Delete(id int) error {
 }
 
 // GetAll implements IEmployee.
-func (m *MockEmployeeService) GetAll() (map[int]model.Employee, error) {
+func (m *MockEmployeeService) GetAll() ([]model.Employee, error) {
 	args := m.Called()
-	return args.Get(0).(map[int]model.Employee), args.Error(1)
+	return args.Get(0).([]model.Employee), args.Error(1)
 }
 
 // GetByID implements IEmployee.
@@ -38,9 +38,9 @@ func (m *MockEmployeeService) GetByID(id int) (model.Employee, error) {
 }
 
 // Report implements IEmployee.
-func (m *MockEmployeeService) Report(id int) (map[int]model.InboundOrdersReport, error) {
+func (m *MockEmployeeService) Report(id int) ([]model.InboundOrdersReport, error) {
 	args := m.Called(id)
-	return args.Get(0).(map[int]model.InboundOrdersReport), args.Error(1)
+	return args.Get(0).([]model.InboundOrdersReport), args.Error(1)
 }
 
 // Update implements IEmployee.
