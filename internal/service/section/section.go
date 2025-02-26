@@ -17,11 +17,7 @@ type SectionService struct {
 }
 
 func (h *SectionService) GetAll() ([]model.Section, error) {
-	allSections, err := h.sectionRp.GetAll()
-	if err != nil {
-		return nil, err
-	}
-	return allSections, nil
+	return h.sectionRp.GetAll()
 }
 
 func (h *SectionService) GetByID(id int) (model.Section, error) {

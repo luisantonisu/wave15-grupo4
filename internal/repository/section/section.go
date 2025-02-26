@@ -91,10 +91,6 @@ func (s *SectionRepository) Patch(id int, section model.SectionAttributes) (mode
 		return model.Section{}, eh.GetErrNotFound(eh.SECTION)
 	}
 
-	// if section.SectionNumber != nil && s.sectionNumberExist(*section.SectionNumber) {
-	// 	return model.Section{}, eh.GetErrAlreadyExists(eh.SECTION_NUMBER)
-	// }
-
 	var sec model.Section
 	err := s.db.QueryRow("SELECT id, section_number, current_temperature, minimum_temperature, current_capacity, minimum_capacity, maximum_capacity, warehouse_id, product_type_id FROM sections WHERE id = ?", id).Scan(
 		&sec.ID, &sec.SectionNumber, &sec.CurrentTemperature, &sec.MinimumTemperature, &sec.CurrentCapacity, &sec.MinimumCapacity, &sec.MaximumCapacity, &sec.WarehouseID, &sec.ProductTypeID)
