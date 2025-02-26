@@ -89,7 +89,7 @@ func (r *ProductRepository) productCodeExists(productCode string) bool {
 func (r *ProductRepository) CreateProduct(productAtrributes *model.ProductAttributes) (prod model.Product, err error) {
 
 	if r.productCodeExists(*productAtrributes.ProductCode) {
-		return model.Product{}, errorHandler.GetErrAlreadyExists(errorHandler.PRODUCT)
+		return model.Product{}, errorHandler.GetErrAlreadyExistsCompose(errorHandler.PRODUCT_CODE, errorHandler.PRODUCT)
 	}
 	row, err := r.db.Exec("INSERT INTO products (product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, freezing_rate, product_type_id, seller_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", productAtrributes.ProductCode, productAtrributes.Description, productAtrributes.Width, productAtrributes.Height, productAtrributes.Length, productAtrributes.NetWeight, productAtrributes.ExpirationRate, productAtrributes.RecommendedFreezingTemperature, productAtrributes.FreezingRate, productAtrributes.ProductTypeID, productAtrributes.SellerID)
 
@@ -140,7 +140,7 @@ func (r *ProductRepository) UpdateProduct(id int, productAtrributesPtr *model.Pr
 	}
 
 	if productAtrributesPtr.ProductCode != nil && r.productCodeExists(*productAtrributesPtr.ProductCode) {
-		return nil, errorHandler.GetErrAlreadyExists(errorHandler.PRODUCT)
+		return nil, errorHandler.GetErrAlreadyExistsCompose(errorHandler.PRODUCT_CODE, errorHandler.PRODUCT)
 
 	}
 

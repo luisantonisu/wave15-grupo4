@@ -17,6 +17,7 @@ const (
 	ID               = "id"
 	INVALID_BODY     = "invalid request body"
 	INVALID_ID       = "invalid id"
+	PRODUCT_CODE     = "product code"
 	CARD_NUMBER      = "card number ID"
 	WAREHOUSE_CODE   = "warehouse code"
 	SECTION_NUMBER   = "section number"
