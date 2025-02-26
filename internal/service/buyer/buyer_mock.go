@@ -33,9 +33,9 @@ func (m *BuyerServiceMock) Delete(id int) error {
 	return args.Error(0)
 }
 
-func (m *BuyerServiceMock) Update(id int, buyer *model.ProductAttributes) (*model.Product, error) {
+func (m *BuyerServiceMock) Update(id int, buyer model.BuyerAttributes) (model.Buyer, error) {
 	args := m.Called(id, buyer)
-	return args.Get(0).(*model.Product), args.Error(1)
+	return args.Get(0).(model.Buyer), args.Error(1)
 }
 
 func (m *BuyerServiceMock) PurchaseOrderReport(id *int) ([]model.ReportPurchaseOrders, error) {
