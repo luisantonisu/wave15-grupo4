@@ -13,9 +13,9 @@ func NewEmployeeMockRepository() *MockEmployeeRepository {
 	return &MockEmployeeRepository{}
 }
 
-func (m *MockEmployeeRepository) GetAll() (map[int]model.Employee, error) {
+func (m *MockEmployeeRepository) GetAll() ([]model.Employee, error) {
 	args := m.Called()
-	return args.Get(0).(map[int]model.Employee), args.Error(1)
+	return args.Get(0).([]model.Employee), args.Error(1)
 }
 
 func (m *MockEmployeeRepository) GetByID(id int) (model.Employee, error) {
@@ -38,7 +38,7 @@ func (m *MockEmployeeRepository) Update(id int, employee model.EmployeeAttribute
 	return args.Get(0).(model.Employee), args.Error(1)
 }
 
-func (m *MockEmployeeRepository) Report(id int) (map[int]model.InboundOrdersReport, error) {
+func (m *MockEmployeeRepository) Report(id int) ([]model.InboundOrdersReport, error) {
 	args := m.Called(id)
-	return args.Get(0).(map[int]model.InboundOrdersReport), args.Error(1)
+	return args.Get(0).([]model.InboundOrdersReport), args.Error(1)
 }

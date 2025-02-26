@@ -165,14 +165,14 @@ func TestEmployeeService_Get(t *testing.T) {
 		mockEmployeeRepo := repositoryEm.NewEmployeeMockRepository()
 		mockWarehouseRepo := repositoryWh.NewWarehouseRepositoryMock()
 		service := NewEmployeeService(mockEmployeeRepo, mockWarehouseRepo)
-		mockEmployeeRepo.On("GetAll").Return(map[int]model.Employee{0: mockEmployeeA, 1: mockEmployeeB}, nil)
+		mockEmployeeRepo.On("GetAll").Return([]model.Employee{ mockEmployeeA, mockEmployeeB}, nil)
 
 		//Act
 		employees, err := service.GetAll()
 
 		//Assert
 		require.NoError(t, err)
-		require.Equal(t, map[int]model.Employee{0: mockEmployeeA, 1: mockEmployeeB}, employees)
+		require.Equal(t, []model.Employee{ mockEmployeeA, mockEmployeeB}, employees)
 		mockEmployeeRepo.AssertExpectations(t)
 		mockWarehouseRepo.AssertExpectations(t)
 	})
@@ -306,15 +306,15 @@ func TestEmployeeService_Report(t *testing.T) {
 		mockWarehouseRepo := repositoryWh.NewWarehouseRepositoryMock()
 		service := NewEmployeeService(mockEmployeeRepo, mockWarehouseRepo)
 
-		reportMap := map[int]model.InboundOrdersReport{
-			0: {
+		reportMap := []model.InboundOrdersReport{
+			{
 				ID:           1,
 				FirstName:    "John",
 				LastName:     "Doe",
 				CardNumberID: 12345,
 				WarehouseID:  1,
 			},
-			1: {
+			{
 				ID:                 2,
 				FirstName:          "Jane",
 				LastName:           "Wick",
@@ -341,8 +341,8 @@ func TestEmployeeService_Report(t *testing.T) {
 		mockWarehouseRepo := repositoryWh.NewWarehouseRepositoryMock()
 		service := NewEmployeeService(mockEmployeeRepo, mockWarehouseRepo)
 
-		reportMap := map[int]model.InboundOrdersReport{
-			0: {
+		reportMap := []model.InboundOrdersReport{
+			{
 				ID:           1,
 				FirstName:    "John",
 				LastName:     "Doe",
@@ -368,7 +368,7 @@ func TestEmployeeService_Report(t *testing.T) {
 		mockWarehouseRepo := repositoryWh.NewWarehouseRepositoryMock()
 		service := NewEmployeeService(mockRepo, mockWarehouseRepo)
 
-		mockRepo.On("Report", 10).Return(map[int]model.InboundOrdersReport{}, eh.GetErrNotFound(eh.EMPLOYEE))
+		mockRepo.On("Report", 10).Return([]model.InboundOrdersReport{}, eh.GetErrNotFound(eh.EMPLOYEE))
 
 		//Act
 		report, err := service.Report(10)
@@ -377,7 +377,7 @@ func TestEmployeeService_Report(t *testing.T) {
 		require.Error(t, err)
 		require.ErrorIs(t, err, eh.ErrNotFound)
 		require.Equal(t, eh.GetErrNotFound(eh.EMPLOYEE), err)
-		require.Equal(t, map[int]model.InboundOrdersReport{}, report)
+		require.Equal(t, []model.InboundOrdersReport{}, report)
 		mockRepo.AssertExpectations(t)
 	})
 }
