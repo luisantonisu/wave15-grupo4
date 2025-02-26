@@ -47,7 +47,6 @@ func (h *PurchaseOrderHandler) Create() http.HandlerFunc {
 
 		// Return response
 		response.JSON(w, http.StatusCreated, map[string]any{
-			"message": "Purchase Order created",
 			"data":    data,
 		})
 	}
