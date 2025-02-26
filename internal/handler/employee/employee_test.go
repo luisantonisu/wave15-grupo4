@@ -213,7 +213,7 @@ func TestEmployeeHandler_Get(t *testing.T) {
 		// Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
-		employeeService.On("GetAll").Return(map[int]model.Employee{1: mockEmployee}, nil)
+		employeeService.On("GetAll").Return([]model.Employee{mockEmployee}, nil)
 
 		rt := chi.NewRouter()
 		rt.Get("/employees", employeeHandler.GetAll())
@@ -235,7 +235,7 @@ func TestEmployeeHandler_Get(t *testing.T) {
 		// Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
-		employeeService.On("GetAll").Return(map[int]model.Employee{}, eh.GetErrDatabase(eh.EMPLOYEE))
+		employeeService.On("GetAll").Return([]model.Employee{}, eh.GetErrDatabase(eh.EMPLOYEE))
 
 		rt := chi.NewRouter()
 		rt.Get("/employees", employeeHandler.GetAll())
@@ -540,8 +540,8 @@ func TestEmployeeHandler_Report(t *testing.T) {
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
 
-		employeeService.On("Report", 1).Return(map[int]model.InboundOrdersReport{
-			0: {
+		employeeService.On("Report", 1).Return([]model.InboundOrdersReport{
+			{
 				ID: 1,
 				CardNumberID: cardNumberID,
 				FirstName: firstNameEmp,
@@ -572,8 +572,8 @@ func TestEmployeeHandler_Report(t *testing.T) {
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
 
-		employeeService.On("Report", -1).Return(map[int]model.InboundOrdersReport{
-			0: {
+		employeeService.On("Report", -1).Return([]model.InboundOrdersReport{
+			{
 				ID: 1,
 				CardNumberID: cardNumberID,
 				FirstName: firstNameEmp,
@@ -581,7 +581,7 @@ func TestEmployeeHandler_Report(t *testing.T) {
 				WarehouseID: warehouseID,
 				InboundOrdersCount: 2,
 			},
-			1: {
+			{
 				ID: 2,
 				CardNumberID: cardNumberB,
 				FirstName: firstNameEmpB,
@@ -614,7 +614,7 @@ func TestEmployeeHandler_Report(t *testing.T) {
 		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
-		employeeService.On("Report", "hi").Return(map[int]model.InboundOrdersReport{}, eh.INVALID_ID)
+		employeeService.On("Report", "hi").Return([]model.InboundOrdersReport{}, eh.INVALID_ID)
 
 		rt := chi.NewRouter()
 		rt.Get("/employees/reportInboundOrders", employeeHandler.Report())
@@ -637,7 +637,7 @@ func TestEmployeeHandler_Report(t *testing.T) {
 		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
-		employeeService.On("Report", 2).Return(map[int]model.InboundOrdersReport{}, eh.GetErrNotFound(eh.EMPLOYEE))
+		employeeService.On("Report", 2).Return([]model.InboundOrdersReport{}, eh.GetErrNotFound(eh.EMPLOYEE))
 
 		rt := chi.NewRouter()
 		rt.Get("/employees/reportInboundOrders", employeeHandler.Report())

@@ -19,7 +19,7 @@ type EmployeeService struct {
 	warehouseRp warehouseRepository.IWarehouse
 }
 
-func (h *EmployeeService) GetAll() (map[int]model.Employee, error) {
+func (h *EmployeeService) GetAll() ([]model.Employee, error) {
 	return h.employeeRp.GetAll()
 }
 
@@ -55,6 +55,6 @@ func (h *EmployeeService) Delete(id int) error {
 	return h.employeeRp.Delete(id)
 }
 
-func (h *EmployeeService) Report(id int) (map[int]model.InboundOrdersReport, error) {
+func (h *EmployeeService) Report(id int) ([]model.InboundOrdersReport, error) {
 	return h.employeeRp.Report(id)
 }
