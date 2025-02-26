@@ -41,20 +41,20 @@ func (r *EmployeeRepository) cardNumberIdExists(cardNumberId int, id int) bool {
 	return exists
 }
 
-func (r *EmployeeRepository) GetAll() (map[int]model.Employee, error) {
+func (r *EmployeeRepository) GetAll() ([]model.Employee, error) {
 	rows, err := r.db.Query("SELECT id, first_name, last_name, card_number_id, warehouse_id FROM employees")
 	if err != nil {
 		return nil, eh.GetErrGettingData(eh.EMPLOYEE)
 	}
 
-	employees := make(map[int]model.Employee)
+	employees := []model.Employee{}
 	for rows.Next() {
 		var employee model.Employee
 		err := rows.Scan(&employee.ID, &employee.FirstName, &employee.LastName, &employee.CardNumberID, &employee.WarehouseID)
 		if err != nil {
 			return nil, eh.GetErrParsingData(eh.EMPLOYEE)
 		}
-		employees[employee.ID] = employee
+		employees = append(employees, employee)
 	}
 
 	return employees, nil
@@ -149,7 +149,7 @@ func (r *EmployeeRepository) Delete(id int) error {
 	return nil
 }
 
-func (r *EmployeeRepository) Report(id int) (map[int]model.InboundOrdersReport, error) {
+func (r *EmployeeRepository) Report(id int) ([]model.InboundOrdersReport, error) {
 	var rows *sql.Rows
 	var err error
 	if id == -1 {
@@ -168,14 +168,14 @@ func (r *EmployeeRepository) Report(id int) (map[int]model.InboundOrdersReport, 
 		}
 	}
 
-	employees := make(map[int]model.InboundOrdersReport)
+	employees := []model.InboundOrdersReport{}
 	for rows.Next() {
 		var employee model.InboundOrdersReport
 		err := rows.Scan(&employee.ID, &employee.FirstName, &employee.LastName, &employee.CardNumberID, &employee.WarehouseID, &employee.InboundOrdersCount)
 		if err != nil {
 			return nil, eh.GetErrParsingData(eh.EMPLOYEE)
 		}
-		employees[employee.ID] = employee
+		employees = append(employees, employee)
 	}
 
 	return employees, nil
