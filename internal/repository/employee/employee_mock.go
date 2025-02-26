@@ -23,7 +23,7 @@ func (m *MockEmployeeRepository) GetByID(id int) (model.Employee, error) {
 	return args.Get(0).(model.Employee), args.Error(1)
 }
 
-func (m *MockEmployeeRepository) Create(employee *model.Employee) (model.Employee, error) {
+func (m *MockEmployeeRepository) Create(employee model.EmployeeAttributes) (model.Employee, error) {
 	args := m.Called(employee)
 	return args.Get(0).(model.Employee), args.Error(1)
 }
