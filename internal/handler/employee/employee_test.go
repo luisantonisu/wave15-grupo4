@@ -78,7 +78,7 @@ func TestEmployeeHandler_Create(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 	})
 
-	t.Run("case 2: bad employee request/creation", func(t *testing.T) {
+	t.Run("case 2: invalid data - employee missing fields", func(t *testing.T) {
 		// Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
@@ -110,7 +110,7 @@ func TestEmployeeHandler_Create(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 	})
 
-	t.Run("case 3: bad employee request - card number id duplicated", func(t *testing.T) {
+	t.Run("case 3: conflict - card number id duplicated", func(t *testing.T) {
 		// Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
@@ -142,7 +142,7 @@ func TestEmployeeHandler_Create(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 	})
 
-	t.Run("case 4: bad employee request - warehouse id not found", func(t *testing.T) {
+	t.Run("case 4: not found - warehouse id doesn't exist", func(t *testing.T) {
 		// Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
@@ -174,7 +174,7 @@ func TestEmployeeHandler_Create(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 	})
 
-	t.Run("case 5: bad employee request - invalid body", func(t *testing.T) {
+	t.Run("case 5: bad request - invalid body", func(t *testing.T) {
 		// Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
@@ -231,7 +231,7 @@ func TestEmployeeHandler_Get(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 	})
 
-	t.Run("case 2: get all employees, server error", func(t *testing.T) {
+	t.Run("case 2: internal server error - get all employees", func(t *testing.T) {
 		// Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
@@ -276,7 +276,7 @@ func TestEmployeeHandler_Get(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 	})
 
-	t.Run("case 4: get employee by id, id not found", func(t *testing.T) {
+	t.Run("case 4: not found - employee id doesn't exist", func(t *testing.T) {
 		// Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
@@ -299,7 +299,7 @@ func TestEmployeeHandler_Get(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 	})
 
-	t.Run("case 5: get employee by id, invalid id", func(t *testing.T) {
+	t.Run("case 5: bad request - employee invalid id", func(t *testing.T) {
 		// Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
@@ -353,7 +353,7 @@ func TestEmployeeHandler_Update(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 	})
 
-	t.Run("case 2: update employee, id not found", func(t *testing.T) {
+	t.Run("case 2: not found - employee id doesn't exist", func(t *testing.T) {
 		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
@@ -382,7 +382,7 @@ func TestEmployeeHandler_Update(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 	})
 
-	t.Run("case 3: update employee, invalid id", func(t *testing.T) {
+	t.Run("case 3: bad request - employee invalid id", func(t *testing.T) {
 		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
@@ -411,7 +411,7 @@ func TestEmployeeHandler_Update(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 	})
 
-	t.Run("case 4: update employee, invalid request body", func(t *testing.T) {
+	t.Run("case 4: invalid data - invalid request body", func(t *testing.T) {
 		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
@@ -440,7 +440,7 @@ func TestEmployeeHandler_Update(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 	})
 
-	t.Run("case 5: update employee, invalid warehouse id", func(t *testing.T) {
+	t.Run("case 5: foreign key - warehouse id doesn't exist", func(t *testing.T) {
 		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
@@ -489,7 +489,7 @@ func TestEmployeeHandler_Delete(t *testing.T) {
 		require.Equal(t, http.StatusNoContent, res.Code)
 	})
 	
-	t.Run("case 2: delete employee, id not found", func(t *testing.T) {
+	t.Run("case 2: not found - employee id doesn't exist", func(t *testing.T) {
 		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
@@ -511,7 +511,7 @@ func TestEmployeeHandler_Delete(t *testing.T) {
 		require.JSONEq(t, expected, res.Body.String())
 	})
 
-	t.Run("case 3: delete employee, invalid id", func(t *testing.T) {
+	t.Run("case 3: bad request - employee invalid id", func(t *testing.T) {
 		//Arranq
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
@@ -535,7 +535,7 @@ func TestEmployeeHandler_Delete(t *testing.T) {
 }
 
 func TestEmployeeHandler_Report(t *testing.T) {
-	t.Run("case 1: get report successfully, specific employee id", func(t *testing.T) {
+	t.Run("case 1: get report by employee id successfully", func(t *testing.T) {
 		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
@@ -567,7 +567,7 @@ func TestEmployeeHandler_Report(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 	})
 	
-	t.Run("case 2: get report successfully, all employees", func(t *testing.T) {
+	t.Run("case 2: get all employees report successfully", func(t *testing.T) {
 		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
@@ -610,7 +610,7 @@ func TestEmployeeHandler_Report(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 	})
 
-	t.Run("case 3: get report employee, invalid id", func(t *testing.T) {
+	t.Run("case 3: bad request - get by employee id report", func(t *testing.T) {
 		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
@@ -633,7 +633,7 @@ func TestEmployeeHandler_Report(t *testing.T) {
 		require.JSONEq(t, expected, res.Body.String())
 	})
 	
-	t.Run("case 4: get report employee, employee not found", func(t *testing.T) {
+	t.Run("case 4: not found - get by employee id report", func(t *testing.T) {
 		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
