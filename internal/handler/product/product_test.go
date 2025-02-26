@@ -61,7 +61,7 @@ var (
 	}
 )
 
-func TestGetAll(t *testing.T) {
+func TestProductHandler_Get(t *testing.T) {
 	mockService := service.NewMockService()
 	testHandler := NewProductHandler(mockService)
 
@@ -79,12 +79,12 @@ func TestGetAll(t *testing.T) {
 	require.JSONEq(t, expected, rr.Body.String())
 }
 
-func TestGetByID(t *testing.T) {
+func TestProductHandler_GetByID(t *testing.T) {
 
 	// Mock the service response
 	productID := 1
 	// Test case: Get a specific record when `id` is provided
-	t.Run("GetProductByID", func(t *testing.T) {
+	t.Run("case 1: get product by id successfully", func(t *testing.T) {
 		mockService := service.NewMockService()
 		testHandler := NewProductHandler(mockService)
 
@@ -124,7 +124,7 @@ func TestGetByID(t *testing.T) {
 
 	// Test case: Get a specific record when `id` is invalid
 
-	t.Run("InvalidId", func(t *testing.T) {
+	t.Run("case 2: get product by id. invalid id", func(t *testing.T) {
 		mockService := service.NewMockService()
 		testHandler := NewProductHandler(mockService)
 
@@ -149,7 +149,7 @@ func TestGetByID(t *testing.T) {
 
 	})
 
-	t.Run("ServiceError", func(t *testing.T) {
+	t.Run("case 3: get product by id, product not found", func(t *testing.T) {
 		mockService := service.NewMockService()
 		testHandler := NewProductHandler(mockService)
 
@@ -172,10 +172,10 @@ func TestGetByID(t *testing.T) {
 	})
 }
 
-func TestGetRecord(t *testing.T) {
+func TestProductHandler_Record(t *testing.T) {
 
 	// Test case: Get all records when no `id` is provided
-	t.Run("GetAllRecords", func(t *testing.T) {
+	t.Run("case 1: get all records successfully", func(t *testing.T) {
 		mockService := service.NewMockService()
 		testHandler := NewProductHandler(mockService)
 		// Mock the service response
@@ -222,7 +222,7 @@ func TestGetRecord(t *testing.T) {
 	})
 
 	// Test case: Get a specific record when `id` is provided
-	t.Run("GetRecordByID", func(t *testing.T) {
+	t.Run("case 2: get record by id successfully", func(t *testing.T) {
 		mockService := service.NewMockService()
 		testHandler := NewProductHandler(mockService)
 		// Mock the service response
@@ -256,7 +256,7 @@ func TestGetRecord(t *testing.T) {
 	})
 
 	// Test case: Handle invalid `id` query parameter
-	t.Run("InvalidID", func(t *testing.T) {
+	t.Run("case 3: get record by id, invalid id", func(t *testing.T) {
 		mockService := service.NewMockService()
 		testHandler := NewProductHandler(mockService)
 		req, err := http.NewRequest("GET", "/products/reportRecords?id=invalid", nil)
@@ -276,7 +276,7 @@ func TestGetRecord(t *testing.T) {
 	})
 
 	// Test case: Handle service errors
-	t.Run("ServiceError", func(t *testing.T) {
+	t.Run("case 4: get record by id, id not found", func(t *testing.T) {
 		mockService := service.NewMockService()
 		testHandler := NewProductHandler(mockService)
 		mockService.On("GetProductRecordByID", 2).Return(model.ProductRecordCount{}, errorHandler.GetErrNotFound(errorHandler.PRODUCT_RECORD))
@@ -298,9 +298,9 @@ func TestGetRecord(t *testing.T) {
 	})
 }
 
-func TestCreate(t *testing.T) {
+func TestProductHandler_Create(t *testing.T) {
 
-	t.Run("ProductCreated", func(t *testing.T) {
+	t.Run("case 1: create product successfully", func(t *testing.T) {
 		mockService := service.NewMockService()
 		testHandler := NewProductHandler(mockService)
 
@@ -339,7 +339,7 @@ func TestCreate(t *testing.T) {
 		require.JSONEq(t, expected, rr.Body.String())
 	})
 
-	t.Run("ServiceError", func(t *testing.T) {
+	t.Run("case 2: bad product request/creation", func(t *testing.T) {
 		mockService := service.NewMockService()
 		testHandler := NewProductHandler(mockService)
 
@@ -377,13 +377,47 @@ func TestCreate(t *testing.T) {
 	    }`
 		require.JSONEq(t, expected, rr.Body.String())
 	})
+
 }
 
-func TestDelete(t *testing.T) {
+func TestProductHandler_Delete(t *testing.T) {
 
 	// Mock the service response
 	productID := 1
-	t.Run("InvalidIdNumber", func(t *testing.T) {
+	t.Run("case 1: delete product successfully", func(t *testing.T) {
+		mockService := service.NewMockService()
+		testHandler := NewProductHandler(mockService)
+		mockService.On("DeleteProduct", productID).Return(nil)
+
+		req, err := http.NewRequest("DELETE", "/products/"+strconv.Itoa(productID), nil)
+		require.NoError(t, err)
+
+		rr := httptest.NewRecorder()
+		r := chi.NewRouter()
+		r.Delete("/products/{id}", testHandler.Delete())
+		r.ServeHTTP(rr, req)
+
+		require.Equal(t, http.StatusNoContent, rr.Code)
+
+	})
+
+	t.Run("case 2: delete product, id not found", func(t *testing.T) {
+		mockService := service.NewMockService()
+		testHandler := NewProductHandler(mockService)
+		mockService.On("DeleteProduct", 2).Return(errorHandler.GetErrNotFound(errorHandler.PRODUCT))
+
+		req, err := http.NewRequest("DELETE", "/products/"+strconv.Itoa(2), nil)
+		require.NoError(t, err)
+
+		rr := httptest.NewRecorder()
+		r := chi.NewRouter()
+		r.Delete("/products/{id}", testHandler.Delete())
+		r.ServeHTTP(rr, req)
+
+		require.Equal(t, http.StatusNotFound, rr.Code)
+
+	})
+	t.Run("case 3: delete product, invalid id", func(t *testing.T) {
 		mockService := service.NewMockService()
 		testHandler := NewProductHandler(mockService)
 		// Mock the service response
@@ -406,81 +440,16 @@ func TestDelete(t *testing.T) {
 
 	})
 
-	t.Run("InvalidId", func(t *testing.T) {
-		mockService := service.NewMockService()
-		testHandler := NewProductHandler(mockService)
-		// Mock the service response
-
-		req, err := http.NewRequest("DELETE", "/products/d", nil)
-		require.NoError(t, err)
-		req.Header.Set("Content-Type", "application/json")
-
-		rr := httptest.NewRecorder()
-		r := chi.NewRouter()
-		r.Delete("/products/{id}", testHandler.Delete())
-		r.ServeHTTP(rr, req)
-
-		require.Equal(t, http.StatusBadRequest, rr.Code)
-		expected := `{
-			"status": "Bad Request",
-			"message": "invalid id"
-		}`
-		require.JSONEq(t, expected, rr.Body.String())
-
-	})
-
-	t.Run("DeleteProduct", func(t *testing.T) {
-		mockService := service.NewMockService()
-		testHandler := NewProductHandler(mockService)
-		mockService.On("DeleteProduct", productID).Return(nil)
-
-		req, err := http.NewRequest("DELETE", "/products/"+strconv.Itoa(productID), nil)
-		require.NoError(t, err)
-
-		rr := httptest.NewRecorder()
-		r := chi.NewRouter()
-		r.Delete("/products/{id}", testHandler.Delete())
-		r.ServeHTTP(rr, req)
-
-		require.Equal(t, http.StatusNoContent, rr.Code)
-
-	})
-
 }
 
-func TestUpdate(t *testing.T) {
+func TestProductHandler_Update(t *testing.T) {
 
 	// Mock the service response
 	mockProduct.Description = &updatedDescription
 
 	productRequest.Description = &updatedDescription
 
-	t.Run("NotFound", func(t *testing.T) {
-		mockService := service.NewMockService()
-		testHandler := NewProductHandler(mockService)
-		// Mock the service response
-		mockService.On("UpdateProduct", 4, mock.Anything).Return(&model.Product{}, errorHandler.GetErrNotFound(errorHandler.PRODUCT))
-
-		body, err := json.Marshal(productRequest)
-		require.NoError(t, err)
-
-		req, err := http.NewRequest("PATCH", "/products/"+strconv.Itoa(4), bytes.NewBuffer(body))
-		require.NoError(t, err)
-		req.Header.Set("Content-Type", "application/json")
-
-		rr := httptest.NewRecorder()
-		r := chi.NewRouter()
-		r.Patch("/products/{id}", testHandler.Update())
-		r.ServeHTTP(rr, req)
-
-		require.Equal(t, http.StatusNotFound, rr.Code)
-		expected := `{
-            "status": "Not Found",
-            "message": "product not found"
-        }`
-		require.JSONEq(t, expected, rr.Body.String())
-	})
-	t.Run("UpdateProduct", func(t *testing.T) {
+	t.Run("case 1: update product successfully", func(t *testing.T) {
 		mockService := service.NewMockService()
 		testHandler := NewProductHandler(mockService)
 
@@ -520,4 +489,31 @@ func TestUpdate(t *testing.T) {
     }`
 		require.JSONEq(t, expected, rr.Body.String())
 	})
+
+	t.Run("case 2: update product, id not found", func(t *testing.T) {
+		mockService := service.NewMockService()
+		testHandler := NewProductHandler(mockService)
+		// Mock the service response
+		mockService.On("UpdateProduct", 4, mock.Anything).Return(&model.Product{}, errorHandler.GetErrNotFound(errorHandler.PRODUCT))
+
+		body, err := json.Marshal(productRequest)
+		require.NoError(t, err)
+
+		req, err := http.NewRequest("PATCH", "/products/"+strconv.Itoa(4), bytes.NewBuffer(body))
+		require.NoError(t, err)
+		req.Header.Set("Content-Type", "application/json")
+
+		rr := httptest.NewRecorder()
+		r := chi.NewRouter()
+		r.Patch("/products/{id}", testHandler.Update())
+		r.ServeHTTP(rr, req)
+
+		require.Equal(t, http.StatusNotFound, rr.Code)
+		expected := `{
+            "status": "Not Found",
+            "message": "product not found"
+        }`
+		require.JSONEq(t, expected, rr.Body.String())
+	})
+
 }
