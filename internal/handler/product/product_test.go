@@ -378,6 +378,45 @@ func TestProductHandler_Create(t *testing.T) {
 		require.JSONEq(t, expected, rr.Body.String())
 	})
 
+	t.Run("case 3: bad product request, product code duplicated", func(t *testing.T) {
+		mockService := service.NewMockService()
+		testHandler := NewProductHandler(mockService)
+
+		mockService.On("CreateProduct", mock.Anything).Return(model.Product{}, errorHandler.GetErrAlreadyExistsCompose(errorHandler.PRODUCT, errorHandler.PRODUCT_CODE))
+
+		body, err := json.Marshal(dto.ProductRequestDTO{
+			ProductCode:                    &productCode,
+			Description:                    &description,
+			Width:                          &width,
+			Height:                         &height,
+			Length:                         &length,
+			NetWeight:                      &netWeight,
+			ExpirationRate:                 &expirationRate,
+			RecommendedFreezingTemperature: &recommendedFreezingTemperature,
+			FreezingRate:                   &freezingRate,
+			ProductTypeId:                  &productTypeId,
+			SellerId:                       &sellerId,
+		})
+		require.NoError(t, err)
+
+		req, err := http.NewRequest("POST", "/products", bytes.NewBuffer(body))
+		require.NoError(t, err)
+		req.Header.Set("Content-Type", "application/json")
+
+		rr := httptest.NewRecorder()
+
+		r := chi.NewRouter()
+		r.Post("/products", testHandler.Create())
+		r.ServeHTTP(rr, req)
+
+		require.Equal(t, http.StatusConflict, rr.Code)
+		expected := `{
+			"status": "Conflict",
+			"message": "product with that product code already exists"
+		}`
+		require.JSONEq(t, expected, rr.Body.String())
+	})
+
 }
 
 func TestProductHandler_Delete(t *testing.T) {
