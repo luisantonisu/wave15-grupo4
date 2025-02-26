@@ -90,7 +90,6 @@ func TestEmployeeService_Create(t *testing.T) {
 		service := NewEmployeeService(mockEmployeeRepo, mockWarehouseRepo)
 
 		mockWarehouseRepo.On("GetByID", 1).Return(model.Warehouse{}, eh.GetErrNotFound(eh.WAREHOUSE))
-		//mockEmployeeRepo.On("Create", mockEmployeeA.EmployeeAttributes).Return(model.Employee{}, eh.GetErrForeignKey(eh.WAREHOUSE))
 
 		//Act
 		employee, err := service.Create(mockEmployeeA)
@@ -228,7 +227,6 @@ func TestEmployeeService_Update(t *testing.T) {
 		service := NewEmployeeService(mockEmployeeRepo, mockWarehouseRepo)
 
 		mockWarehouseRepo.On("GetByID", 1).Return(model.Warehouse{}, eh.GetErrNotFound(eh.WAREHOUSE))
-		//mockEmployeeRepo.On("Update", mockEmployeeB.ID, mockEmployeeB.EmployeeAttributes).Return(model.Employee{}, eh.GetErrForeignKey(eh.WAREHOUSE))
 
 		//Act
 		employee, err := service.Update(mockEmployeeB.ID, mockEmployeeB.EmployeeAttributes)
