@@ -101,7 +101,7 @@ func TestWarehouseService_GetByID(t *testing.T) {
 		warehouseRepo.AssertExpectations(t)
 	})
 
-	t.Run("case 2: warehouse not found", func(t *testing.T) {
+	t.Run("case 2: not found - warehouse not found", func(t *testing.T) {
 		// Arrange
 		warehouseRepo := warehouseRepository.NewWarehouseRepositoryMock()
 		localityRepo := localityRepository.NewLocalityRepositoryMock()

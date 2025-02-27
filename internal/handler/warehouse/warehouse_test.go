@@ -259,7 +259,7 @@ func TestWarehouseHandler_Create(t *testing.T) {
 		warehouseService.AssertExpectations(t)
 	})
 
-	t.Run("case 4: bad request - invalid locality id", func(t *testing.T) {
+	t.Run("case 4: conflict - invalid locality id", func(t *testing.T) {
 		// Arrange
 		warehouseService := service.NewWarehouseServiceMock()
 		warehouseHandler := handler.NewWarehouseHandler(warehouseService)
@@ -283,7 +283,7 @@ func TestWarehouseHandler_Create(t *testing.T) {
 		warehouseService.AssertExpectations(t)
 	})
 
-	t.Run("case 5: bad request - invalid warehouse code", func(t *testing.T) {
+	t.Run("case 5: conflict - invalid warehouse code", func(t *testing.T) {
 		// Arrange
 		warehouseService := service.NewWarehouseServiceMock()
 		warehouseHandler := handler.NewWarehouseHandler(warehouseService)
@@ -307,7 +307,7 @@ func TestWarehouseHandler_Create(t *testing.T) {
 		warehouseService.AssertExpectations(t)
 	})
 
-	t.Run("case 6: bad request - missing warehouse code", func(t *testing.T) {
+	t.Run("case 6: unprocesable entity - missing warehouse code", func(t *testing.T) {
 		// Arrange
 		warehouseService := service.NewWarehouseServiceMock()
 		warehouseHandler := handler.NewWarehouseHandler(warehouseService)
@@ -427,7 +427,7 @@ func TestWarehouseHandler_Update(t *testing.T) {
 		warehouseService.AssertExpectations(t)
 	})
 
-	t.Run("case 5: bad request - invalid locality id", func(t *testing.T) {
+	t.Run("case 5: conflict - invalid locality id", func(t *testing.T) {
 		// Arrange
 		warehouseService := service.NewWarehouseServiceMock()
 		warehouseHandler := handler.NewWarehouseHandler(warehouseService)
