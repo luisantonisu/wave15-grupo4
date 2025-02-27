@@ -132,7 +132,103 @@ func TestCreatePurchaseOrder(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 		purchaseOrderService.AssertExpectations(t)
 	})
-	t.Run("case 4: bad request - invalid body", func(t *testing.T) {
+	t.Run("case 4: conflict - buyer foreing key not found", func(t *testing.T) {
+		// Arrange
+		purchaseOrderService := service.NewPurchaseOrderServiceMock()
+		purchaseOrderHandler := handler.NewPurchaseOrderHandler(purchaseOrderService)
+		purchaseOrderService.On("Create", mock.Anything).Return(model.PurchaseOrder{}, eh.GetErrForeignKey(eh.BUYER))
+
+		body, err := json.Marshal(purchaseOrderRequestDTO)
+		require.NoError(t, err)
+
+		rt := chi.NewRouter()
+		rt.Post("/purchaseOrders", purchaseOrderHandler.Create())
+
+		// Act
+		req, res := httptest.NewRequest(http.MethodPost, "/purchaseOrders", bytes.NewBuffer(body)), httptest.NewRecorder()
+		req.Header.Set("Content-Type", "application/json")
+		rt.ServeHTTP(res, req)
+
+		// Assert
+		expectedBody := `{"status": "Conflict","message":"buyer foreign key not found"}`
+		require.Equal(t, http.StatusConflict, res.Code)
+		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
+		require.JSONEq(t, expectedBody, res.Body.String())
+		purchaseOrderService.AssertExpectations(t)
+	})
+	t.Run("case 5: conflict - carry foreing key not found", func(t *testing.T) {
+		// Arrange
+		purchaseOrderService := service.NewPurchaseOrderServiceMock()
+		purchaseOrderHandler := handler.NewPurchaseOrderHandler(purchaseOrderService)
+		purchaseOrderService.On("Create", mock.Anything).Return(model.PurchaseOrder{}, eh.GetErrForeignKey(eh.CARRY))
+
+		body, err := json.Marshal(purchaseOrderRequestDTO)
+		require.NoError(t, err)
+
+		rt := chi.NewRouter()
+		rt.Post("/purchaseOrders", purchaseOrderHandler.Create())
+
+		// Act
+		req, res := httptest.NewRequest(http.MethodPost, "/purchaseOrders", bytes.NewBuffer(body)), httptest.NewRecorder()
+		req.Header.Set("Content-Type", "application/json")
+		rt.ServeHTTP(res, req)
+
+		// Assert
+		expectedBody := `{"status": "Conflict","message":"carry foreign key not found"}`
+		require.Equal(t, http.StatusConflict, res.Code)
+		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
+		require.JSONEq(t, expectedBody, res.Body.String())
+		purchaseOrderService.AssertExpectations(t)
+	})
+	t.Run("case 6: conflict - order status foreing key not found", func(t *testing.T) {
+		// Arrange
+		purchaseOrderService := service.NewPurchaseOrderServiceMock()
+		purchaseOrderHandler := handler.NewPurchaseOrderHandler(purchaseOrderService)
+		purchaseOrderService.On("Create", mock.Anything).Return(model.PurchaseOrder{}, eh.GetErrForeignKey(eh.ORDER_STATUS))
+
+		body, err := json.Marshal(purchaseOrderRequestDTO)
+		require.NoError(t, err)
+
+		rt := chi.NewRouter()
+		rt.Post("/purchaseOrders", purchaseOrderHandler.Create())
+
+		// Act
+		req, res := httptest.NewRequest(http.MethodPost, "/purchaseOrders", bytes.NewBuffer(body)), httptest.NewRecorder()
+		req.Header.Set("Content-Type", "application/json")
+		rt.ServeHTTP(res, req)
+
+		// Assert
+		expectedBody := `{"status": "Conflict","message":"order status foreign key not found"}`
+		require.Equal(t, http.StatusConflict, res.Code)
+		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
+		require.JSONEq(t, expectedBody, res.Body.String())
+		purchaseOrderService.AssertExpectations(t)
+	})
+	t.Run("case 7: conflict - warehouse foreing key not found", func(t *testing.T) {
+		// Arrange
+		purchaseOrderService := service.NewPurchaseOrderServiceMock()
+		purchaseOrderHandler := handler.NewPurchaseOrderHandler(purchaseOrderService)
+		purchaseOrderService.On("Create", mock.Anything).Return(model.PurchaseOrder{}, eh.GetErrForeignKey(eh.WAREHOUSE))
+
+		body, err := json.Marshal(purchaseOrderRequestDTO)
+		require.NoError(t, err)
+
+		rt := chi.NewRouter()
+		rt.Post("/purchaseOrders", purchaseOrderHandler.Create())
+
+		// Act
+		req, res := httptest.NewRequest(http.MethodPost, "/purchaseOrders", bytes.NewBuffer(body)), httptest.NewRecorder()
+		req.Header.Set("Content-Type", "application/json")
+		rt.ServeHTTP(res, req)
+
+		// Assert
+		expectedBody := `{"status": "Conflict","message":"warehouse foreign key not found"}`
+		require.Equal(t, http.StatusConflict, res.Code)
+		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
+		require.JSONEq(t, expectedBody, res.Body.String())
+		purchaseOrderService.AssertExpectations(t)
+	})
+	t.Run("case 8: bad request - invalid body", func(t *testing.T) {
 		// Arrange
 		purchaseOrderService := service.NewPurchaseOrderServiceMock()
 		purchaseOrderHandler := handler.NewPurchaseOrderHandler(purchaseOrderService)
