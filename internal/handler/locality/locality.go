@@ -74,8 +74,7 @@ func (h *LocalityHandler) CarriersReport() http.HandlerFunc {
 			data = append(data, helper.CarriersReportToCarriersReportResponseDTO(record))
 		}
 		response.JSON(w, http.StatusOK, map[string]any{
-			"message": "Success",
-			"data":    data,
+			"data": data,
 		})
 	}
 }
