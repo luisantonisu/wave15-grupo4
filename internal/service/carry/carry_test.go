@@ -58,10 +58,11 @@ func TestCarryService_Create(t *testing.T) {
 		localityRepo := localityRepository.NewLocalityRepositoryMock()
 		carryService := service.NewCarryService(carryRepo, localityRepo)
 
-		carry.CarryID = nil
+		newCarry := carry
+		newCarry.CarryID = nil
 
 		// Act
-		result, err := carryService.Create(carry)
+		result, err := carryService.Create(newCarry)
 
 		// Assert
 		require.Error(t, err)
