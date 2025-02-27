@@ -28,11 +28,11 @@ func (i *InbounderOrderRepository) AlreadyExists(atribute string, value int) boo
 }
 
 func (i *InbounderOrderRepository) CreateInboundOrder(inboundOrder model.InboundOrderAttributes) (model.InboundOrder, error) {
-	if i.AlreadyExists("product_batch_id", inboundOrder.ProductBatchID) == false {
+	if !i.AlreadyExists("product_batch_id", *inboundOrder.ProductBatchID) {
 		return model.InboundOrder{}, eh.GetErrForeignKey(eh.PRODUCT_BATCH_ID)
 	}
 
-	if i.AlreadyExists("order_number", inboundOrder.OrderNumber) {
+	if i.AlreadyExists("order_number", *inboundOrder.OrderNumber) {
 		return model.InboundOrder{}, eh.GetErrAlreadyExists(eh.ORDER_NUMBER)
 	}
 

@@ -25,7 +25,6 @@ func (h *InboundOrderHandler) Create() http.HandlerFunc {
 
 		if err := json.NewDecoder(r.Body).Decode(&inbDto); err != nil {
 			response.Error(w, http.StatusBadRequest, eh.INVALID_BODY)
-			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -41,7 +40,6 @@ func (h *InboundOrderHandler) Create() http.HandlerFunc {
 
 		response.JSON(w, http.StatusCreated, map[string]any{
 			"data": data,
-			"message": "Success",
 		})
 	}
 }
