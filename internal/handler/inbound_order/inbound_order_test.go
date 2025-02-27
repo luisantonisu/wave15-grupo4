@@ -34,7 +34,7 @@ var (
 	}
 )
 
-func TestInboundOrder_Create(t *testing.T) {
+func TestInboundOrderHandler_Create(t *testing.T) {
 	t.Run("case 1: create inbound order successfully", func(t *testing.T) {
 		// Arrange
 		inboundService := service.NewInboundOrderServiceMock()
