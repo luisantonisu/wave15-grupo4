@@ -12,28 +12,34 @@ import (
 )
 
 var (
-	warehouseCodeA       = "WH1"
-	warehouseCodeB       = "WH2"
-	address              = "Address 1"
-	telephone            = uint(123456789)
-	capacity             = 100
-	temperature          = float32(20.5)
-	localityID           = 1
-	warehouseAttributesA = model.WarehouseAttributes{
-		WarehouseCode:      &warehouseCodeA,
-		Address:            &address,
-		Telephone:          &telephone,
-		MinimumCapacity:    &capacity,
-		MinimumTemperature: &temperature,
-		LocalityID:         &localityID,
+	warehouseCodeA = "WH1"
+	warehouseCodeB = "WH2"
+	address        = "Address 1"
+	telephone      = uint(123456789)
+	capacity       = 100
+	temperature    = float32(20.5)
+	localityID     = 1
+	warehouseA     = model.Warehouse{
+		ID: 1,
+		WarehouseAttributes: model.WarehouseAttributes{
+			WarehouseCode:      &warehouseCodeA,
+			Address:            &address,
+			Telephone:          &telephone,
+			MinimumCapacity:    &capacity,
+			MinimumTemperature: &temperature,
+			LocalityID:         &localityID,
+		},
 	}
-	warehouseAttributesB = model.WarehouseAttributes{
-		WarehouseCode:      &warehouseCodeB,
-		Address:            &address,
-		Telephone:          &telephone,
-		MinimumCapacity:    &capacity,
-		MinimumTemperature: &temperature,
-		LocalityID:         &localityID,
+	warehouseB = model.Warehouse{
+		ID: 2,
+		WarehouseAttributes: model.WarehouseAttributes{
+			WarehouseCode:      &warehouseCodeB,
+			Address:            &address,
+			Telephone:          &telephone,
+			MinimumCapacity:    &capacity,
+			MinimumTemperature: &temperature,
+			LocalityID:         &localityID,
+		},
 	}
 )
 
@@ -43,16 +49,7 @@ func TestWarehouseService_GetAll(t *testing.T) {
 		warehouseRepo := warehouseRepository.NewWarehouseRepositoryMock()
 		localityRepo := localityRepository.NewLocalityRepositoryMock()
 		warehouseService := service.NewWarehouseService(warehouseRepo, localityRepo)
-		warehouses := []model.Warehouse{
-			{
-				ID:                  1,
-				WarehouseAttributes: warehouseAttributesA,
-			},
-			{
-				ID:                  2,
-				WarehouseAttributes: warehouseAttributesB,
-			},
-		}
+		warehouses := []model.Warehouse{warehouseA, warehouseB}
 
 		warehouseRepo.On("GetAll").Return(warehouses, nil)
 
@@ -91,12 +88,8 @@ func TestWarehouseService_GetByID(t *testing.T) {
 		warehouseRepo := warehouseRepository.NewWarehouseRepositoryMock()
 		localityRepo := localityRepository.NewLocalityRepositoryMock()
 		warehouseService := service.NewWarehouseService(warehouseRepo, localityRepo)
-		warehouse := model.Warehouse{
-			ID:                  1,
-			WarehouseAttributes: warehouseAttributesA,
-		}
 
-		warehouseRepo.On("GetByID", 1).Return(warehouse, nil)
+		warehouseRepo.On("GetByID", 1).Return(warehouseA, nil)
 
 		// Act
 		result, err := warehouseService.GetByID(1)
@@ -104,7 +97,7 @@ func TestWarehouseService_GetByID(t *testing.T) {
 		// Assert
 		require.NoError(t, err)
 		require.NotNil(t, result)
-		require.Equal(t, warehouse, result)
+		require.Equal(t, warehouseA, result)
 		warehouseRepo.AssertExpectations(t)
 	})
 
@@ -135,22 +128,17 @@ func TestWarehouseService_Create(t *testing.T) {
 		warehouseRepo := warehouseRepository.NewWarehouseRepositoryMock()
 		localityRepo := localityRepository.NewLocalityRepositoryMock()
 		warehouseService := service.NewWarehouseService(warehouseRepo, localityRepo)
-		warehouse := model.Warehouse{
-			ID:                  1,
-			WarehouseAttributes: warehouseAttributesA,
-		}
-
-		warehouseRepo.On("GetByCode", *warehouse.WarehouseCode).Return(model.Warehouse{}, eh.GetErrNotFound(eh.WAREHOUSE_CODE))
-		localityRepo.On("GetByID", *warehouse.LocalityID).Return(model.LocalityDBModel{Id: *warehouse.LocalityID}, nil)
-		warehouseRepo.On("Create", warehouse).Return(warehouse, nil)
+		warehouseRepo.On("GetByCode", *warehouseA.WarehouseCode).Return(model.Warehouse{}, eh.GetErrNotFound(eh.WAREHOUSE_CODE))
+		localityRepo.On("GetByID", *warehouseA.LocalityID).Return(model.LocalityDBModel{Id: *warehouseA.LocalityID}, nil)
+		warehouseRepo.On("Create", warehouseA).Return(warehouseA, nil)
 
 		// Act
-		result, err := warehouseService.Create(warehouse)
+		result, err := warehouseService.Create(warehouseA)
 
 		// Assert
 		require.NoError(t, err)
 		require.NotNil(t, result)
-		require.Equal(t, warehouse, result)
+		require.Equal(t, warehouseA, result)
 		warehouseRepo.AssertExpectations(t)
 		localityRepo.AssertExpectations(t)
 	})
@@ -180,16 +168,12 @@ func TestWarehouseService_Create(t *testing.T) {
 		warehouseRepo := warehouseRepository.NewWarehouseRepositoryMock()
 		localityRepo := localityRepository.NewLocalityRepositoryMock()
 		warehouseService := service.NewWarehouseService(warehouseRepo, localityRepo)
-		warehouse := model.Warehouse{
-			ID:                  1,
-			WarehouseAttributes: warehouseAttributesA,
-		}
 
 		errConflict := eh.GetErrAlreadyExists(eh.WAREHOUSE_CODE)
-		warehouseRepo.On("GetByCode", *warehouse.WarehouseCode).Return(warehouse, nil)
+		warehouseRepo.On("GetByCode", *warehouseA.WarehouseCode).Return(warehouseA, nil)
 
 		// Act
-		result, err := warehouseService.Create(warehouse)
+		result, err := warehouseService.Create(warehouseA)
 
 		// Assert
 		require.Error(t, err)
@@ -205,17 +189,13 @@ func TestWarehouseService_Create(t *testing.T) {
 		warehouseRepo := warehouseRepository.NewWarehouseRepositoryMock()
 		localityRepo := localityRepository.NewLocalityRepositoryMock()
 		warehouseService := service.NewWarehouseService(warehouseRepo, localityRepo)
-		warehouse := model.Warehouse{
-			ID:                  1,
-			WarehouseAttributes: warehouseAttributesA,
-		}
 
 		errForeignKey := eh.GetErrForeignKey(eh.LOCALITY)
-		warehouseRepo.On("GetByCode", *warehouse.WarehouseCode).Return(model.Warehouse{}, eh.GetErrNotFound(eh.WAREHOUSE_CODE))
-		localityRepo.On("GetByID", *warehouse.LocalityID).Return(model.LocalityDBModel{}, eh.GetErrNotFound(eh.LOCALITY))
+		warehouseRepo.On("GetByCode", *warehouseA.WarehouseCode).Return(model.Warehouse{}, eh.GetErrNotFound(eh.WAREHOUSE_CODE))
+		localityRepo.On("GetByID", *warehouseA.LocalityID).Return(model.LocalityDBModel{}, eh.GetErrNotFound(eh.LOCALITY))
 
 		// Act
-		result, err := warehouseService.Create(warehouse)
+		result, err := warehouseService.Create(warehouseA)
 
 		// Assert
 		require.Error(t, err)
@@ -233,22 +213,18 @@ func TestWarehouseService_Update(t *testing.T) {
 		warehouseRepo := warehouseRepository.NewWarehouseRepositoryMock()
 		localityRepo := localityRepository.NewLocalityRepositoryMock()
 		warehouseService := service.NewWarehouseService(warehouseRepo, localityRepo)
-		warehouse := model.Warehouse{
-			ID:                  1,
-			WarehouseAttributes: warehouseAttributesA,
-		}
 
-		warehouseRepo.On("GetByID", warehouse.ID).Return(warehouse, nil)
-		localityRepo.On("GetByID", *warehouse.LocalityID).Return(model.LocalityDBModel{Id: *warehouse.LocalityID}, nil)
-		warehouseRepo.On("Update", warehouse.ID, warehouse).Return(warehouse, nil)
+		warehouseRepo.On("GetByID", warehouseA.ID).Return(warehouseA, nil)
+		localityRepo.On("GetByID", *warehouseA.LocalityID).Return(model.LocalityDBModel{Id: *warehouseA.LocalityID}, nil)
+		warehouseRepo.On("Update", warehouseA.ID, warehouseA).Return(warehouseA, nil)
 
 		// Act
-		result, err := warehouseService.Update(warehouse.ID, warehouse.WarehouseAttributes)
+		result, err := warehouseService.Update(warehouseA.ID, warehouseA.WarehouseAttributes)
 
 		// Assert
 		require.NoError(t, err)
 		require.NotNil(t, result)
-		require.Equal(t, warehouse, result)
+		require.Equal(t, warehouseA, result)
 		warehouseRepo.AssertExpectations(t)
 		localityRepo.AssertExpectations(t)
 	})
@@ -258,16 +234,12 @@ func TestWarehouseService_Update(t *testing.T) {
 		warehouseRepo := warehouseRepository.NewWarehouseRepositoryMock()
 		localityRepo := localityRepository.NewLocalityRepositoryMock()
 		warehouseService := service.NewWarehouseService(warehouseRepo, localityRepo)
-		warehouse := model.Warehouse{
-			ID:                  1,
-			WarehouseAttributes: warehouseAttributesA,
-		}
 
 		errNotFound := eh.GetErrNotFound(eh.WAREHOUSE)
-		warehouseRepo.On("GetByID", warehouse.ID).Return(model.Warehouse{}, errNotFound)
+		warehouseRepo.On("GetByID", warehouseA.ID).Return(model.Warehouse{}, errNotFound)
 
 		// Act
-		result, err := warehouseService.Update(warehouse.ID, warehouse.WarehouseAttributes)
+		result, err := warehouseService.Update(warehouseA.ID, warehouseA.WarehouseAttributes)
 
 		// Assert
 		require.Error(t, err)
@@ -283,17 +255,13 @@ func TestWarehouseService_Update(t *testing.T) {
 		warehouseRepo := warehouseRepository.NewWarehouseRepositoryMock()
 		localityRepo := localityRepository.NewLocalityRepositoryMock()
 		warehouseService := service.NewWarehouseService(warehouseRepo, localityRepo)
-		warehouse := model.Warehouse{
-			ID:                  1,
-			WarehouseAttributes: warehouseAttributesA,
-		}
 		newWarehouse := model.Warehouse{
 			ID:                  1,
-			WarehouseAttributes: warehouseAttributesB,
+			WarehouseAttributes: warehouseB.WarehouseAttributes,
 		}
 
 		errConflict := eh.GetErrAlreadyExists(eh.WAREHOUSE_CODE)
-		warehouseRepo.On("GetByID", warehouse.ID).Return(warehouse, nil)
+		warehouseRepo.On("GetByID", warehouseA.ID).Return(warehouseA, nil)
 		warehouseRepo.On("GetByCode", *newWarehouse.WarehouseCode).Return(newWarehouse, nil)
 
 		// Act
@@ -313,17 +281,13 @@ func TestWarehouseService_Update(t *testing.T) {
 		warehouseRepo := warehouseRepository.NewWarehouseRepositoryMock()
 		localityRepo := localityRepository.NewLocalityRepositoryMock()
 		warehouseService := service.NewWarehouseService(warehouseRepo, localityRepo)
-		warehouse := model.Warehouse{
-			ID:                  1,
-			WarehouseAttributes: warehouseAttributesA,
-		}
 
 		errForeignKey := eh.GetErrForeignKey(eh.LOCALITY)
-		warehouseRepo.On("GetByID", warehouse.ID).Return(warehouse, nil)
-		localityRepo.On("GetByID", *warehouse.LocalityID).Return(model.LocalityDBModel{}, eh.GetErrNotFound(eh.LOCALITY))
+		warehouseRepo.On("GetByID", warehouseA.ID).Return(warehouseA, nil)
+		localityRepo.On("GetByID", *warehouseA.LocalityID).Return(model.LocalityDBModel{}, eh.GetErrNotFound(eh.LOCALITY))
 
 		// Act
-		result, err := warehouseService.Update(warehouse.ID, warehouse.WarehouseAttributes)
+		result, err := warehouseService.Update(warehouseA.ID, warehouseA.WarehouseAttributes)
 
 		// Assert
 		require.Error(t, err)
@@ -341,16 +305,12 @@ func TestWarehouseService_Delete(t *testing.T) {
 		warehouseRepo := warehouseRepository.NewWarehouseRepositoryMock()
 		localityRepo := localityRepository.NewLocalityRepositoryMock()
 		warehouseService := service.NewWarehouseService(warehouseRepo, localityRepo)
-		warehouse := model.Warehouse{
-			ID:                  1,
-			WarehouseAttributes: warehouseAttributesA,
-		}
 
-		warehouseRepo.On("GetByID", warehouse.ID).Return(warehouse, nil)
-		warehouseRepo.On("Delete", warehouse.ID).Return(nil)
+		warehouseRepo.On("GetByID", warehouseA.ID).Return(warehouseA, nil)
+		warehouseRepo.On("Delete", warehouseA.ID).Return(nil)
 
 		// Act
-		err := warehouseService.Delete(warehouse.ID)
+		err := warehouseService.Delete(warehouseA.ID)
 
 		// Assert
 		require.NoError(t, err)
