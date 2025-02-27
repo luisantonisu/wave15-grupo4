@@ -36,8 +36,7 @@ func (h *WarehouseHandler) GetAll() http.HandlerFunc {
 		}
 
 		response.JSON(w, http.StatusOK, map[string]any{
-			"message": "success",
-			"data":    data,
+			"data": data,
 		})
 	}
 }
@@ -60,8 +59,7 @@ func (h *WarehouseHandler) GetByID() http.HandlerFunc {
 		data := helper.WarehouseToWarehouseResponseDTO(warehouse)
 
 		response.JSON(w, http.StatusOK, map[string]any{
-			"message": "success",
-			"data":    data,
+			"data": data,
 		})
 	}
 }
@@ -85,8 +83,7 @@ func (h *WarehouseHandler) Create() http.HandlerFunc {
 		data := helper.WarehouseToWarehouseResponseDTO(createdWarehouse)
 
 		response.JSON(w, http.StatusCreated, map[string]any{
-			"message": "warehouse created",
-			"data":    data,
+			"data": data,
 		})
 	}
 }
@@ -116,8 +113,7 @@ func (h *WarehouseHandler) Update() http.HandlerFunc {
 		data := helper.WarehouseToWarehouseResponseDTO(updatedWarehouse)
 
 		response.JSON(w, http.StatusOK, map[string]any{
-			"message": "warehouse updated",
-			"data":    data,
+			"data": data,
 		})
 	}
 }
