@@ -10,6 +10,7 @@ import (
 )
 
 var (
+	SectionNumber      = "1"
 	CurrentTemperature = 5.5
 	MinimumTemperature = 5.5
 	CurrentCapacity    = 5
@@ -18,7 +19,7 @@ var (
 	WarehouseID        = 5
 	ProductTypeID      = 5
 
-	MockSectionAtributes = model.SectionAttributes{CurrentTemperature: &CurrentTemperature, MinimumTemperature: &MinimumTemperature, CurrentCapacity: &CurrentCapacity, MinimumCapacity: &MinimumCapacity, MaximumCapacity: &MaximumCapacity, WarehouseID: &WarehouseID, ProductTypeID: &ProductTypeID}
+	MockSectionAtributes = model.SectionAttributes{SectionNumber: &SectionNumber, CurrentTemperature: &CurrentTemperature, MinimumTemperature: &MinimumTemperature, CurrentCapacity: &CurrentCapacity, MinimumCapacity: &MinimumCapacity, MaximumCapacity: &MaximumCapacity, WarehouseID: &WarehouseID, ProductTypeID: &ProductTypeID}
 	MockSection          = model.Section{ID: 1, SectionAttributes: MockSectionAtributes}
 	MockSections         = []model.Section{
 		{
