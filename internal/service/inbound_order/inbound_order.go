@@ -23,16 +23,16 @@ func NewInboundOrderService(ibOrdRp inboundOrderRepository.IInboundOrder, employ
 }
 
 func (h *InboundOrderService) Create(inboundOrder model.InboundOrderAttributes) (model.InboundOrder, error) {
-	if inboundOrder.OrderDate == "" || inboundOrder.EmployeeID <= 0 || inboundOrder.OrderNumber <= 0 || inboundOrder.WarehouseID <= 0 || inboundOrder.ProductBatchID <= 0 {
+	if inboundOrder.OrderDate == nil || inboundOrder.EmployeeID == nil || inboundOrder.OrderNumber == nil || inboundOrder.WarehouseID == nil || inboundOrder.ProductBatchID == nil || *inboundOrder.OrderDate == ""{
 		return model.InboundOrder{}, eh.GetErrInvalidData(eh.INBOUND_ORDER)
 	}
 
-	_, err := h.employeeRp.GetByID(inboundOrder.EmployeeID)
+	_, err := h.employeeRp.GetByID(*inboundOrder.EmployeeID)
 	if err != nil {
 		return model.InboundOrder{}, eh.GetErrForeignKey(eh.EMPLOYEE)
 	}
 
-	_, err = h.warehouseRp.GetByID(inboundOrder.WarehouseID)
+	_, err = h.warehouseRp.GetByID(*inboundOrder.WarehouseID)
 	if err != nil {
 		return model.InboundOrder{}, eh.GetErrForeignKey(eh.WAREHOUSE)
 	}
