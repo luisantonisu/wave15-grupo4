@@ -38,8 +38,7 @@ func (h *CarryHandler) Create() http.HandlerFunc {
 		data := helper.CarryToCarryResponseDTO(createdCarry)
 
 		response.JSON(w, http.StatusCreated, map[string]any{
-			"message": "carry created",
-			"data":    data,
+			"data": data,
 		})
 	}
 }

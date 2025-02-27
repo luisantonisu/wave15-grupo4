@@ -114,7 +114,7 @@ func TestCarryService_Create(t *testing.T) {
 		localityRepo.AssertExpectations(t)
 	})
 
-	t.Run("case 5: error - carry repository create", func(t *testing.T) {
+	t.Run("case 5: database error - carry repository create", func(t *testing.T) {
 		// Arrange
 		carryRepo := carryRepository.NewCarryRepositoryMock()
 		localityRepo := localityRepository.NewLocalityRepositoryMock()
