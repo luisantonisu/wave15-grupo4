@@ -9,6 +9,7 @@ import (
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/dto"
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 	service "github.com/luisantonisu/wave15-grupo4/internal/service/section"
+	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 	"github.com/stretchr/testify/require"
 )
 
@@ -85,6 +86,30 @@ func TestSectionHandler_Get(t *testing.T) {
 			}`
 
 		require.Equal(t, http.StatusOK, res.Code)
+		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
+		require.JSONEq(t, expectedBody, res.Body.String())
+	})
+
+	t.Run("case 2: internal server error - get all sections", func(t *testing.T) {
+		// Arrange
+		sectionService := service.NewSectionMock()
+		sectionHandler := NewSectionHandler(sectionService)
+		sectionService.On("GetAll").Return([]model.Section{}, eh.GetErrDatabase(eh.SECTION))
+
+		rt := chi.NewRouter()
+		rt.Get("/sections", sectionHandler.GetAll())
+
+		// Act
+		req, res := httptest.NewRequest(http.MethodGet, "/sections", nil), httptest.NewRecorder()
+		rt.ServeHTTP(res, req)
+
+		// Assert
+		expectedBody := `{
+			"status": "Internal Server Error",
+			"message": "database error: section"
+		}`
+
+		require.Equal(t, http.StatusInternalServerError, res.Code)
 		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
 		require.JSONEq(t, expectedBody, res.Body.String())
 	})
