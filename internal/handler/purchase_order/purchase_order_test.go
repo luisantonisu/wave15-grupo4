@@ -52,7 +52,7 @@ var (
 	}
 )
 
-func TestCreatePurchaseOrder(t *testing.T) {
+func TestPurchaseOrderHandler_Create(t *testing.T) {
 	t.Run("case 1: create purchase order successfully", func(t *testing.T) {
 		// Arrange
 		purchaseOrderService := service.NewPurchaseOrderServiceMock()
