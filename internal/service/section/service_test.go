@@ -388,3 +388,80 @@ func TestSectionService_Delete(t *testing.T) {
 		mockSectionRepo.AssertExpectations(t)
 	})
 }
+
+func TestSectionService_Report(t *testing.T) {
+	t.Run("case 1: get all sections report successfully", func(t *testing.T) {
+		mockSectionRepo := repositorySection.NewMockRepository()
+		mockProductRepo := repositoryProduct.NewMockRepository()
+		mockWarehouseRepo := repositoryWarehouse.NewWarehouseRepositoryMock()
+		service := NewSectionService(mockSectionRepo, mockProductRepo, mockWarehouseRepo)
+
+		reportMap := []model.ReportProductsBatches{
+			{
+				SectionID:     1,
+				SectionNumber: 101,
+				ProductsCount: 5,
+			},
+			{
+				SectionID:     2,
+				SectionNumber: 102,
+				ProductsCount: 10,
+			},
+		}
+		mockSectionRepo.On("Report", (*int)(nil)).Return(reportMap, nil)
+
+		report, err := service.Report(nil)
+
+		require.NoError(t, err)
+		require.Equal(t, reportMap, report)
+		mockSectionRepo.AssertExpectations(t)
+		mockProductRepo.AssertExpectations(t)
+		mockWarehouseRepo.AssertExpectations(t)
+	})
+
+	t.Run("case 2: get report by section id successfully", func(t *testing.T) {
+		mockSectionRepo := repositorySection.NewMockRepository()
+		mockProductRepo := repositoryProduct.NewMockRepository()
+		mockWarehouseRepo := repositoryWarehouse.NewWarehouseRepositoryMock()
+		service := NewSectionService(mockSectionRepo, mockProductRepo, mockWarehouseRepo)
+
+		sectionID := 1
+		reportMap := []model.ReportProductsBatches{
+			{
+				SectionID:     1,
+				SectionNumber: 101,
+				ProductsCount: 5,
+			},
+		}
+		mockSectionRepo.On("Report", &sectionID).Return(reportMap, nil)
+
+		report, err := service.Report(&sectionID)
+
+		require.NoError(t, err)
+		require.Equal(t, reportMap, report)
+		mockSectionRepo.AssertExpectations(t)
+		mockProductRepo.AssertExpectations(t)
+		mockWarehouseRepo.AssertExpectations(t)
+	})
+
+	t.Run("case 3: not found - get by section id report", func(t *testing.T) {
+		mockSectionRepo := repositorySection.NewMockRepository()
+		mockProductRepo := repositoryProduct.NewMockRepository()
+		mockWarehouseRepo := repositoryWarehouse.NewWarehouseRepositoryMock()
+		service := NewSectionService(mockSectionRepo, mockProductRepo, mockWarehouseRepo)
+
+		sectionID := 10
+
+		mockSectionRepo.On("Report", &sectionID).Return([]model.ReportProductsBatches{}, eh.GetErrNotFound(eh.SECTION))
+
+		report, err := service.Report(&sectionID)
+
+		require.Error(t, err)
+		require.ErrorIs(t, err, eh.ErrNotFound)
+		require.Equal(t, eh.GetErrNotFound(eh.SECTION), err)
+		require.NotNil(t, report)
+		require.Empty(t, report)
+		mockSectionRepo.AssertExpectations(t)
+	})
+
+}

@@ -85,7 +85,7 @@ func (h *SectionService) Delete(id int) error {
 func (h *SectionService) Report(id *int) ([]model.ReportProductsBatches, error) {
 	report, err := h.sectionRp.Report(id)
 	if err != nil {
-		return nil, err
+		return []model.ReportProductsBatches{}, err
 	}
 	return report, nil
 }

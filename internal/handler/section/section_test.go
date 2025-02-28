@@ -379,6 +379,29 @@ func TestSectionHandler_Get(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 	})
 
+	t.Run("case 5: bad request - invalid section id", func(t *testing.T) {
+		// Arrange
+		sectionService := service.NewSectionMock()
+		sectionHandler := NewSectionHandler(sectionService)
+
+		rt := chi.NewRouter()
+		rt.Get("/sections/{id}", sectionHandler.GetByID())
+
+		// Act
+		req, res := httptest.NewRequest(http.MethodGet, "/sections/abc", nil), httptest.NewRecorder()
+		rt.ServeHTTP(res, req)
+
+		// Assert
+		expectedBody := `{
+			"status": "Bad Request",
+			"message": "invalid id"
+		}`
+
+		require.Equal(t, http.StatusBadRequest, res.Code)
+		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
+		require.JSONEq(t, expectedBody, res.Body.String())
+	})
+
 }
 
 func TestSectionHandler_Update(t *testing.T) {
@@ -617,5 +640,120 @@ func TestSectionHandler_Delete(t *testing.T) {
 		}`
 		require.Equal(t, http.StatusBadRequest, res.Code)
 		require.JSONEq(t, expected, res.Body.String())
+	})
+}
+
+func TestSectionHandler_Report(t *testing.T) {
+	t.Run("case 1: get report by section id successfully", func(t *testing.T) {
+		// Arrange
+		sectionService := service.NewSectionMock()
+		sectionHandler := NewSectionHandler(sectionService)
+
+		sectionID := 1
+		sectionService.On("Report", &sectionID).Return([]model.ReportProductsBatches{
+			{
+				SectionID:     1,
+				SectionNumber: 101,
+				ProductsCount: 5,
+			},
+		}, nil)
+
+		rt := chi.NewRouter()
+		rt.Get("/sections/reportProductsBatches", sectionHandler.Report())
+
+		// Act
+		req, res := httptest.NewRequest(http.MethodGet, "/sections/reportProductsBatches?id=1", nil), httptest.NewRecorder()
+		rt.ServeHTTP(res, req)
+
+		// Assert
+		expectedBody := `{
+			"data": [{"section_id":1, "section_number":101, "products_count":5}]
+		}`
+		require.Equal(t, http.StatusOK, res.Code)
+		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
+		require.JSONEq(t, expectedBody, res.Body.String())
+	})
+
+	t.Run("case 2: get all sections report successfully", func(t *testing.T) {
+		// Arrange
+		sectionService := service.NewSectionMock()
+		sectionHandler := NewSectionHandler(sectionService)
+
+		// Cambiamos -1 por nil, porque queremos que traiga todas las secciones
+		sectionService.On("Report", (*int)(nil)).Return([]model.ReportProductsBatches{
+			{
+				SectionID:     1,
+				SectionNumber: 101,
+				ProductsCount: 5,
+			},
+			{
+				SectionID:     2,
+				SectionNumber: 202,
+				ProductsCount: 10,
+			},
+		}, nil)
+
+		rt := chi.NewRouter()
+		rt.Get("/sections/reportProductsBatches", sectionHandler.Report())
+
+		// Act
+		req, res := httptest.NewRequest(http.MethodGet, "/sections/reportProductsBatches", nil), httptest.NewRecorder()
+		rt.ServeHTTP(res, req)
+
+		// Assert
+		expectedBody := `{
+			"data": [
+				{"section_id":1, "section_number":101, "products_count":5},
+				{"section_id":2, "section_number":202, "products_count":10}
+			]
+		}`
+		require.Equal(t, http.StatusOK, res.Code)
+		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
+		require.JSONEq(t, expectedBody, res.Body.String())
+	})
+
+	t.Run("case 3: bad request - invalid section id", func(t *testing.T) {
+		// Arrange
+		sectionService := service.NewSectionMock()
+		sectionHandler := NewSectionHandler(sectionService)
+
+		rt := chi.NewRouter()
+		rt.Get("/sections/reportProductsBatches", sectionHandler.Report())
+
+		// Act
+		req, res := httptest.NewRequest(http.MethodGet, "/sections/reportProductsBatches?id=hi", nil), httptest.NewRecorder()
+		rt.ServeHTTP(res, req)
+
+		// Assert
+		expectedBody := `{
+			"status": "Bad Request",
+			"message": "invalid id"
+		}`
+		require.Equal(t, http.StatusBadRequest, res.Code)
+		require.JSONEq(t, expectedBody, res.Body.String())
+	})
+
+	t.Run("case 4: not found - section id doesn't exist", func(t *testing.T) {
+		// Arrange
+		sectionService := service.NewSectionMock()
+		sectionHandler := NewSectionHandler(sectionService)
+
+		badSectionID := 2
+		sectionService.On("Report", &badSectionID).Return([]model.ReportProductsBatches{}, eh.GetErrNotFound(eh.SECTION))
+
+		rt := chi.NewRouter()
+		rt.Get("/sections/reportProductsBatches", sectionHandler.Report())
+
+		// Act
+		req, res := httptest.NewRequest(http.MethodGet, "/sections/reportProductsBatches?id=2", nil), httptest.NewRecorder()
+		rt.ServeHTTP(res, req)
+
+		// Assert
+		expectedBody := `{
+			"status": "Not Found",
+			"message": "section not found"
+		}`
+		require.Equal(t, http.StatusNotFound, res.Code)
+		require.JSONEq(t, expectedBody, res.Body.String())
 	})
 }
