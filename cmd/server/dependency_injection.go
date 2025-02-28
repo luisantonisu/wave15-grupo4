@@ -86,7 +86,7 @@ func GetHandlers(db *sql.DB) Handlers {
 	productSv := productService.NewProductService(productRp)
 	productBatchSv := productBatchService.NewProductBatchService(productBatchRp, sectionRp, productRp)
 	productRecordSv := productRecordService.NewProductRecordService(productRecordRp, productRp)
-	sectionSv := sectionService.NewSectionService(sectionRp)
+	sectionSv := sectionService.NewSectionService(sectionRp, productRp, warehouseRp)
 	sellerSv := sellerService.NewSellerService(sellerRp, localityRp)
 	warehouseSv := warehouseService.NewWarehouseService(warehouseRp, localityRp)
 	localitySv := localityService.NewLocalityService(countryRp, provinceRp, localityRp)

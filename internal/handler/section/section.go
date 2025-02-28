@@ -156,6 +156,7 @@ func (h *SectionHandler) Report() http.HandlerFunc {
 			hasId, err := strconv.Atoi(idStr.Get("id"))
 			if err != nil {
 				response.Error(w, http.StatusBadRequest, eh.INVALID_ID)
+				return
 			}
 			id = &hasId
 		}
