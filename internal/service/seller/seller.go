@@ -23,19 +23,10 @@ type SellerService struct {
 }
 
 func (s *SellerService) GetAll() (sellers []model.Seller, err error) {
-	sellers, err = s.sellerRp.GetAll()
-	if len(sellers) == 0 {
-		return nil, eh.GetErrNotFound(eh.SELLER)
-	}
-
-	return
+	return s.sellerRp.GetAll()
 }
 
 func (s *SellerService) GetByID(id int) (model.Seller, error) {
-
-	if id == 0 {
-		return model.Seller{}, eh.GetErrNotFound(eh.SELLER)
-	}
 
 	seller, err := s.sellerRp.GetByID(id)
 	if err != nil {
@@ -45,10 +36,10 @@ func (s *SellerService) GetByID(id int) (model.Seller, error) {
 	return seller, nil
 }
 
-func (s *SellerService) Create(seller model.Seller) (model.Seller, error) {
+func (s *SellerService) Create(seller model.SellerAttributes) (model.Seller, error) {
 
 	//validate seller
-	err := s.validateSeller(seller)
+	err := s.ValidateSeller(seller)
 	if err != nil {
 		return model.Seller{}, err
 	}
@@ -60,7 +51,7 @@ func (s *SellerService) Create(seller model.Seller) (model.Seller, error) {
 	}
 
 	//create seller
-	newSeller, err := s.sellerRp.Create(seller.SellerAttributes)
+	newSeller, err := s.sellerRp.Create(seller)
 	if err != nil {
 		return model.Seller{}, err
 	}
@@ -93,13 +84,10 @@ func (s *SellerService) Update(id int, seller model.SellerAttributes) (model.Sel
 }
 
 func (s *SellerService) Delete(id int) error {
-	if id == 0 {
-		return eh.GetErrNotFound(eh.SELLER)
-	}
 	return s.sellerRp.Delete(id)
 }
 
-func (s *SellerService) validateSeller(seller model.Seller) error {
+func (s *SellerService) ValidateSeller(seller model.SellerAttributes) error {
 	//validate if company_id only contains numbers and is not empty
 	pattern := regexp.MustCompile("^[1-9]+[0-9]*$")
 	matchCompanyID := pattern.MatchString(*seller.CompanyID)
@@ -131,7 +119,7 @@ func (s *SellerService) validateLocality(id string) error {
 	//convert locality_id
 	localityID, err := strconv.Atoi(id)
 	if err != nil {
-		return err
+		return eh.GetErrInvalidData(eh.LOCALITY)
 	}
 
 	//Validate if locality exist

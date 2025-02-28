@@ -34,7 +34,7 @@ func SellerRequestDTOToSeller(sellerRequestDTO dto.SellerRequestDTO) model.Selle
 	return data
 }
 
-func SellerRequestDTOPtrToSellerPtr(seller dto.SellerRequestDTO) model.SellerAttributes{
+func SellerRequestDTOPtrToSellerAttributes(seller dto.SellerRequestDTO) model.SellerAttributes {
 	data := model.SellerAttributes{
 		CompanyID:   seller.CompanyID,
 		CompanyName: seller.CompanyName,

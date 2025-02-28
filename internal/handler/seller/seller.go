@@ -79,7 +79,7 @@ func (h *SellerHandler) Create() http.HandlerFunc {
 		json.NewDecoder(r.Body).Decode(&newSeller)
 
 		//mapping
-		var seller = helper.SellerRequestDTOToSeller(newSeller)
+		var seller = helper.SellerRequestDTOPtrToSellerAttributes(newSeller)
 
 		//process
 		result, err := h.sv.Create(seller)
@@ -114,7 +114,7 @@ func (h *SellerHandler) Update() http.HandlerFunc {
 		json.NewDecoder(r.Body).Decode(&updateSeller)
 
 		//mapping
-		var seller = helper.SellerRequestDTOPtrToSellerPtr(updateSeller)
+		var seller = helper.SellerRequestDTOPtrToSellerAttributes(updateSeller)
 
 		//process
 		result, err := h.sv.Update(id, seller)
