@@ -40,13 +40,14 @@ const (
 )
 
 var (
-	ErrNotFound      = errors.New("not found")             // 404
-	ErrAlreadyExists = errors.New("already exists")        // 409
-	ErrForeignKey    = errors.New("foreign key not found") // 409
-	ErrInvalidData   = errors.New("invalid data")          // 422
-	ErrGettingData   = errors.New("error getting data")    // 500
-	ErrParsingData   = errors.New("error parsing data")    // 500
-	ErrDatabase      = errors.New("database error")        // 500
+	ErrNotFound       = errors.New("not found")             // 404
+	ErrAlreadyExists  = errors.New("already exists")        // 409
+	ErrForeignKey     = errors.New("foreign key not found") // 409
+	ErrInvalidData    = errors.New("invalid data")          // 422
+	ErrGettingData    = errors.New("error getting data")    // 500
+	ErrParsingData    = errors.New("error parsing data")    // 500
+	ErrDatabase       = errors.New("database error")        // 500
+	ErrInternalServer = errors.New("internal server error") // 500
 )
 
 func GetErrNotFound(entity string) error {
@@ -81,6 +82,10 @@ func GetErrAlreadyExistsCompose(entity1 string, entity2 string) error {
 	return fmt.Errorf("%s with that %s %w", entity1, entity2, ErrAlreadyExists)
 }
 
+func GetErrInternalServer(entity string) error {
+	return fmt.Errorf("%w: %s", ErrInternalServer, entity)
+}
+
 func HandleError(err error) (int, string) {
 	if errors.Is(err, ErrNotFound) {
 		return http.StatusNotFound, err.Error()
@@ -98,5 +103,5 @@ func HandleError(err error) (int, string) {
 		return http.StatusConflict, err.Error()
 	}
 
-	return http.StatusInternalServerError, err.Error()
+	return http.StatusInternalServerError, ErrInternalServer.Error()
 }

@@ -37,5 +37,13 @@ func (h *InboundOrderService) Create(inboundOrder model.InboundOrderAttributes) 
 		return model.InboundOrder{}, eh.GetErrForeignKey(eh.WAREHOUSE)
 	}
 
+	if !h.ibOrdRp.AlreadyExists("product_batch_id", *inboundOrder.ProductBatchID) {
+		return model.InboundOrder{}, eh.GetErrForeignKey(eh.PRODUCT_BATCH_ID)
+	}
+
+	if h.ibOrdRp.AlreadyExists("order_number", *inboundOrder.OrderNumber) {
+		return model.InboundOrder{}, eh.GetErrAlreadyExistsCompose(eh.INBOUND_ORDER, eh.ORDER_NUMBER)
+	}
+
 	return h.ibOrdRp.CreateInboundOrder(inboundOrder)
 }

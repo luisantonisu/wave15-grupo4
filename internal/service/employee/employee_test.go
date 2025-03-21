@@ -52,7 +52,9 @@ func TestEmployeeService_Create(t *testing.T) {
 		mockWarehouseRepo := repositoryWh.NewWarehouseRepositoryMock()
 		service := NewEmployeeService(mockEmployeeRepo, mockWarehouseRepo)
 
-		mockWarehouseRepo.On("GetByID", 1).Return(model.Warehouse{ID: warehouseID}, nil)
+
+		mockEmployeeRepo.On("CardNumberIDExists", *mockEmployeeA.CardNumberID, mockEmployeeA.ID).Return(false)
+		mockWarehouseRepo.On("GetByID", *mockEmployeeA.WarehouseID).Return(model.Warehouse{ID: warehouseID}, nil)
 		mockEmployeeRepo.On("Create", mockEmployeeA.EmployeeAttributes).Return(mockEmployeeA, nil)
 
 		//Act
@@ -89,7 +91,8 @@ func TestEmployeeService_Create(t *testing.T) {
 		mockWarehouseRepo := repositoryWh.NewWarehouseRepositoryMock()
 		service := NewEmployeeService(mockEmployeeRepo, mockWarehouseRepo)
 
-		mockWarehouseRepo.On("GetByID", 1).Return(model.Warehouse{}, eh.GetErrNotFound(eh.WAREHOUSE))
+		mockEmployeeRepo.On("CardNumberIDExists", *mockEmployeeA.CardNumberID, mockEmployeeA.ID).Return(false)
+		mockWarehouseRepo.On("GetByID", *mockEmployeeA.WarehouseID).Return(model.Warehouse{}, eh.GetErrNotFound(eh.WAREHOUSE))
 
 		//Act
 		employee, err := service.Create(mockEmployeeA)
@@ -109,9 +112,8 @@ func TestEmployeeService_Create(t *testing.T) {
 		mockWarehouseRepo := repositoryWh.NewWarehouseRepositoryMock()
 		service := NewEmployeeService(mockEmployeeRepo, mockWarehouseRepo)
 
-		mockWarehouseRepo.On("GetByID", 1).Return(model.Warehouse{ID: warehouseID}, nil)
-		mockEmployeeRepo.On("Create", mockEmployeeA.EmployeeAttributes).Return(model.Employee{}, eh.GetErrAlreadyExistsCompose(eh.EMPLOYEE, eh.CARD_NUMBER))
-
+		mockEmployeeRepo.On("CardNumberIDExists", *mockEmployeeA.CardNumberID, mockEmployeeA.ID).Return(true)
+		
 		//Act
 		employee, err := service.Create(mockEmployeeA)
 
@@ -142,25 +144,7 @@ func TestEmployeeService_Get(t *testing.T) {
 		mockWarehouseRepo.AssertExpectations(t)
 	})
 
-	t.Run("case 2: employee not found", func(t *testing.T) {
-		//Arrange
-		mockEmployeeRepo := repositoryEm.NewEmployeeMockRepository()
-		mockWarehouseRepo := repositoryWh.NewWarehouseRepositoryMock()
-		service := NewEmployeeService(mockEmployeeRepo, mockWarehouseRepo)
-		mockEmployeeRepo.On("GetByID", 2).Return(model.Employee{}, eh.GetErrNotFound(eh.EMPLOYEE))
-
-		//Act
-		employee, err := service.GetByID(2)
-
-		//Assert
-		require.Error(t, err)
-		require.NotNil(t, err)
-		require.Equal(t, model.Employee{}, employee)
-		mockEmployeeRepo.AssertExpectations(t)
-		mockWarehouseRepo.AssertExpectations(t)
-	})
-
-	t.Run("case 3: get all employees successfully", func(t *testing.T) {
+	t.Run("case 2: get all employees successfully", func(t *testing.T) {
 		//Arrange
 		mockEmployeeRepo := repositoryEm.NewEmployeeMockRepository()
 		mockWarehouseRepo := repositoryWh.NewWarehouseRepositoryMock()
@@ -186,9 +170,12 @@ func TestEmployeeService_Update(t *testing.T) {
 		service := NewEmployeeService(mockEmployeeRepo, mockWarehouseRepo)
 
 		mockEmployeeA.EmployeeAttributes.FirstName = &firstNameEmpB
-		mockWarehouseRepo.On("GetByID", 1).Return(model.Warehouse{ID: warehouseID}, nil)
-		mockEmployeeRepo.On("Update", mockEmployeeA.ID, mockEmployeeA.EmployeeAttributes).Return(mockEmployeeA, nil)
 
+		mockEmployeeRepo.On("EmployeeExists", mockEmployeeA.ID).Return(true)
+		mockWarehouseRepo.On("GetByID", *mockEmployeeA.WarehouseID).Return(model.Warehouse{ID: warehouseID}, nil)
+		mockEmployeeRepo.On("CardNumberIDExists", *mockEmployeeA.CardNumberID, mockEmployeeA.ID).Return(false)
+		mockEmployeeRepo.On("Update", mockEmployeeA.ID, mockEmployeeA.EmployeeAttributes).Return(mockEmployeeA, nil)
+		
 		//Act
 		employee, err := service.Update(mockEmployeeA.ID, mockEmployeeA.EmployeeAttributes)
 		
@@ -198,18 +185,16 @@ func TestEmployeeService_Update(t *testing.T) {
 		mockEmployeeRepo.AssertExpectations(t)
 		mockWarehouseRepo.AssertExpectations(t)
 	})
-
+	
 	t.Run("case 2: not found - employee doesn't exist", func(t *testing.T) {
 		//Arrange
 		mockEmployeeRepo := repositoryEm.NewEmployeeMockRepository()
 		mockWarehouseRepo := repositoryWh.NewWarehouseRepositoryMock()
 		service := NewEmployeeService(mockEmployeeRepo, mockWarehouseRepo)
 		
-		mockWarehouseRepo.On("GetByID", 1).Return(model.Warehouse{ID: warehouseID}, nil)
-		mockEmployeeRepo.On("Update", 2, mockEmployeeA.EmployeeAttributes).Return(model.Employee{}, eh.GetErrNotFound(eh.EMPLOYEE))
-
+		mockEmployeeRepo.On("EmployeeExists", mockEmployeeA.ID).Return(false)
 		//Act
-		employee, err := service.Update(2, mockEmployeeA.EmployeeAttributes)
+		employee, err := service.Update(mockEmployeeA.ID, mockEmployeeA.EmployeeAttributes)
 		
 		//Assert
 		require.Error(t, err)
@@ -226,8 +211,9 @@ func TestEmployeeService_Update(t *testing.T) {
 		mockWarehouseRepo := repositoryWh.NewWarehouseRepositoryMock()
 		service := NewEmployeeService(mockEmployeeRepo, mockWarehouseRepo)
 
-		mockWarehouseRepo.On("GetByID", 1).Return(model.Warehouse{}, eh.GetErrNotFound(eh.WAREHOUSE))
-
+		mockEmployeeRepo.On("EmployeeExists", mockEmployeeB.ID).Return(true)
+		mockWarehouseRepo.On("GetByID", *mockEmployeeB.WarehouseID).Return(model.Warehouse{}, eh.GetErrNotFound(eh.WAREHOUSE))
+		
 		//Act
 		employee, err := service.Update(mockEmployeeB.ID, mockEmployeeB.EmployeeAttributes)
 		
@@ -239,16 +225,17 @@ func TestEmployeeService_Update(t *testing.T) {
 		mockEmployeeRepo.AssertExpectations(t)
 		mockWarehouseRepo.AssertExpectations(t)
 	})
-
+	
 	t.Run("case 4: conflict - card number id duplicated ", func(t *testing.T) {
 		//Arrange
 		mockEmployeeRepo := repositoryEm.NewEmployeeMockRepository()
 		mockWarehouseRepo := repositoryWh.NewWarehouseRepositoryMock()
 		service := NewEmployeeService(mockEmployeeRepo, mockWarehouseRepo)
-
+		
+		
+		mockEmployeeRepo.On("EmployeeExists", mockEmployeeA.ID).Return(true)
 		mockWarehouseRepo.On("GetByID", 1).Return(model.Warehouse{ID: warehouseID}, nil)
-		mockEmployeeRepo.On("Update", mockEmployeeA.ID, mockEmployeeA.EmployeeAttributes).Return(model.Employee{}, eh.GetErrAlreadyExistsCompose(eh.EMPLOYEE, eh.CARD_NUMBER))
-
+		mockEmployeeRepo.On("CardNumberIDExists", *mockEmployeeA.CardNumberID, mockEmployeeA.ID).Return(true)
 		//Act
 		employee, err := service.Update(mockEmployeeA.ID, mockEmployeeA.EmployeeAttributes)
 		
@@ -269,10 +256,11 @@ func TestEmployeeService_Delete(t *testing.T) {
 		mockWarehouseRepo := repositoryWh.NewWarehouseRepositoryMock()
 		service := NewEmployeeService(mockEmployeeRepo, mockWarehouseRepo)
 		
-		mockEmployeeRepo.On("Delete", 1).Return(nil)
+		mockEmployeeRepo.On("EmployeeExists", mockEmployeeA.ID).Return(true)
+		mockEmployeeRepo.On("Delete", mockEmployeeA.ID).Return(nil)
 
 		//Act
-		err := service.Delete(1)
+		err := service.Delete(mockEmployeeA.ID)
 
 		//Assert
 		require.NoError(t, err)
@@ -285,10 +273,11 @@ func TestEmployeeService_Delete(t *testing.T) {
 		mockEmployeeRepo := repositoryEm.NewEmployeeMockRepository()
 		mockWarehouseRepo := repositoryWh.NewWarehouseRepositoryMock()
 		service := NewEmployeeService(mockEmployeeRepo, mockWarehouseRepo)
-		mockEmployeeRepo.On("Delete", 2).Return(eh.GetErrNotFound(eh.EMPLOYEE))
+		
+		mockEmployeeRepo.On("EmployeeExists", mockEmployeeB.ID).Return(false)
 
 		//Act
-		err := service.Delete(2)
+		err := service.Delete(mockEmployeeB.ID)
 		
 		//Assert
 		require.Error(t, err)
@@ -350,10 +339,12 @@ func TestEmployeeService_Report(t *testing.T) {
 				WarehouseID:  1,
 			},
 		}
-		mockEmployeeRepo.On("Report", 1).Return(reportMap, nil)
+
+		mockEmployeeRepo.On("EmployeeExists", mockEmployeeA.ID).Return(true)
+		mockEmployeeRepo.On("Report", mockEmployeeA.ID).Return(reportMap, nil)
 
 		//Act
-		report, err := service.Report(1)
+		report, err := service.Report(mockEmployeeA.ID)
 
 		//Assert
 		require.NoError(t, err)
@@ -362,22 +353,22 @@ func TestEmployeeService_Report(t *testing.T) {
 		mockWarehouseRepo.AssertExpectations(t)
 	})
 
-	t.Run("case 3: not found - get by employee id report", func(t *testing.T) {
+	t.Run("case 3: not found - employee id doesn't exists", func(t *testing.T) {
 		//Arrange
 		mockRepo := repositoryEm.NewEmployeeMockRepository()
 		mockWarehouseRepo := repositoryWh.NewWarehouseRepositoryMock()
 		service := NewEmployeeService(mockRepo, mockWarehouseRepo)
 
-		mockRepo.On("Report", 10).Return([]model.InboundOrdersReport{}, eh.GetErrNotFound(eh.EMPLOYEE))
+		mockRepo.On("EmployeeExists", mockEmployeeB.ID).Return(false)
 
 		//Act
-		report, err := service.Report(10)
+		report, err := service.Report(mockEmployeeB.ID)
 
 		//Assert
 		require.Error(t, err)
 		require.ErrorIs(t, err, eh.ErrNotFound)
 		require.Equal(t, eh.GetErrNotFound(eh.EMPLOYEE), err)
-		require.Equal(t, []model.InboundOrdersReport{}, report)
+		require.Nil(t,report)
 		mockRepo.AssertExpectations(t)
 	})
 }

@@ -32,6 +32,10 @@ func (h *EmployeeService) Create(employee model.Employee) (model.Employee, error
 		return model.Employee{}, eh.GetErrInvalidData(eh.EMPLOYEE)
 	}
 
+	if h.employeeRp.CardNumberIDExists(*employee.CardNumberID, employee.ID){
+		return model.Employee{}, eh.GetErrAlreadyExistsCompose(eh.EMPLOYEE, eh.CARD_NUMBER)
+	}
+
 	_, err := h.warehouseRp.GetByID(*employee.WarehouseID)
 	if err != nil {
 		return model.Employee{}, eh.GetErrForeignKey(eh.WAREHOUSE)
@@ -41,6 +45,10 @@ func (h *EmployeeService) Create(employee model.Employee) (model.Employee, error
 }
 
 func (h *EmployeeService) Update(id int, employee model.EmployeeAttributes) (model.Employee, error) {
+	if !h.employeeRp.EmployeeExists(id){
+		return model.Employee{}, eh.GetErrNotFound(eh.EMPLOYEE)
+	}
+	
 	if employee.WarehouseID != nil {
 		_, err := h.warehouseRp.GetByID(*employee.WarehouseID)
 		if err != nil {
@@ -48,13 +56,23 @@ func (h *EmployeeService) Update(id int, employee model.EmployeeAttributes) (mod
 		}
 	}
 
+	if employee.CardNumberID != nil && h.employeeRp.CardNumberIDExists(*employee.CardNumberID, id){
+		return model.Employee{}, eh.GetErrAlreadyExistsCompose(eh.EMPLOYEE, eh.CARD_NUMBER)
+	}
+
 	return h.employeeRp.Update(id, employee)
 }
 
 func (h *EmployeeService) Delete(id int) error {
+	if !h.employeeRp.EmployeeExists(id){
+		return eh.GetErrNotFound(eh.EMPLOYEE)
+	}
 	return h.employeeRp.Delete(id)
 }
 
 func (h *EmployeeService) Report(id int) ([]model.InboundOrdersReport, error) {
+	if id != -1 && !h.employeeRp.EmployeeExists(id){
+		return nil, eh.GetErrNotFound(eh.EMPLOYEE)
+	}
 	return h.employeeRp.Report(id)
 }

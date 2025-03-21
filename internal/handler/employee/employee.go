@@ -77,7 +77,6 @@ func (h *EmployeeHandler) Create() http.HandlerFunc {
 		employee := helper.EmployeeRequestDTOToEmployee(empDto)
 
 		emp, err := h.sv.Create(employee)
-
 		if err != nil {
 			code, msg := eh.HandleError(err)
 			response.Error(w, code, msg)

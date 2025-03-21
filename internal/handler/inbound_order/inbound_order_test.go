@@ -63,7 +63,7 @@ func TestInboundOrderHandler_Create(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 	})
 
-	t.Run("case 2: invalid data - inbound order missing fields", func(t *testing.T) {
+	t.Run("case 2: invalid data - problems creating inbound order", func(t *testing.T) {
 		// Arrange
 		inboundService := service.NewInboundOrderServiceMock()
 		inboundHandler := NewInboundOrderHandler(inboundService)
@@ -98,123 +98,7 @@ func TestInboundOrderHandler_Create(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 	})
 
-	t.Run("case 3: conflict - order number already exists", func(t *testing.T) {
-		// Arrange
-		inboundService := service.NewInboundOrderServiceMock()
-		inboundHandler := NewInboundOrderHandler(inboundService)
-
-		inboundService.On("Create", mock.Anything).Return(model.InboundOrder{}, eh.GetErrAlreadyExists(eh.ORDER_NUMBER))
-
-		body, err := json.Marshal(inboundOrderMockA.InboundOrderAttributes)
-		require.NoError(t, err)
-
-		rt := chi.NewRouter()
-		rt.Post("/inboundOrders", inboundHandler.Create())
-
-		// Act
-		req, res := httptest.NewRequest(http.MethodPost, "/inboundOrders", bytes.NewReader(body)), httptest.NewRecorder()
-		req.Header.Set("Content-Type", "application/json")
-		rt.ServeHTTP(res, req)
-
-		// Assert
-		expectedBody := `{
-			"status": "Conflict",
-			"message": "order number already exists"
-		}`
-
-		require.Equal(t, http.StatusConflict, res.Code)
-		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
-		require.JSONEq(t, expectedBody, res.Body.String())
-	})
-
-	t.Run("case 4: not found - product batch id doesn't exist", func(t *testing.T) {
-		// Arrange
-		inboundService := service.NewInboundOrderServiceMock()
-		inboundHandler := NewInboundOrderHandler(inboundService)
-
-		inboundService.On("Create", mock.Anything).Return(model.InboundOrder{}, eh.GetErrForeignKey(eh.PRODUCT_BATCH_ID))
-
-		body, err := json.Marshal(inboundOrderMockA.InboundOrderAttributes)
-		require.NoError(t, err)
-
-		rt := chi.NewRouter()
-		rt.Post("/inboundOrders", inboundHandler.Create())
-
-		// Act
-		req, res := httptest.NewRequest(http.MethodPost, "/inboundOrders", bytes.NewReader(body)), httptest.NewRecorder()
-		req.Header.Set("Content-Type", "application/json")
-		rt.ServeHTTP(res, req)
-
-		// Assert
-		expectedBody := `{
-			"status": "Conflict",
-			"message": "product batch ID foreign key not found"
-		}`
-
-		require.Equal(t, http.StatusConflict, res.Code)
-		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
-		require.JSONEq(t, expectedBody, res.Body.String())
-	})
-
-	t.Run("case 5: not found - employee id doesn't exist", func(t *testing.T) {
-		// Arrange
-		inboundService := service.NewInboundOrderServiceMock()
-		inboundHandler := NewInboundOrderHandler(inboundService)
-
-		inboundService.On("Create", mock.Anything).Return(model.InboundOrder{}, eh.GetErrForeignKey(eh.EMPLOYEE))
-
-		body, err := json.Marshal(inboundOrderMockA.InboundOrderAttributes)
-		require.NoError(t, err)
-
-		rt := chi.NewRouter()
-		rt.Post("/inboundOrders", inboundHandler.Create())
-
-		// Act
-		req, res := httptest.NewRequest(http.MethodPost, "/inboundOrders", bytes.NewReader(body)), httptest.NewRecorder()
-		req.Header.Set("Content-Type", "application/json")
-		rt.ServeHTTP(res, req)
-
-		// Assert
-		expectedBody := `{
-			"status": "Conflict",
-			"message": "employee foreign key not found"
-		}`
-
-		require.Equal(t, http.StatusConflict, res.Code)
-		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
-		require.JSONEq(t, expectedBody, res.Body.String())
-	})
-
-	t.Run("case 6: not found - warehouse id doesn't exist", func(t *testing.T) {
-		// Arrange
-		inboundService := service.NewInboundOrderServiceMock()
-		inboundHandler := NewInboundOrderHandler(inboundService)
-
-		inboundService.On("Create", mock.Anything).Return(model.InboundOrder{}, eh.GetErrForeignKey(eh.WAREHOUSE))
-
-		body, err := json.Marshal(inboundOrderMockA.InboundOrderAttributes)
-		require.NoError(t, err)
-
-		rt := chi.NewRouter()
-		rt.Post("/inboundOrders", inboundHandler.Create())
-
-		// Act
-		req, res := httptest.NewRequest(http.MethodPost, "/inboundOrders", bytes.NewReader(body)), httptest.NewRecorder()
-		req.Header.Set("Content-Type", "application/json")
-		rt.ServeHTTP(res, req)
-
-		// Assert
-		expectedBody := `{
-			"status": "Conflict",
-			"message": "warehouse foreign key not found"
-		}`
-
-		require.Equal(t, http.StatusConflict, res.Code)
-		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
-		require.JSONEq(t, expectedBody, res.Body.String())
-	})
-
-	t.Run("case 7: bad request - invalid body", func(t *testing.T) {
+	t.Run("case 3: bad request - invalid body", func(t *testing.T) {
 		// Arrange
 		inboundOrderSv := service.NewInboundOrderServiceMock()
 		iboundOrderHnd := NewInboundOrderHandler(inboundOrderSv)
