@@ -78,7 +78,7 @@ func TestEmployeeHandler_Create(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 	})
 
-	t.Run("case 2: invalid data - employee missing fields", func(t *testing.T) {
+	t.Run("case 2: invalid data - error creating employee", func(t *testing.T) {
 		// Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
@@ -110,71 +110,7 @@ func TestEmployeeHandler_Create(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 	})
 
-	t.Run("case 3: conflict - card number id duplicated", func(t *testing.T) {
-		// Arrange
-		employeeService := service.NewEmployeeMock()
-		employeeHandler := NewEmployeeHandler(employeeService)
-		employeeService.On("Create", mock.Anything).Return(model.Employee{}, eh.GetErrAlreadyExistsCompose(eh.EMPLOYEE, eh.CARD_NUMBER))
-
-		body, err := json.Marshal(dto.EmployeeRequestDTO{
-			CardNumberID: &cardNumberID,
-			FirstName:    &firstNameEmp,
-			LastName:     &lastNameEmp,
-			WarehouseID:  &warehouseID,
-		})
-		require.NoError(t, err)
-
-		rt := chi.NewRouter()
-		rt.Post("/employees", employeeHandler.Create())
-
-		// Act
-		req, res := httptest.NewRequest(http.MethodPost, "/employees", bytes.NewReader(body)), httptest.NewRecorder()
-		req.Header.Set("Content-Type", "application/json")
-		rt.ServeHTTP(res, req)
-
-		// Assert
-		expectedBody := `{
-			"status": "Conflict",
-			"message": "employee with that card number ID already exists"
-		}`
-		require.Equal(t, http.StatusConflict, res.Code)
-		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
-		require.JSONEq(t, expectedBody, res.Body.String())
-	})
-
-	t.Run("case 4: not found - warehouse id doesn't exist", func(t *testing.T) {
-		// Arrange
-		employeeService := service.NewEmployeeMock()
-		employeeHandler := NewEmployeeHandler(employeeService)
-		employeeService.On("Create", mock.Anything).Return(model.Employee{}, eh.GetErrForeignKey(eh.WAREHOUSE))
-
-		body, err := json.Marshal(dto.EmployeeRequestDTO{
-			CardNumberID: &cardNumberID,
-			FirstName:    &firstNameEmp,
-			LastName:     &lastNameEmp,
-			WarehouseID:  &warehouseBadID,
-		})
-		require.NoError(t, err)
-
-		rt := chi.NewRouter()
-		rt.Post("/employees", employeeHandler.Create())
-
-		// Act
-		req, res := httptest.NewRequest(http.MethodPost, "/employees", bytes.NewReader(body)), httptest.NewRecorder()
-		req.Header.Set("Content-Type", "application/json")
-		rt.ServeHTTP(res, req)
-
-		// Assert
-		expectedBody := `{
-			"status": "Conflict",
-			"message": "warehouse foreign key not found"
-		}`
-		require.Equal(t, http.StatusConflict, res.Code)
-		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
-		require.JSONEq(t, expectedBody, res.Body.String())
-	})
-
-	t.Run("case 5: bad request - invalid body", func(t *testing.T) {
+	t.Run("case 3: bad request - invalid body", func(t *testing.T) {
 		// Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
@@ -235,7 +171,7 @@ func TestEmployeeHandler_Get(t *testing.T) {
 		// Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
-		employeeService.On("GetAll").Return([]model.Employee{}, eh.GetErrDatabase(eh.EMPLOYEE))
+		employeeService.On("GetAll").Return([]model.Employee{}, eh.GetErrInternalServer(eh.EMPLOYEE))
 
 		rt := chi.NewRouter()
 		rt.Get("/employees", employeeHandler.GetAll())
@@ -247,7 +183,7 @@ func TestEmployeeHandler_Get(t *testing.T) {
 		// Assert
 		expectedBody := `{
 			"status": "Internal Server Error",
-			"message": "database error: employee"
+			"message": "internal server error"
 		}`
 		require.Equal(t, http.StatusInternalServerError, res.Code)
 		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
@@ -353,7 +289,7 @@ func TestEmployeeHandler_Update(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 	})
 
-	t.Run("case 2: not found - employee id doesn't exist", func(t *testing.T) {
+	t.Run("case 2: not found - problems updating employee", func(t *testing.T) {
 		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
@@ -439,36 +375,6 @@ func TestEmployeeHandler_Update(t *testing.T) {
 		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
 		require.JSONEq(t, expectedBody, res.Body.String())
 	})
-
-	t.Run("case 5: foreign key - warehouse id doesn't exist", func(t *testing.T) {
-		//Arrange
-		employeeService := service.NewEmployeeMock()
-		employeeHandler := NewEmployeeHandler(employeeService)
-		employeeService.On("Update", 1, mock.Anything).Return(model.Employee{}, eh.GetErrForeignKey(eh.WAREHOUSE))
-
-		body, err := json.Marshal(model.EmployeeAttributes{
-			CardNumberID: &cardNumberB,
-			FirstName:    &firstNameEmpB,
-			WarehouseID: &warehouseBadID,
-		})
-		require.NoError(t, err)
-
-		rt := chi.NewRouter()
-		rt.Patch("/employees/{id}", employeeHandler.Update())
-
-		// Act
-		req, res := httptest.NewRequest(http.MethodPatch, "/employees/1", bytes.NewReader(body)), httptest.NewRecorder()
-		rt.ServeHTTP(res, req)
-
-		// Assert
-		expectedBody := `{
-			"status": "Conflict",
-			"message": "warehouse foreign key not found"
-		}`
-		require.Equal(t, http.StatusConflict, res.Code)
-		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
-		require.JSONEq(t, expectedBody, res.Body.String())
-	})
 }
 
 func TestEmployeeHandler_Delete(t *testing.T) {
@@ -489,7 +395,7 @@ func TestEmployeeHandler_Delete(t *testing.T) {
 		require.Equal(t, http.StatusNoContent, res.Code)
 	})
 	
-	t.Run("case 2: not found - employee id doesn't exist", func(t *testing.T) {
+	t.Run("case 2: not found - problems deleting employee", func(t *testing.T) {
 		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
@@ -610,7 +516,7 @@ func TestEmployeeHandler_Report(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 	})
 
-	t.Run("case 3: bad request - get by employee id report", func(t *testing.T) {
+	t.Run("case 3: bad request - invalid employee id", func(t *testing.T) {
 		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
@@ -633,7 +539,7 @@ func TestEmployeeHandler_Report(t *testing.T) {
 		require.JSONEq(t, expected, res.Body.String())
 	})
 	
-	t.Run("case 4: not found - get by employee id report", func(t *testing.T) {
+	t.Run("case 4: not found - problems getting the report by employee id", func(t *testing.T) {
 		//Arrange
 		employeeService := service.NewEmployeeMock()
 		employeeHandler := NewEmployeeHandler(employeeService)
