@@ -13,6 +13,16 @@ func NewEmployeeMockRepository() *MockEmployeeRepository {
 	return &MockEmployeeRepository{}
 }
 
+func (m *MockEmployeeRepository) CardNumberIDExists(cardNumberID int, id int) bool {
+	args := m.Called(cardNumberID, id)
+	return args.Get(0).(bool)
+}
+
+func (m *MockEmployeeRepository) EmployeeExists(id int) bool {
+	args := m.Called(id)
+	return args.Get(0).(bool)
+}
+
 func (m *MockEmployeeRepository) GetAll() ([]model.Employee, error) {
 	args := m.Called()
 	return args.Get(0).([]model.Employee), args.Error(1)

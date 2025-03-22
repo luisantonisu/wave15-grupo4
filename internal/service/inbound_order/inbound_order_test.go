@@ -48,6 +48,9 @@ func TestInboundOrderService_Create(t *testing.T) {
 
 		mockEmployeeRepo.On("GetByID", mock.Anything).Return(model.Employee{ID: 1}, nil)
 		mockWarehouseRepo.On("GetByID", mock.Anything).Return(model.Warehouse{ID: 1}, nil)
+		mockInboundOrderRepo.On("AlreadyExists", "product_batch_id", productBatchID).Return(true)
+		mockInboundOrderRepo.On("AlreadyExists", "order_number", orderNumberA).Return(false)
+		
 		mockInboundOrderRepo.On("CreateInboundOrder", mock.Anything).Return(inboundOrderMockA, nil)
 
 		//Act
@@ -135,7 +138,7 @@ func TestInboundOrderService_Create(t *testing.T) {
 
 		mockEmployeeRepo.On("GetByID", mock.Anything).Return(model.Employee{ID: 1}, nil)
 		mockWarehouseRepo.On("GetByID", mock.Anything).Return(model.Warehouse{ID: 1}, nil)
-		mockInboundOrderRepo.On("CreateInboundOrder", mock.Anything).Return(model.InboundOrder{}, eh.GetErrForeignKey(eh.PRODUCT_BATCH))
+		mockInboundOrderRepo.On("AlreadyExists", "product_batch_id", productBatchID).Return(false)
 
 		//Act
 		inboundOrder, err := service.Create(inboundOrderMockA.InboundOrderAttributes)
@@ -143,7 +146,7 @@ func TestInboundOrderService_Create(t *testing.T) {
 		//Assert
 		require.Error(t, err)
 		require.ErrorIs(t, err, eh.ErrForeignKey)
-		require.Equal(t, eh.GetErrForeignKey(eh.PRODUCT_BATCH), err)
+		require.Equal(t, eh.GetErrForeignKey(eh.PRODUCT_BATCH_ID), err)
 		require.Equal(t, model.InboundOrder{}, inboundOrder)
 		mockInboundOrderRepo.AssertExpectations(t)
 		mockEmployeeRepo.AssertExpectations(t)
@@ -159,8 +162,9 @@ func TestInboundOrderService_Create(t *testing.T) {
 
 		mockEmployeeRepo.On("GetByID", mock.Anything).Return(model.Employee{ID: 1}, nil)
 		mockWarehouseRepo.On("GetByID", mock.Anything).Return(model.Warehouse{ID: 1}, nil)
-		mockInboundOrderRepo.On("CreateInboundOrder", mock.Anything).Return(model.InboundOrder{}, eh.GetErrAlreadyExistsCompose(eh.INBOUND_ORDER, eh.ORDER_NUMBER))
-
+		mockInboundOrderRepo.On("AlreadyExists", "product_batch_id", productBatchID).Return(true)
+		mockInboundOrderRepo.On("AlreadyExists", "order_number", orderNumberA).Return(true)
+		
 		//Act
 		inboundOrder, err := service.Create(inboundOrderMockA.InboundOrderAttributes)
 

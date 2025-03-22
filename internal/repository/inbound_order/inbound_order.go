@@ -17,9 +17,9 @@ func NewInboundOrderRepository(defaultDB *sql.DB) *InbounderOrderRepository {
 	}
 }
 
-func (i *InbounderOrderRepository) AlreadyExists(atribute string, value int) bool {
+func (i *InbounderOrderRepository) AlreadyExists(attribute string, value int) bool {
 	var exists bool
-	err := i.db.QueryRow("SELECT EXISTS(SELECT 1 FROM inbound_orders WHERE "+atribute+" = ?)", value).Scan(&exists)
+	err := i.db.QueryRow("SELECT EXISTS(SELECT 1 FROM inbound_orders WHERE "+attribute+" = ?)", value).Scan(&exists)
 	if err != nil {
 		return false
 	}
@@ -28,14 +28,6 @@ func (i *InbounderOrderRepository) AlreadyExists(atribute string, value int) boo
 }
 
 func (i *InbounderOrderRepository) CreateInboundOrder(inboundOrder model.InboundOrderAttributes) (model.InboundOrder, error) {
-	if !i.AlreadyExists("product_batch_id", *inboundOrder.ProductBatchID) {
-		return model.InboundOrder{}, eh.GetErrForeignKey(eh.PRODUCT_BATCH_ID)
-	}
-
-	if i.AlreadyExists("order_number", *inboundOrder.OrderNumber) {
-		return model.InboundOrder{}, eh.GetErrAlreadyExists(eh.ORDER_NUMBER)
-	}
-
 	row, err := i.db.Exec("INSERT INTO inbound_orders (order_date, order_number, employee_id, product_batch_id, warehouse_id) VALUES (?, ?, ?, ?, ?)", inboundOrder.OrderDate, inboundOrder.OrderNumber, inboundOrder.EmployeeID, inboundOrder.ProductBatchID, inboundOrder.WarehouseID)
 	if err != nil {
 		return model.InboundOrder{}, eh.GetErrInvalidData(eh.INBOUND_ORDER)
