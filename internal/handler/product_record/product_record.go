@@ -32,7 +32,7 @@ func (h *ProductRecordHandler) Create() http.HandlerFunc {
 		request := helper.ProductRecordRequestDTOToProductRecord(requestDTO)
 		// process
 		// - create product record
-		err := h.service.CreateProductRecord(request)
+		pr, err := h.service.CreateProductRecord(request)
 		if err != nil {
 			code, msg := errorHandler.HandleError(err)
 			response.JSON(w, code, msg)
@@ -41,6 +41,7 @@ func (h *ProductRecordHandler) Create() http.HandlerFunc {
 
 		// response
 		response.JSON(w, http.StatusCreated, map[string]any{
+			"data":    helper.ProductRecordToProductRecordResponseDTO(pr),
 			"message": "Product record created",
 		})
 	}

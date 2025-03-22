@@ -38,6 +38,9 @@ func ValueCheck(productAtrributes model.ProductAttributes) (err error) {
 }
 
 func (s *ProductService) CreateProduct(productAttributes *model.ProductAttributes) (prod model.Product, err error) {
+	if s.repository.ProductCodeExists(*productAttributes.ProductCode) {
+		return model.Product{}, errorHandler.GetErrAlreadyExistsCompose(errorHandler.PRODUCT, errorHandler.PRODUCT_CODE)
+	}
 	if err = ValueCheck(*productAttributes); err != nil {
 		return model.Product{}, err
 	}
