@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"log"
 
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 	errorHandler "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
@@ -76,7 +75,7 @@ func (r *ProductRepository) GetProductRecordByID(id int) (model.ProductRecordCou
 	return productRecordCount, nil
 }
 
-func (r *ProductRepository) productCodeExists(productCode string) bool {
+func (r *ProductRepository) ProductCodeExists(productCode string) bool {
 	row := r.db.QueryRow("SELECT COUNT(*) FROM products WHERE product_code = ?", productCode)
 	var count int
 	err := row.Scan(&count)
@@ -88,9 +87,6 @@ func (r *ProductRepository) productCodeExists(productCode string) bool {
 
 func (r *ProductRepository) CreateProduct(productAtrributes *model.ProductAttributes) (prod model.Product, err error) {
 
-	if r.productCodeExists(*productAtrributes.ProductCode) {
-		return model.Product{}, errorHandler.GetErrAlreadyExistsCompose(errorHandler.PRODUCT, errorHandler.PRODUCT_CODE)
-	}
 	row, err := r.db.Exec("INSERT INTO products (product_code, description, width, height, length, net_weight, expiration_rate, recommended_freezing_temperature, freezing_rate, product_type_id, seller_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", productAtrributes.ProductCode, productAtrributes.Description, productAtrributes.Width, productAtrributes.Height, productAtrributes.Length, productAtrributes.NetWeight, productAtrributes.ExpirationRate, productAtrributes.RecommendedFreezingTemperature, productAtrributes.FreezingRate, productAtrributes.ProductTypeID, productAtrributes.SellerID)
 
 	if err != nil {
@@ -110,15 +106,7 @@ func (r *ProductRepository) CreateProduct(productAtrributes *model.ProductAttrib
 }
 
 func (r *ProductRepository) DeleteProduct(id int) (err error) {
-	exist, err := r.registerExists(id)
 
-	if err != nil {
-		return err
-	}
-
-	if !exist {
-		return errorHandler.GetErrNotFound(errorHandler.PRODUCT)
-	}
 	_, err = r.db.Exec("DELETE FROM products WHERE id = ?", id)
 	if err != nil {
 		return errorHandler.GetErrNotFound(errorHandler.PRODUCT)
@@ -127,22 +115,6 @@ func (r *ProductRepository) DeleteProduct(id int) (err error) {
 }
 
 func (r *ProductRepository) UpdateProduct(id int, productAtrributesPtr *model.ProductAttributes) (product *model.Product, err error) {
-
-	exist, err := r.registerExists(id)
-	if err != nil {
-		return nil, err
-	}
-	if !exist {
-		return nil, errorHandler.GetErrNotFound(errorHandler.PRODUCT)
-	}
-	if productAtrributesPtr == nil {
-		return nil, errorHandler.GetErrInvalidData(errorHandler.PRODUCT)
-	}
-
-	if productAtrributesPtr.ProductCode != nil && r.productCodeExists(*productAtrributesPtr.ProductCode) {
-		return nil, errorHandler.GetErrAlreadyExistsCompose(errorHandler.PRODUCT, errorHandler.PRODUCT_CODE)
-
-	}
 
 	var patchedProduct model.ProductAttributes
 	product = &model.Product{}
@@ -186,7 +158,6 @@ func (r *ProductRepository) UpdateProduct(id int, productAtrributesPtr *model.Pr
 	// Update the product in the repository after all fields have been patched
 	_, err = r.db.Exec("UPDATE products SET product_code = ?, description = ?, width = ?, height = ?, length = ?, net_weight = ?, expiration_rate = ?, recommended_freezing_temperature = ?, product_type_id = ?, seller_id = ? WHERE id = ?", patchedProduct.ProductCode, patchedProduct.Description, patchedProduct.Width, patchedProduct.Height, patchedProduct.Length, patchedProduct.NetWeight, patchedProduct.ExpirationRate, patchedProduct.RecommendedFreezingTemperature, patchedProduct.ProductTypeID, patchedProduct.SellerID, id)
 	if err != nil {
-		log.Println(err)
 		return nil, errorHandler.GetErrInvalidData(errorHandler.PRODUCT)
 	}
 	product.ID = id
@@ -194,7 +165,7 @@ func (r *ProductRepository) UpdateProduct(id int, productAtrributesPtr *model.Pr
 	return product, nil
 }
 
-func (r *ProductRepository) registerExists(id int) (bool, error) {
+func (r *ProductRepository) RegisterExists(id int) (bool, error) {
 	var exist bool
 	query := "SELECT EXISTS(SELECT 1 FROM products WHERE ID = ?)"
 	err := r.db.QueryRow(query, id).Scan(&exist)
@@ -203,17 +174,3 @@ func (r *ProductRepository) registerExists(id int) (bool, error) {
 	}
 	return exist, nil
 }
-
-/* func (r *ProductRepository) registerExists(id int) (bool, error) {
-	var exist int
-	query := "SELECT COUNT(*) FROM products WHERE ID = ?"
-	err := r.db.QueryRow(query, id).Scan(&exist)
-	if err != nil {
-		return false, errorHandler.GetErrDatabase(errorHandler.PRODUCT)
-	}
-	if exist == 0 {
-		return false, errorHandler.GetErrNotFound(errorHandler.PRODUCT)
-	}
-	fmt.Println(exist)
-	return exist > 0, nil
-} */
