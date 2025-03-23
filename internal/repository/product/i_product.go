@@ -3,6 +3,7 @@ package repository
 import "github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 
 type IProduct interface {
+	ProductCodeExists(productCode string) bool
 	GetProduct() (productMap []model.Product, err error)
 	GetProductByID(id int) (product model.Product, err error)
 	GetProductRecord() (productRecordMap []model.ProductRecordCount, err error)
@@ -10,4 +11,5 @@ type IProduct interface {
 	CreateProduct(productAtrributes *model.ProductAttributes) (prod model.Product, err error)
 	DeleteProduct(id int) (err error)
 	UpdateProduct(id int, productAtrributes *model.ProductAttributes) (producto *model.Product, err error)
+	RegisterExists(id int) (bool, error)
 }

@@ -5,5 +5,5 @@ import (
 )
 
 type IProductRecord interface {
-	CreateProductRecord(productRecord model.ProductRecordAtrributes) (err error)
+	CreateProductRecord(productRecord model.ProductRecordAtrributes) (prodRecord model.ProductRecord, err error)
 }
