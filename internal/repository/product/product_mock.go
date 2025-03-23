@@ -13,10 +13,16 @@ func NewMockRepository() *MockProductRepository {
 	return &MockProductRepository{}
 }
 
+func (m *MockProductRepository) RegisterExists(id int) (bool, error) {
+	args := m.Called()
+	return args.Get(0).(bool), args.Error(1)
+}
+
 func (m *MockProductRepository) ProductCodeExists(productCode string) bool {
 	args := m.Called()
 	return args.Get(0).(bool)
 }
+
 func (m *MockProductRepository) GetProduct() ([]model.Product, error) {
 	args := m.Called()
 	return args.Get(0).([]model.Product), args.Error(1)

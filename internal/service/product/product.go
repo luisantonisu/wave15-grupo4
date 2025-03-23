@@ -48,9 +48,38 @@ func (s *ProductService) CreateProduct(productAttributes *model.ProductAttribute
 }
 
 func (s *ProductService) DeleteProduct(id int) (err error) {
+
+	exist, err := s.repository.RegisterExists(id)
+
+	if err != nil {
+		return err
+	}
+
+	if !exist {
+		return errorHandler.GetErrNotFound(errorHandler.PRODUCT)
+	}
+
 	return s.repository.DeleteProduct(id)
 }
 
 func (s *ProductService) UpdateProduct(id int, productAttributes *model.ProductAttributes) (producto *model.Product, err error) {
+	exist, err := s.repository.RegisterExists(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if !exist {
+		return nil, errorHandler.GetErrNotFound(errorHandler.PRODUCT)
+	}
+
+	if productAttributes == nil {
+		return nil, errorHandler.GetErrInvalidData(errorHandler.PRODUCT)
+	}
+
+	if productAttributes.ProductCode != nil && s.repository.ProductCodeExists(*productAttributes.ProductCode) {
+		return nil, errorHandler.GetErrAlreadyExistsCompose(errorHandler.PRODUCT, errorHandler.PRODUCT_CODE)
+	}
+
 	return s.repository.UpdateProduct(id, productAttributes)
 }

@@ -11,4 +11,5 @@ type IProduct interface {
 	CreateProduct(productAtrributes *model.ProductAttributes) (prod model.Product, err error)
 	DeleteProduct(id int) (err error)
 	UpdateProduct(id int, productAtrributes *model.ProductAttributes) (producto *model.Product, err error)
+	RegisterExists(id int) (bool, error)
 }
