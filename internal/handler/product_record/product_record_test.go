@@ -16,46 +16,12 @@ import (
 )
 
 var (
-	LastUpdateDate             = "2021-09-01"
-	PurchasePrice              = 10.0
-	SalePrice                  = 20.0
-	ProductId                  = 1
-	BadProductId               = 2
-	mockProduct                = model.Product{ID: 1, ProductAttributes: model.ProductAttributes{ProductCode: new(string)}}
-	badProductRecordAttributes = model.ProductRecordAtrributes{
-		LastUpdateDate: nil,
-		PurchasePrice:  nil,
-		SalePrice:      nil,
-		ProductId:      nil,
-	}
+	LastUpdateDate = "2021-09-01"
+	PurchasePrice  = 10.0
+	SalePrice      = 20.0
+	ProductId      = 1
+	BadProductId   = 2
 )
-
-/*
-	buyerService := service.NewBuyerServiceMock()
-	buyerHandler := handler.NewBuyerHandler(buyerService)
-
-	body, err := json.Marshal(`{
-		CardNumberId: 1,
-		FirstName:    &firstName,
-		LastName:     &lastName,
-	}`)
-	require.NoError(t, err)
-
-	rt := chi.NewRouter()
-	rt.Post("/buyers", buyerHandler.Create())
-
-	// Act
-	req, res := httptest.NewRequest(http.MethodPost, "/buyers", bytes.NewReader(body)), httptest.NewRecorder()
-	req.Header.Set("Content-Type", "application/json")
-	rt.ServeHTTP(res, req)
-
-	// Assert
-	expectedBody := `{"status": "Bad Request","message":"invalid request body"}`
-	require.Equal(t, http.StatusBadRequest, res.Code)
-	require.Equal(t, "application/json", res.Header().Get("Content-Type"))
-	require.JSONEq(t, expectedBody, res.Body.String())
-	buyerService.AssertNotCalled(t, "Create")
-*/
 
 func TestProductHandler_Create(t *testing.T) {
 	productRecordAttributes := model.ProductRecordAtrributes{
