@@ -9,11 +9,11 @@ type MockProductRecordRepository struct {
 	mock.Mock
 }
 
-func NewMockRepository() *MockProductRecordRepository {
+func NewMockReportRepository() *MockProductRecordRepository {
 	return &MockProductRecordRepository{}
 }
 
-func (m *MockProductRecordRepository) CreateProductRecord(productRecord model.ProductRecordAtrributes) (err error) {
+func (m *MockProductRecordRepository) CreateProductRecord(productRecord model.ProductRecordAtrributes) (prodRecord model.ProductRecord, err error) {
 	args := m.Called()
-	return args.Error(0)
+	return args.Get(0).(model.ProductRecord), args.Error(1)
 }
