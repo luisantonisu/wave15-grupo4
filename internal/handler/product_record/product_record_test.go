@@ -16,18 +16,11 @@ import (
 )
 
 var (
-	LastUpdateDate             = "2021-09-01"
-	PurchasePrice              = 10.0
-	SalePrice                  = 20.0
-	ProductId                  = 1
-	BadProductId               = 2
-	mockProduct                = model.Product{ID: 1, ProductAttributes: model.ProductAttributes{ProductCode: new(string)}}
-	badProductRecordAttributes = model.ProductRecordAtrributes{
-		LastUpdateDate: nil,
-		PurchasePrice:  nil,
-		SalePrice:      nil,
-		ProductId:      nil,
-	}
+	LastUpdateDate = "2021-09-01"
+	PurchasePrice  = 10.0
+	SalePrice      = 20.0
+	ProductId      = 1
+	BadProductId   = 2
 )
 
 /*
