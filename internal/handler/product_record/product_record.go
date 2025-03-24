@@ -24,8 +24,7 @@ func (h *ProductRecordHandler) Create() http.HandlerFunc {
 		// request
 		var requestDTO dto.ProductRecordRequestDTO
 		if err := json.NewDecoder(r.Body).Decode(&requestDTO); err != nil {
-			code, msg := errorHandler.HandleError(err)
-			response.JSON(w, code, msg)
+			response.Error(w, http.StatusBadRequest, errorHandler.INVALID_BODY)
 			return
 		}
 
