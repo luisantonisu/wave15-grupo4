@@ -26,6 +26,7 @@ func (r *ProductRecordRepository) CreateProductRecord(productRecord model.Produc
 	}
 
 	id, err := row.LastInsertId()
+
 	if err != nil {
 		return model.ProductRecord{}, errorHandler.GetErrDatabase(errorHandler.EMPLOYEE)
 	}
