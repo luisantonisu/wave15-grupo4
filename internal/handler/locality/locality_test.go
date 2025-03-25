@@ -275,42 +275,7 @@ func TestLocalityHandler_Create(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 		localityService.AssertExpectations(t)
 	})
-	// t.Run("case 2: bad request - invalid body", func(t *testing.T) {
-	// 	// Arrange
-	// 	localityService := service.NewLocalityServiceMock()
-	// 	localityHandler := handler.NewLocalityHandler(localityService)
-	// 	localityService.On("Create", mock.Anything).Return(model.Locality{}, eh.GetErrGettingData(eh.LOCALITY))
-
-	// 	body, err := json.Marshal(dto.LocalityRequestDTO{
-	// 		Data: dto.LocalityDataDTO{
-	// 			Id:           new(string),
-	// 			LocalityName: new(string),
-	// 			ProvinceName: new(string),
-	// 			CountryName:  new(string),
-	// 		},
-	// 	})
-	// 	require.NoError(t, err)
-
-	// 	rt := chi.NewRouter()
-	// 	rt.Post("/localities", localityHandler.Create())
-
-	// 	// Act
-	// 	req, res := httptest.NewRequest(http.MethodPost, "/localities", bytes.NewReader(body)), httptest.NewRecorder()
-	// 	rt.ServeHTTP(res, req)
-
-	// 	// Assert
-	// 	expectedBody := `{ "data":{
-    //     	"id": "1",
-    //    	    "locality_name": "Merida",
-    //         "province_name": "Yucatan",
-    //         "country_name": "Mexico"
-    //     }}`
-	// 	require.Equal(t, http.StatusCreated, res.Code)
-	// 	require.Equal(t, "application/json", res.Header().Get("Content-Type"))
-	// 	require.JSONEq(t, expectedBody, res.Body.String())
-	// 	localityService.AssertExpectations(t)
-	// })
-	t.Run("case 3: internal server error", func(t *testing.T) {
+	t.Run("case 2: internal server error", func(t *testing.T) {
 		// Arrange
 		localityService := service.NewLocalityServiceMock()
 		localityHandler := handler.NewLocalityHandler(localityService)
