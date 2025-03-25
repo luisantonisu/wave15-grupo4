@@ -235,37 +235,57 @@ func TestProductService_CreateProduct(t *testing.T) {
 		require.Equal(t, model.Product{}, product)
 		mockRepo.AssertExpectations(t)
 	})
+	t.Run("case 3: bad product creation, duplicated product code", func(t *testing.T) {
+		mockRepo := repository.NewMockRepository()
+		service := NewProductService(mockRepo)
+		mockRepo.On("ProductCodeExists", mock.Anything).Return(true)
+
+		product, err := service.CreateProduct(productAttributes)
+		require.Error(t, err)
+		require.Equal(t, model.Product{}, product)
+		mockRepo.AssertExpectations(t)
+	})
 }
 
 func TestProductService_Delete(t *testing.T) {
-	mockRepo := repository.NewMockRepository()
-	service := NewProductService(mockRepo)
 	t.Run("case 1: delete product successfully", func(t *testing.T) {
+		mockRepo := repository.NewMockRepository()
+		service := NewProductService(mockRepo)
 		mockRepo.On("RegisterExists", mock.Anything).Return(true, nil)
-		mockRepo.On("DeleteProduct", 1).Return(nil)
+		mockRepo.On("DeleteProduct", mock.Anything).Return(nil)
 
 		err := service.DeleteProduct(1)
 		require.NoError(t, err)
 		mockRepo.AssertExpectations(t)
 	})
-	t.Run("case 2: delete product, id not found", func(t *testing.T) {
-		mockRepo.On("RegisterExists", mock.Anything).Return(true, nil)
-		mockRepo.On("DeleteProduct", 2).Return(errorHandler.GetErrNotFound(errorHandler.PRODUCT))
+	t.Run("case 2: delete product, register error", func(t *testing.T) {
+		mockRepo := repository.NewMockRepository()
+		service := NewProductService(mockRepo)
+		mockRepo.On("RegisterExists", mock.Anything).Return(false, errorHandler.GetErrNotFound(errorHandler.PRODUCT))
 
 		err := service.DeleteProduct(2)
+
 		require.Error(t, err)
 		mockRepo.AssertExpectations(t)
 	})
+	t.Run("case 3: delete product, register not found", func(t *testing.T) {
+		mockRepo := repository.NewMockRepository()
+		service := NewProductService(mockRepo)
+		mockRepo.On("RegisterExists", mock.Anything).Return(false, nil)
 
+		err := service.DeleteProduct(2)
+
+		require.Error(t, err)
+		mockRepo.AssertExpectations(t)
+	})
 }
 
 func TestProductService_Update(t *testing.T) {
-	mockRepo := repository.NewMockRepository()
-	service := NewProductService(mockRepo)
-
 	mockProduct.ProductAttributes.Description = new(string)
 	productAttributes := &model.ProductAttributes{ProductCode: new(string)}
 	t.Run("case 1: update product successfully", func(t *testing.T) {
+		mockRepo := repository.NewMockRepository()
+		service := NewProductService(mockRepo)
 
 		mockRepo.On("ProductCodeExists", mock.Anything).Return(false)
 		mockRepo.On("RegisterExists", mock.Anything).Return(true, nil)
@@ -277,6 +297,8 @@ func TestProductService_Update(t *testing.T) {
 		mockRepo.AssertExpectations(t)
 	})
 	t.Run("case 2: update product, id not found", func(t *testing.T) {
+		mockRepo := repository.NewMockRepository()
+		service := NewProductService(mockRepo)
 
 		mockRepo.On("ProductCodeExists", mock.Anything).Return(false)
 		mockRepo.On("RegisterExists", mock.Anything).Return(true, nil)
