@@ -27,7 +27,7 @@ type LocalityService struct {
 
 func (s *LocalityService) Create(locality model.Locality) (model.Locality, error) {
 	//validate locality
-	err := s.validateLocality(locality)
+	err := s.ValidateLocality(locality)
 	if err != nil {
 		return model.Locality{}, err
 	}
@@ -78,7 +78,7 @@ func (s *LocalityService) SellersReport(id *int) ([]model.LocalityReport, error)
 	return s.localityRp.SellersReport(id)
 }
 
-func (s *LocalityService) validateLocality(locality model.Locality) error {
+func (s *LocalityService) ValidateLocality(locality model.Locality) error {
 	//validate if locality_Id only contains numbers and is not empty
 	pattern := regexp.MustCompile("^[1-9]+[0-9]*$")
 	match := pattern.MatchString(locality.Id)
