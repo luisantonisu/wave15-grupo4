@@ -4,7 +4,7 @@ import (
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 	repoProduct "github.com/luisantonisu/wave15-grupo4/internal/repository/product"
 	repository "github.com/luisantonisu/wave15-grupo4/internal/repository/product_record"
-	"github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
+	errorHandler "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
 )
 
 type ProductRecordService struct {
@@ -23,7 +23,7 @@ func (s *ProductRecordService) CreateProductRecord(productRecord model.ProductRe
 	_, err = s.repositoryProduct.GetProductByID(*productRecord.ProductId)
 
 	if err != nil {
-		return model.ProductRecord{}, error_handler.GetErrForeignKey(error_handler.PRODUCT)
+		return model.ProductRecord{}, errorHandler.GetErrForeignKey(errorHandler.PRODUCT)
 	}
 	return s.repository.CreateProductRecord(productRecord)
 }
