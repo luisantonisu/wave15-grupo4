@@ -184,7 +184,100 @@ func TestWarehouseService_Create(t *testing.T) {
 		localityRepo.AssertExpectations(t)
 	})
 
-	t.Run("case 4: foreign key - locality id doesn't exists", func(t *testing.T) {
+	t.Run("case 4: internal server error - get by warehouse code error", func(t *testing.T) {
+		// Arrange
+		warehouseRepo := warehouseRepository.NewWarehouseRepositoryMock()
+		localityRepo := localityRepository.NewLocalityRepositoryMock()
+		warehouseService := service.NewWarehouseService(warehouseRepo, localityRepo)
+
+		errInternalError := eh.GetErrDatabase(eh.WAREHOUSE)
+		warehouseRepo.On("GetByCode", *warehouseA.WarehouseCode).Return(model.Warehouse{}, eh.GetErrDatabase(eh.WAREHOUSE))
+
+		// Act
+		result, err := warehouseService.Create(warehouseA)
+
+		// Assert
+		require.Error(t, err)
+		require.ErrorIs(t, err, eh.ErrDatabase)
+		require.Equal(t, errInternalError, err)
+		require.Equal(t, model.Warehouse{}, result)
+		warehouseRepo.AssertExpectations(t)
+		localityRepo.AssertExpectations(t)
+	})
+
+	t.Run("case 5: invalid data - invalid telephone", func(t *testing.T) {
+		// Arrange
+		warehouseRepo := warehouseRepository.NewWarehouseRepositoryMock()
+		localityRepo := localityRepository.NewLocalityRepositoryMock()
+		warehouseService := service.NewWarehouseService(warehouseRepo, localityRepo)
+
+		errInvalidData := eh.GetErrInvalidData(service.ErrTelephoneEmptyOrInvalid)
+		warehouseRepo.On("GetByCode", *warehouseA.WarehouseCode).Return(model.Warehouse{}, eh.GetErrNotFound(eh.WAREHOUSE_CODE))
+
+		badPhone := uint(123)
+		badPhoneWarehouse := warehouseA
+		badPhoneWarehouse.Telephone = &badPhone
+		// Act
+		result, err := warehouseService.Create(badPhoneWarehouse)
+
+		// Assert
+		require.Error(t, err)
+		require.ErrorIs(t, err, eh.ErrInvalidData)
+		require.Equal(t, errInvalidData, err)
+		require.Equal(t, model.Warehouse{}, result)
+		warehouseRepo.AssertExpectations(t)
+		localityRepo.AssertExpectations(t)
+	})
+
+	t.Run("case 6: invalid data - invalid minimum capacity", func(t *testing.T) {
+		// Arrange
+		warehouseRepo := warehouseRepository.NewWarehouseRepositoryMock()
+		localityRepo := localityRepository.NewLocalityRepositoryMock()
+		warehouseService := service.NewWarehouseService(warehouseRepo, localityRepo)
+
+		errInvalidData := eh.GetErrInvalidData(service.ErrMinimumCapacityNegative)
+		warehouseRepo.On("GetByCode", *warehouseA.WarehouseCode).Return(model.Warehouse{}, eh.GetErrNotFound(eh.WAREHOUSE_CODE))
+
+		badMinCap := -1
+		badMinCapWarehouse := warehouseA
+		badMinCapWarehouse.MinimumCapacity = &badMinCap
+		// Act
+		result, err := warehouseService.Create(badMinCapWarehouse)
+
+		// Assert
+		require.Error(t, err)
+		require.ErrorIs(t, err, eh.ErrInvalidData)
+		require.Equal(t, errInvalidData, err)
+		require.Equal(t, model.Warehouse{}, result)
+		warehouseRepo.AssertExpectations(t)
+		localityRepo.AssertExpectations(t)
+	})
+
+	t.Run("case 7: invalid data - invalid minimum temperature", func(t *testing.T) {
+		// Arrange
+		warehouseRepo := warehouseRepository.NewWarehouseRepositoryMock()
+		localityRepo := localityRepository.NewLocalityRepositoryMock()
+		warehouseService := service.NewWarehouseService(warehouseRepo, localityRepo)
+
+		errInvalidData := eh.GetErrInvalidData(service.ErrMinimumTemperatureOutOfRange)
+		warehouseRepo.On("GetByCode", *warehouseA.WarehouseCode).Return(model.Warehouse{}, eh.GetErrNotFound(eh.WAREHOUSE_CODE))
+
+		badMinTemp := float32(-100)
+		badMinTempWarehouse := warehouseA
+		badMinTempWarehouse.MinimumTemperature = &badMinTemp
+		// Act
+		result, err := warehouseService.Create(badMinTempWarehouse)
+
+		// Assert
+		require.Error(t, err)
+		require.ErrorIs(t, err, eh.ErrInvalidData)
+		require.Equal(t, errInvalidData, err)
+		require.Equal(t, model.Warehouse{}, result)
+		warehouseRepo.AssertExpectations(t)
+		localityRepo.AssertExpectations(t)
+	})
+
+	t.Run("case 8: foreign key - locality id doesn't exists", func(t *testing.T) {
 		// Arrange
 		warehouseRepo := warehouseRepository.NewWarehouseRepositoryMock()
 		localityRepo := localityRepository.NewLocalityRepositoryMock()
@@ -276,7 +369,105 @@ func TestWarehouseService_Update(t *testing.T) {
 		localityRepo.AssertExpectations(t)
 	})
 
-	t.Run("case 4: foreign key - locality id doesn't exists", func(t *testing.T) {
+	t.Run("case 4: internal server error - get by warehouse code error", func(t *testing.T) {
+		// Arrange
+		warehouseRepo := warehouseRepository.NewWarehouseRepositoryMock()
+		localityRepo := localityRepository.NewLocalityRepositoryMock()
+		warehouseService := service.NewWarehouseService(warehouseRepo, localityRepo)
+		newWarehouse := model.Warehouse{
+			ID:                  1,
+			WarehouseAttributes: warehouseB.WarehouseAttributes,
+		}
+
+		errInternalError := eh.GetErrDatabase(eh.WAREHOUSE)
+		warehouseRepo.On("GetByID", warehouseA.ID).Return(warehouseA, nil)
+		warehouseRepo.On("GetByCode", *newWarehouse.WarehouseCode).Return(model.Warehouse{}, eh.GetErrDatabase(eh.WAREHOUSE))
+
+		// Act
+		result, err := warehouseService.Update(newWarehouse.ID, newWarehouse.WarehouseAttributes)
+
+		// Assert
+		require.Error(t, err)
+		require.ErrorIs(t, err, eh.ErrDatabase)
+		require.Equal(t, errInternalError, err)
+		require.Equal(t, model.Warehouse{}, result)
+		warehouseRepo.AssertExpectations(t)
+		localityRepo.AssertExpectations(t)
+	})
+
+	t.Run("case 5: invalid data - invalid telephone", func(t *testing.T) {
+		// Arrange
+		warehouseRepo := warehouseRepository.NewWarehouseRepositoryMock()
+		localityRepo := localityRepository.NewLocalityRepositoryMock()
+		warehouseService := service.NewWarehouseService(warehouseRepo, localityRepo)
+
+		errInvalidData := eh.GetErrInvalidData(service.ErrTelephoneEmptyOrInvalid)
+		warehouseRepo.On("GetByID", warehouseA.ID).Return(warehouseA, nil)
+
+		badPhone := uint(123)
+		badPhoneWarehouse := warehouseA
+		badPhoneWarehouse.Telephone = &badPhone
+		// Act
+		result, err := warehouseService.Update(badPhoneWarehouse.ID, badPhoneWarehouse.WarehouseAttributes)
+
+		// Assert
+		require.Error(t, err)
+		require.ErrorIs(t, err, eh.ErrInvalidData)
+		require.Equal(t, errInvalidData, err)
+		require.Equal(t, model.Warehouse{}, result)
+		warehouseRepo.AssertExpectations(t)
+		localityRepo.AssertExpectations(t)
+	})
+
+	t.Run("case 6: invalid data - invalid minimum capacity", func(t *testing.T) {
+		// Arrange
+		warehouseRepo := warehouseRepository.NewWarehouseRepositoryMock()
+		localityRepo := localityRepository.NewLocalityRepositoryMock()
+		warehouseService := service.NewWarehouseService(warehouseRepo, localityRepo)
+
+		errInvalidData := eh.GetErrInvalidData(service.ErrMinimumCapacityNegative)
+		warehouseRepo.On("GetByID", warehouseA.ID).Return(warehouseA, nil)
+
+		badMinCap := -1
+		badMinCapWarehouse := warehouseA
+		badMinCapWarehouse.MinimumCapacity = &badMinCap
+		// Act
+		result, err := warehouseService.Update(badMinCapWarehouse.ID, badMinCapWarehouse.WarehouseAttributes)
+
+		// Assert
+		require.Error(t, err)
+		require.ErrorIs(t, err, eh.ErrInvalidData)
+		require.Equal(t, errInvalidData, err)
+		require.Equal(t, model.Warehouse{}, result)
+		warehouseRepo.AssertExpectations(t)
+		localityRepo.AssertExpectations(t)
+	})
+
+	t.Run("case 7: invalid data - invalid minimum temperature", func(t *testing.T) {
+		// Arrange
+		warehouseRepo := warehouseRepository.NewWarehouseRepositoryMock()
+		localityRepo := localityRepository.NewLocalityRepositoryMock()
+		warehouseService := service.NewWarehouseService(warehouseRepo, localityRepo)
+
+		errInvalidData := eh.GetErrInvalidData(service.ErrMinimumTemperatureOutOfRange)
+		warehouseRepo.On("GetByID", warehouseA.ID).Return(warehouseA, nil)
+
+		badMinTemp := float32(-100)
+		badMinTempWarehouse := warehouseA
+		badMinTempWarehouse.MinimumTemperature = &badMinTemp
+		// Act
+		result, err := warehouseService.Update(badMinTempWarehouse.ID, badMinTempWarehouse.WarehouseAttributes)
+
+		// Assert
+		require.Error(t, err)
+		require.ErrorIs(t, err, eh.ErrInvalidData)
+		require.Equal(t, errInvalidData, err)
+		require.Equal(t, model.Warehouse{}, result)
+		warehouseRepo.AssertExpectations(t)
+		localityRepo.AssertExpectations(t)
+	})
+
+	t.Run("case 8: foreign key - locality id doesn't exists", func(t *testing.T) {
 		// Arrange
 		warehouseRepo := warehouseRepository.NewWarehouseRepositoryMock()
 		localityRepo := localityRepository.NewLocalityRepositoryMock()

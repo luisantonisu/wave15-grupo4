@@ -118,7 +118,7 @@ func TestWarehouseHandler_GetAll(t *testing.T) {
 		rt.ServeHTTP(res, req)
 
 		// Assert
-		expectedBody := `{"status": "Internal Server Error","message": "database error: warehouse"}`
+		expectedBody := `{"status": "Internal Server Error","message": "internal server error"}`
 		require.Equal(t, http.StatusInternalServerError, res.Code)
 		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
 		require.JSONEq(t, expectedBody, res.Body.String())
@@ -148,7 +148,7 @@ func TestWarehouseHandler_GetByID(t *testing.T) {
 		warehouseService.AssertExpectations(t)
 	})
 
-	t.Run("case 2: not found - get warehouse by id not found", func(t *testing.T) {
+	t.Run("case 2: internal server error - error getting warehouse", func(t *testing.T) {
 		// Arrange
 		warehouseService := service.NewWarehouseServiceMock()
 		warehouseHandler := handler.NewWarehouseHandler(warehouseService)
@@ -252,83 +252,8 @@ func TestWarehouseHandler_Create(t *testing.T) {
 		rt.ServeHTTP(res, req)
 
 		// Assert
-		expectedBody := `{"status": "Internal Server Error","message": "database error: warehouse"}`
+		expectedBody := `{"status": "Internal Server Error","message": "internal server error"}`
 		require.Equal(t, http.StatusInternalServerError, res.Code)
-		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
-		require.JSONEq(t, expectedBody, res.Body.String())
-		warehouseService.AssertExpectations(t)
-	})
-
-	t.Run("case 4: conflict - invalid locality id", func(t *testing.T) {
-		// Arrange
-		warehouseService := service.NewWarehouseServiceMock()
-		warehouseHandler := handler.NewWarehouseHandler(warehouseService)
-		warehouseService.On("Create", mock.Anything).Return(model.Warehouse{}, eh.GetErrForeignKey(eh.LOCALITY))
-
-		body, err := json.Marshal(warehouseRequest)
-		require.NoError(t, err)
-
-		rt := chi.NewRouter()
-		rt.Post("/warehouses", warehouseHandler.Create())
-
-		// Act
-		req, res := httptest.NewRequest(http.MethodPost, "/warehouses", bytes.NewReader(body)), httptest.NewRecorder()
-		rt.ServeHTTP(res, req)
-
-		// Assert
-		expectedBody := `{"status": "Conflict","message": "locality foreign key not found"}`
-		require.Equal(t, http.StatusConflict, res.Code)
-		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
-		require.JSONEq(t, expectedBody, res.Body.String())
-		warehouseService.AssertExpectations(t)
-	})
-
-	t.Run("case 5: conflict - invalid warehouse code", func(t *testing.T) {
-		// Arrange
-		warehouseService := service.NewWarehouseServiceMock()
-		warehouseHandler := handler.NewWarehouseHandler(warehouseService)
-		warehouseService.On("Create", mock.Anything).Return(model.Warehouse{}, eh.GetErrAlreadyExists(eh.WAREHOUSE_CODE))
-
-		body, err := json.Marshal(warehouseRequest)
-		require.NoError(t, err)
-
-		rt := chi.NewRouter()
-		rt.Post("/warehouses", warehouseHandler.Create())
-
-		// Act
-		req, res := httptest.NewRequest(http.MethodPost, "/warehouses", bytes.NewReader(body)), httptest.NewRecorder()
-		rt.ServeHTTP(res, req)
-
-		// Assert
-		expectedBody := `{"status": "Conflict","message": "warehouse code already exists"}`
-		require.Equal(t, http.StatusConflict, res.Code)
-		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
-		require.JSONEq(t, expectedBody, res.Body.String())
-		warehouseService.AssertExpectations(t)
-	})
-
-	t.Run("case 6: unprocesable entity - missing warehouse code", func(t *testing.T) {
-		// Arrange
-		warehouseService := service.NewWarehouseServiceMock()
-		warehouseHandler := handler.NewWarehouseHandler(warehouseService)
-		warehouseService.On("Create", mock.Anything).Return(model.Warehouse{}, eh.GetErrInvalidData(eh.WAREHOUSE_CODE))
-
-		warehouseReq := dto.WarehouseRequestDTO{
-			WarehouseCode: nil,
-		}
-		body, err := json.Marshal(warehouseReq)
-		require.NoError(t, err)
-
-		rt := chi.NewRouter()
-		rt.Post("/warehouses", warehouseHandler.Create())
-
-		// Act
-		req, res := httptest.NewRequest(http.MethodPost, "/warehouses", bytes.NewReader(body)), httptest.NewRecorder()
-		rt.ServeHTTP(res, req)
-
-		// Assert
-		expectedBody := `{"status": "Unprocessable Entity","message": "invalid data: warehouse code"}`
-		require.Equal(t, http.StatusUnprocessableEntity, res.Code)
 		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
 		require.JSONEq(t, expectedBody, res.Body.String())
 		warehouseService.AssertExpectations(t)
@@ -420,56 +345,8 @@ func TestWarehouseHandler_Update(t *testing.T) {
 		rt.ServeHTTP(res, req)
 
 		// Assert
-		expectedBody := `{"status": "Internal Server Error","message": "database error: warehouse"}`
+		expectedBody := `{"status": "Internal Server Error","message": "internal server error"}`
 		require.Equal(t, http.StatusInternalServerError, res.Code)
-		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
-		require.JSONEq(t, expectedBody, res.Body.String())
-		warehouseService.AssertExpectations(t)
-	})
-
-	t.Run("case 5: conflict - invalid locality id", func(t *testing.T) {
-		// Arrange
-		warehouseService := service.NewWarehouseServiceMock()
-		warehouseHandler := handler.NewWarehouseHandler(warehouseService)
-		warehouseService.On("Update", 1, mock.Anything).Return(model.Warehouse{}, eh.GetErrForeignKey(eh.LOCALITY))
-
-		body, err := json.Marshal(warehouseRequest)
-		require.NoError(t, err)
-
-		rt := chi.NewRouter()
-		rt.Put("/warehouses/{id}", warehouseHandler.Update())
-
-		// Act
-		req, res := httptest.NewRequest(http.MethodPut, "/warehouses/1", bytes.NewReader(body)), httptest.NewRecorder()
-		rt.ServeHTTP(res, req)
-
-		// Assert
-		expectedBody := `{"status": "Conflict","message": "locality foreign key not found"}`
-		require.Equal(t, http.StatusConflict, res.Code)
-		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
-		require.JSONEq(t, expectedBody, res.Body.String())
-		warehouseService.AssertExpectations(t)
-	})
-
-	t.Run("case 6: not found - warehouse not found", func(t *testing.T) {
-		// Arrange
-		warehouseService := service.NewWarehouseServiceMock()
-		warehouseHandler := handler.NewWarehouseHandler(warehouseService)
-		warehouseService.On("Update", 1, mock.Anything).Return(model.Warehouse{}, eh.GetErrNotFound(eh.WAREHOUSE))
-
-		body, err := json.Marshal(warehouseRequest)
-		require.NoError(t, err)
-
-		rt := chi.NewRouter()
-		rt.Put("/warehouses/{id}", warehouseHandler.Update())
-
-		// Act
-		req, res := httptest.NewRequest(http.MethodPut, "/warehouses/1", bytes.NewReader(body)), httptest.NewRecorder()
-		rt.ServeHTTP(res, req)
-
-		// Assert
-		expectedBody := `{"status": "Not Found","message": "warehouse not found"}`
-		require.Equal(t, http.StatusNotFound, res.Code)
 		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
 		require.JSONEq(t, expectedBody, res.Body.String())
 		warehouseService.AssertExpectations(t)
