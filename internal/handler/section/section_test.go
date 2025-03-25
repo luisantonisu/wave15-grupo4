@@ -316,7 +316,7 @@ func TestSectionHandler_Get(t *testing.T) {
 		// Assert
 		expectedBody := `{
 			"status": "Internal Server Error",
-			"message": "database error: section"
+			"message": "internal server error"
 		}`
 
 		require.Equal(t, http.StatusInternalServerError, res.Code)
