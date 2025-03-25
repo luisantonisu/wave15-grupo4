@@ -17,3 +17,7 @@ func (m *PurchaseOrderRepositoryMock) Create(purchaseOrder model.PurchaseOrderAt
 	args := m.Called(purchaseOrder)
 	return args.Get(0).(model.PurchaseOrder), args.Error(1)
 }
+func (m *PurchaseOrderRepositoryMock) OrderNumberExists(orderNumber string) bool {
+	args := m.Called(orderNumber)
+	return args.Bool(0)
+}
