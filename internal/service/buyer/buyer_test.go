@@ -55,6 +55,7 @@ func TestBuyerService_Create(t *testing.T) {
 			ID:              1,
 			BuyerAttributes: buyerAttributes,
 		}
+		repo.On("GetByCardNumberID", "123456").Return(model.Buyer{}, nil)
 		repo.On("Create", buyerAttributes).Return(buyer, nil)
 
 		// Act
@@ -66,13 +67,16 @@ func TestBuyerService_Create(t *testing.T) {
 		require.Equal(t, buyer, buyerResult)
 		repo.AssertExpectations(t)
 	})
-
 	t.Run("case 2: conflict - card number id already exist", func(t *testing.T) {
 		// Arrange
 		repo := repository.NewBuyerRepositoryMock()
 		buyerService := service.NewBuyerService(repo)
 		errId := eh.GetErrAlreadyExists(eh.CARD_NUMBER)
-		repo.On("Create", buyerAttributes).Return(model.Buyer{}, errId)
+		buyer := model.Buyer{
+			ID:              1,
+			BuyerAttributes: buyerAttributes,
+		}
+		repo.On("GetByCardNumberID", cardNumberId).Return(buyer, nil)
 
 		// Act
 		buyerResult, err := buyerService.Create(buyerAttributes)
@@ -84,6 +88,40 @@ func TestBuyerService_Create(t *testing.T) {
 		require.Equal(t, model.Buyer{}, buyerResult)
 		repo.AssertExpectations(t)
 	})
+	t.Run("case 3: internal server error - database error on validate", func(t *testing.T) {
+		// Arrange
+		repo := repository.NewBuyerRepositoryMock()
+		buyerService := service.NewBuyerService(repo)
+		repo.On("GetByCardNumberID", cardNumberId).Return(model.Buyer{}, eh.GetErrDatabase(eh.BUYER))
+
+		// Act
+		buyerResult, err := buyerService.Create(buyerAttributes)
+
+		// Assert
+		require.Error(t, err)
+		require.ErrorIs(t, err, eh.ErrDatabase)
+		require.Equal(t, eh.GetErrDatabase(eh.BUYER), err)
+		require.Equal(t, model.Buyer{}, buyerResult)
+		repo.AssertExpectations(t)
+	})
+	t.Run("case 4: internal server error - database error on create", func(t *testing.T) {
+		// Arrange
+		repo := repository.NewBuyerRepositoryMock()
+		buyerService := service.NewBuyerService(repo)
+		repo.On("GetByCardNumberID", cardNumberId).Return(model.Buyer{}, nil)
+		repo.On("Create", buyerAttributes).Return(model.Buyer{}, eh.GetErrDatabase(eh.BUYER))
+
+		// Act
+		buyerResult, err := buyerService.Create(buyerAttributes)
+
+		// Assert
+		require.Error(t, err)
+		require.ErrorIs(t, err, eh.ErrDatabase)
+		require.Equal(t, eh.GetErrDatabase(eh.BUYER), err)
+		require.Equal(t, model.Buyer{}, buyerResult)
+		repo.AssertExpectations(t)
+	})
+
 }
 
 func TestBuyerService_GetAll(t *testing.T) {
@@ -177,6 +215,8 @@ func TestBuyerService_Update(t *testing.T) {
 			ID:              1,
 			BuyerAttributes: buyerAttributes,
 		}
+		repo.On("GetByID", 1).Return(buyer, nil)
+		repo.On("GetByCardNumberID", "123456").Return(buyer, nil)
 		repo.On("Update", 1, buyerAttributes).Return(buyer, nil)
 
 		// Act
@@ -193,7 +233,7 @@ func TestBuyerService_Update(t *testing.T) {
 		repo := repository.NewBuyerRepositoryMock()
 		buyerService := service.NewBuyerService(repo)
 		errId := eh.GetErrNotFound(eh.BUYER)
-		repo.On("Update", 1, buyerAttributes).Return(model.Buyer{}, errId)
+		repo.On("GetByID", 1).Return(model.Buyer{}, errId)
 
 		// Act
 		buyerResult, err := buyerService.Update(1, buyerAttributes)
@@ -205,6 +245,77 @@ func TestBuyerService_Update(t *testing.T) {
 		require.Equal(t, model.Buyer{}, buyerResult)
 		repo.AssertExpectations(t)
 	})
+	t.Run("case 3: conflict - update buyer, card number id already exists", func(t *testing.T) {
+		// Arrange
+		repo := repository.NewBuyerRepositoryMock()
+		buyerService := service.NewBuyerService(repo)
+		newBuyer := model.Buyer{
+			ID:              1,
+			BuyerAttributes: buyerAttributes,
+		}
+		existingBuyer := model.Buyer{
+			ID:              2,
+			BuyerAttributes: buyerAttributes,
+		}
+		errConflict := eh.GetErrAlreadyExists(eh.CARD_NUMBER)
+		repo.On("GetByID", 1).Return(newBuyer, nil)
+		repo.On("GetByCardNumberID", "654321",).Return(existingBuyer, nil)
+
+		// Act
+		buyerResult, err := buyerService.Update(newBuyer.ID,buyerAttributesB)
+
+		// Assert
+		require.Error(t, err)
+		require.ErrorIs(t, err, eh.ErrAlreadyExists)
+		require.Equal(t, errConflict, err)
+		require.Equal(t, model.Buyer{}, buyerResult)
+		repo.AssertExpectations(t)
+	})
+	t.Run("case 4: internal server error - database error on validate", func(t *testing.T) {
+		// Arrange
+		repo := repository.NewBuyerRepositoryMock()
+		buyerService := service.NewBuyerService(repo)
+		newBuyer := model.Buyer{
+			ID:              1,
+			BuyerAttributes: buyerAttributes,
+		}
+		errInternal := eh.GetErrDatabase(eh.BUYER)
+		repo.On("GetByID", 1).Return(newBuyer, nil)
+		repo.On("GetByCardNumberID", "654321",).Return(model.Buyer{}, errInternal)
+
+		// Act
+		buyerResult, err := buyerService.Update(newBuyer.ID,buyerAttributesB)
+
+		// Assert
+		require.Error(t, err)
+		require.ErrorIs(t, err, eh.ErrDatabase)
+		require.Equal(t, errInternal, err)
+		require.Equal(t, model.Buyer{}, buyerResult)
+		repo.AssertExpectations(t)
+	})
+	t.Run("case 5: internal server error - database error on update", func(t *testing.T) {
+		// Arrange
+		repo := repository.NewBuyerRepositoryMock()
+		buyerService := service.NewBuyerService(repo)
+		newBuyer := model.Buyer{
+			ID:              1,
+			BuyerAttributes: buyerAttributes,
+		}
+		errInternal := eh.GetErrDatabase(eh.BUYER)
+		repo.On("GetByID", 1).Return(newBuyer, nil)
+		repo.On("GetByCardNumberID", "654321",).Return(model.Buyer{}, nil)
+		repo.On("Update", 1, buyerAttributesB).Return(model.Buyer{}, eh.GetErrDatabase(eh.BUYER))
+
+		// Act
+		buyerResult, err := buyerService.Update(newBuyer.ID,buyerAttributesB)
+
+		// Assert
+		require.Error(t, err)
+		require.ErrorIs(t, err, eh.ErrDatabase)
+		require.Equal(t, errInternal, err)
+		require.Equal(t, model.Buyer{}, buyerResult)
+		repo.AssertExpectations(t)
+	})
 }
 
 func TestBuyerService_Delete(t *testing.T) {
@@ -212,6 +323,7 @@ func TestBuyerService_Delete(t *testing.T) {
 		// Arrange
 		repo := repository.NewBuyerRepositoryMock()
 		buyerService := service.NewBuyerService(repo)
+		repo.On("GetByID", 1).Return(model.Buyer{}, nil)
 		repo.On("Delete", 1).Return(nil)
 
 		// Act
@@ -226,7 +338,7 @@ func TestBuyerService_Delete(t *testing.T) {
 		repo := repository.NewBuyerRepositoryMock()
 		buyerService := service.NewBuyerService(repo)
 		errId := eh.GetErrNotFound(eh.BUYER)
-		repo.On("Delete", 1).Return(errId)
+		repo.On("GetByID", 1).Return(model.Buyer{}, errId)
 
 		// Act
 		err := buyerService.Delete(1)
@@ -235,6 +347,22 @@ func TestBuyerService_Delete(t *testing.T) {
 		require.Error(t, err)
 		require.ErrorIs(t, err, eh.ErrNotFound)
 		require.Equal(t, errId, err)
+		repo.AssertExpectations(t)
+	})
+	t.Run("case 3: internal server error - database error", func(t *testing.T) {
+		// Arrange
+		repo := repository.NewBuyerRepositoryMock()
+		buyerService := service.NewBuyerService(repo)
+		repo.On("GetByID", 1).Return(model.Buyer{}, nil)
+		repo.On("Delete", 1).Return(eh.GetErrDatabase(eh.BUYER))
+
+		// Act
+		err := buyerService.Delete(1)
+
+		// Assert
+		require.Error(t, err)
+		require.ErrorIs(t, err, eh.ErrDatabase)
+		require.Equal(t, eh.GetErrDatabase(eh.BUYER), err)
 		repo.AssertExpectations(t)
 	})
 }

@@ -27,6 +27,10 @@ func (m *BuyerRepositoryMock) GetByID(id int) (model.Buyer, error) {
 	args := m.Called(id)
 	return args.Get(0).(model.Buyer), args.Error(1)
 }
+func (m *BuyerRepositoryMock) GetByCardNumberID(id string) (model.Buyer, error) {
+	args := m.Called(id)
+	return args.Get(0).(model.Buyer), args.Error(1)
+}
 
 func (m *BuyerRepositoryMock) Delete(id int) error {
 	args := m.Called(id)
