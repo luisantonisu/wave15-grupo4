@@ -6,6 +6,7 @@ import (
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 	repository "github.com/luisantonisu/wave15-grupo4/internal/repository/product"
 	errorHandler "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -214,6 +215,7 @@ func TestProductService_CreateProduct(t *testing.T) {
 	t.Run("case 1: create product successfully", func(t *testing.T) {
 		mockRepo := repository.NewMockRepository()
 		service := NewProductService(mockRepo)
+		mockRepo.On("ProductCodeExists", mock.Anything).Return(false)
 		mockRepo.On("CreateProduct", productAttributes).Return(mockProduct, nil)
 
 		product, err := service.CreateProduct(productAttributes)
@@ -224,6 +226,8 @@ func TestProductService_CreateProduct(t *testing.T) {
 	t.Run("case 2: bad product request/creation", func(t *testing.T) {
 		mockRepo := repository.NewMockRepository()
 		service := NewProductService(mockRepo)
+		mockRepo.On("ProductCodeExists", mock.Anything).Return(false)
+
 		mockRepo.On("CreateProduct", productAttributes).Return(model.Product{}, errorHandler.GetErrInvalidData(errorHandler.PRODUCT))
 
 		product, err := service.CreateProduct(productAttributes)
@@ -237,6 +241,7 @@ func TestProductService_Delete(t *testing.T) {
 	mockRepo := repository.NewMockRepository()
 	service := NewProductService(mockRepo)
 	t.Run("case 1: delete product successfully", func(t *testing.T) {
+		mockRepo.On("RegisterExists", mock.Anything).Return(true, nil)
 		mockRepo.On("DeleteProduct", 1).Return(nil)
 
 		err := service.DeleteProduct(1)
@@ -244,6 +249,7 @@ func TestProductService_Delete(t *testing.T) {
 		mockRepo.AssertExpectations(t)
 	})
 	t.Run("case 2: delete product, id not found", func(t *testing.T) {
+		mockRepo.On("RegisterExists", mock.Anything).Return(true, nil)
 		mockRepo.On("DeleteProduct", 2).Return(errorHandler.GetErrNotFound(errorHandler.PRODUCT))
 
 		err := service.DeleteProduct(2)
@@ -260,6 +266,9 @@ func TestProductService_Update(t *testing.T) {
 	mockProduct.ProductAttributes.Description = new(string)
 	productAttributes := &model.ProductAttributes{ProductCode: new(string)}
 	t.Run("case 1: update product successfully", func(t *testing.T) {
+
+		mockRepo.On("ProductCodeExists", mock.Anything).Return(false)
+		mockRepo.On("RegisterExists", mock.Anything).Return(true, nil)
 		mockRepo.On("UpdateProduct", 1, productAttributes).Return(&mockProduct, nil)
 
 		product, err := service.UpdateProduct(1, productAttributes)
@@ -268,6 +277,9 @@ func TestProductService_Update(t *testing.T) {
 		mockRepo.AssertExpectations(t)
 	})
 	t.Run("case 2: update product, id not found", func(t *testing.T) {
+
+		mockRepo.On("ProductCodeExists", mock.Anything).Return(false)
+		mockRepo.On("RegisterExists", mock.Anything).Return(true, nil)
 		mockRepo.On("UpdateProduct", 4, productAttributes).Return(&model.Product{}, errorHandler.GetErrNotFound(errorHandler.PRODUCT))
 
 		product, err := service.UpdateProduct(4, productAttributes)
