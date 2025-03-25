@@ -6,6 +6,7 @@ type IBuyer interface {
 	Create(buyer model.BuyerAttributes) (model.Buyer, error)
 	GetAll() ([]model.Buyer, error)
 	GetByID(id int) (model.Buyer, error)
+	GetByCardNumberID(cardNumberID string) (model.Buyer, error)
 	Delete(id int) error
 	Update(id int, attributes model.BuyerAttributes) (model.Buyer, error)
 	PurchaseOrderReport(id *int) ([]model.ReportPurchaseOrders, error)

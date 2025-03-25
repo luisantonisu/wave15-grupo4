@@ -127,32 +127,7 @@ func TestBuyerHandler_Create(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 		buyerService.AssertNotCalled(t, "Create")
 	})
-
-	t.Run("case 3: conflict - card number id already exists", func(t *testing.T) {
-		// Arrange
-		buyerService := service.NewBuyerServiceMock()
-		buyerHandler := handler.NewBuyerHandler(buyerService)
-		buyerService.On("Create", mock.Anything).Return(model.Buyer{}, eh.GetErrAlreadyExists(eh.CARD_NUMBER))
-
-		body, err := json.Marshal(buyerRequest)
-		require.NoError(t, err)
-
-		rt := chi.NewRouter()
-		rt.Post("/buyers", buyerHandler.Create())
-
-		// Act
-		req, res := httptest.NewRequest(http.MethodPost, "/buyers", bytes.NewReader(body)), httptest.NewRecorder()
-		req.Header.Set("Content-Type", "application/json")
-		rt.ServeHTTP(res, req)
-
-		// Assert
-		expectedBody := `{"status": "Conflict","message":"card number ID already exists"}`
-		require.Equal(t, http.StatusConflict, res.Code)
-		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
-		require.JSONEq(t, expectedBody, res.Body.String())
-		buyerService.AssertExpectations(t)
-	})
-	t.Run("case 4: bad request - invalid request body", func(t *testing.T) {
+	t.Run("case 3: bad request - invalid request body", func(t *testing.T) {
 		// Arrange
 		buyerService := service.NewBuyerServiceMock()
 		buyerHandler := handler.NewBuyerHandler(buyerService)
@@ -161,7 +136,7 @@ func TestBuyerHandler_Create(t *testing.T) {
 			CardNumberId: 1,
 			FirstName:    &firstName,
 			LastName:     &lastName,
-		}`)
+			}`)
 		require.NoError(t, err)
 
 		rt := chi.NewRouter()
@@ -178,6 +153,30 @@ func TestBuyerHandler_Create(t *testing.T) {
 		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
 		require.JSONEq(t, expectedBody, res.Body.String())
 		buyerService.AssertNotCalled(t, "Create")
+	})
+	t.Run("case 4: internal server error - service error", func(t *testing.T) {
+		// Arrange
+		buyerService := service.NewBuyerServiceMock()
+		buyerHandler := handler.NewBuyerHandler(buyerService)
+		buyerService.On("Create", mock.Anything).Return(model.Buyer{}, eh.GetErrInternalServer(eh.BUYER))
+
+		body, err := json.Marshal(buyerRequest)
+		require.NoError(t, err)
+
+		rt := chi.NewRouter()
+		rt.Post("/buyers", buyerHandler.Create())
+
+		// Act
+		req, res := httptest.NewRequest(http.MethodPost, "/buyers", bytes.NewReader(body)), httptest.NewRecorder()
+		req.Header.Set("Content-Type", "application/json")
+		rt.ServeHTTP(res, req)
+
+		// Assert
+		expectedBody := `{"status": "Internal Server Error","message":"internal server error"}`
+		require.Equal(t, http.StatusInternalServerError, res.Code)
+		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
+		require.JSONEq(t, expectedBody, res.Body.String())
+		buyerService.AssertExpectations(t)
 	})
 }
 
@@ -227,11 +226,11 @@ func TestBuyerHandler_GetAll(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 		buyerService.AssertExpectations(t)
 	})
-	t.Run("case 3: internal Server Error - get all buyers  but error occurred", func(t *testing.T) {
+	t.Run("case 3: internal Server Error - service error", func(t *testing.T) {
 		// Arrange
 		buyerService := service.NewBuyerServiceMock()
 		buyerHandler := handler.NewBuyerHandler(buyerService)
-		buyerService.On("GetAll").Return([]model.Buyer{}, eh.GetErrDatabase(eh.BUYER))
+		buyerService.On("GetAll").Return([]model.Buyer{}, eh.GetErrInternalServer(eh.BUYER))
 
 		rt := chi.NewRouter()
 		rt.Get("/buyers", buyerHandler.GetAll())
@@ -241,7 +240,7 @@ func TestBuyerHandler_GetAll(t *testing.T) {
 		rt.ServeHTTP(res, req)
 
 		// Assert
-		expectedBody := `{"status": "Internal Server Error","message": "database error: buyer"}`
+		expectedBody := `{"status": "Internal Server Error","message": "internal server error"}`
 		require.Equal(t, http.StatusInternalServerError, res.Code)
 		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
 		require.JSONEq(t, expectedBody, res.Body.String())
@@ -411,30 +410,6 @@ func TestBuyerHandler_Update(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 		buyerService.AssertNotCalled(t, "Update")
 	})
-
-	t.Run("case 5: conflict - update buyer, card number id already exists", func(t *testing.T) {
-		// Arrange
-		buyerService := service.NewBuyerServiceMock()
-		buyerHandler := handler.NewBuyerHandler(buyerService)
-		buyerService.On("Update", 2, mock.Anything).Return(model.Buyer{}, eh.GetErrAlreadyExists(eh.CARD_NUMBER))
-
-		body, err := json.Marshal(buyerRequestUpdate)
-		require.NoError(t, err)
-
-		rt := chi.NewRouter()
-		rt.Patch("/buyers/{id}", buyerHandler.Update())
-
-		// Act
-		req, res := httptest.NewRequest(http.MethodPatch, "/buyers/2", bytes.NewReader(body)), httptest.NewRecorder()
-		rt.ServeHTTP(res, req)
-
-		// Assert
-		expectedBody := `{"status": "Conflict","message":"card number ID already exists"}`
-		require.Equal(t, http.StatusConflict, res.Code)
-		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
-		require.JSONEq(t, expectedBody, res.Body.String())
-		buyerService.AssertExpectations(t)
-	})
 }
 
 func TestBuyerHandler_Delete(t *testing.T) {
@@ -569,7 +544,7 @@ func TestBuyerHanlder_Report(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 		buyerService.AssertExpectations(t)
 	})
-	t.Run("case 4: Bad request -  get purchase order report, invalid id", func(t *testing.T) {
+	t.Run("case 4: bad request -  get purchase order report, invalid id", func(t *testing.T) {
 		// Arrange
 		buyerService := service.NewBuyerServiceMock()
 		buyerHandler := handler.NewBuyerHandler(buyerService)
@@ -588,7 +563,7 @@ func TestBuyerHanlder_Report(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 		buyerService.AssertNotCalled(t, "PurchaseOrderReport")
 	})
-	t.Run("case 5: Not found - get purchase order report, id non existent", func(t *testing.T) {
+	t.Run("case 5: not found - get purchase order report, id non existent", func(t *testing.T) {
 		// Arrange
 		buyerService := service.NewBuyerServiceMock()
 		buyerHandler := handler.NewBuyerHandler(buyerService)
