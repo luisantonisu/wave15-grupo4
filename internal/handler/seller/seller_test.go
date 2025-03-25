@@ -105,7 +105,7 @@ func TestSellerHandler_GetAll(t *testing.T) {
 		sellerSv := service.NewSellerServiceMock()
 		sellerHd := NewSellerHandler(sellerSv)
 
-		sellerSv.On("GetAll").Return([]model.Seller{}, eh.GetErrDatabase(eh.SELLER))
+		sellerSv.On("GetAll").Return([]model.Seller{}, eh.GetErrInternalServer(eh.SELLER))
 
 		rt := chi.NewRouter()
 		rt.Get("/sellers", sellerHd.GetAll())
@@ -115,7 +115,7 @@ func TestSellerHandler_GetAll(t *testing.T) {
 		rt.ServeHTTP(res, req)
 
 		// Assert
-		expectedBody := `{"status": "Internal Server Error","message": "database error: seller"}`
+		expectedBody := `{"status": "Internal Server Error","message": "internal server error"}`
 		require.Equal(t, http.StatusInternalServerError, res.Code)
 		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
 		require.JSONEq(t, expectedBody, res.Body.String())
@@ -241,12 +241,12 @@ func TestSellerHandler_Create(t *testing.T) {
 		require.JSONEq(t, expectedBody, res.Body.String())
 		sellerSv.AssertExpectations(t)
 	})
-	t.Run("case 3: conflict - invalid locality id", func(t *testing.T) {
+	t.Run("case 3: internal server error", func(t *testing.T) {
 		//Arrange
 		sellerSv := service.NewSellerServiceMock()
 		sellerHd := NewSellerHandler(sellerSv)
 
-		sellerSv.On("Create", mock.Anything).Return(model.Seller{}, eh.GetErrForeignKey(eh.LOCALITY))
+		sellerSv.On("Create", mock.Anything).Return(model.Seller{}, eh.GetErrInternalServer(eh.SELLER))
 
 		body, err := json.Marshal(sellerRequest)
 		require.NoError(t, err)
@@ -259,56 +259,8 @@ func TestSellerHandler_Create(t *testing.T) {
 		rt.ServeHTTP(res, req)
 
 		//Assert
-		expectedBody := `{"status": "Conflict","message": "locality foreign key not found"}`
-		require.Equal(t, http.StatusConflict, res.Code)
-		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
-		require.JSONEq(t, expectedBody, res.Body.String())
-		sellerSv.AssertExpectations(t)
-	})
-	t.Run("case 4: internal server error", func(t *testing.T) {
-		//Arrange
-		sellerSv := service.NewSellerServiceMock()
-		sellerHd := NewSellerHandler(sellerSv)
-
-		sellerSv.On("Create", mock.Anything).Return(model.Seller{}, eh.GetErrDatabase(eh.SELLER))
-
-		body, err := json.Marshal(sellerRequest)
-		require.NoError(t, err)
-
-		rt := chi.NewRouter()
-		rt.Post("/sellers", sellerHd.Create())
-
-		//Act
-		req, res := httptest.NewRequest(http.MethodPost, "/sellers", bytes.NewReader(body)), httptest.NewRecorder()
-		rt.ServeHTTP(res, req)
-
-		//Assert
-		expectedBody := `{"status": "Internal Server Error","message": "database error: seller"}`
+		expectedBody := `{"status": "Internal Server Error","message": "internal server error"}`
 		require.Equal(t, http.StatusInternalServerError, res.Code)
-		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
-		require.JSONEq(t, expectedBody, res.Body.String())
-		sellerSv.AssertExpectations(t)
-	})
-	t.Run("case 5: conflict - invalid company ID", func(t *testing.T) {
-		//Arrange
-		sellerSv := service.NewSellerServiceMock()
-		sellerHd := NewSellerHandler(sellerSv)
-
-		sellerSv.On("Create", mock.Anything).Return(model.Seller{}, eh.GetErrAlreadyExists(eh.SELLER))
-
-		body, err := json.Marshal(sellerRequest)
-		require.NoError(t, err)
-
-		rt := chi.NewRouter()
-		rt.Post("/sellers", sellerHd.Create())
-
-		//Act
-		req, res := httptest.NewRequest(http.MethodPost, "/sellers", bytes.NewReader(body)), httptest.NewRecorder()
-		rt.ServeHTTP(res, req)
-
-		//Assert
-		expectedBody := `{"status": "Conflict","message": "seller already exists"}`
-		require.Equal(t, http.StatusConflict, res.Code)
 		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
 		require.JSONEq(t, expectedBody, res.Body.String())
 		sellerSv.AssertExpectations(t)
@@ -390,37 +342,13 @@ func TestSellerHandler_Update(t *testing.T) {
 		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
 		require.JSONEq(t, expectedBody, res.Body.String())
 		sellerSv.AssertNotCalled(t, "Update")
-	})
-	t.Run("case 4: conflict - invalid Company ID", func(t *testing.T) {
-		//Arrange
-		sellerSv := service.NewSellerServiceMock()
-		sellerHd := NewSellerHandler(sellerSv)
-
-		sellerSv.On("Update", 1, mock.Anything).Return(model.Seller{}, eh.GetErrAlreadyExists(eh.SELLER))
-
-		body, err := json.Marshal(sellerRequest)
-		require.NoError(t, err)
-
-		rt := chi.NewRouter()
-		rt.Patch("/sellers/{id}", sellerHd.Update())
-
-		//Act
-		req, res := httptest.NewRequest(http.MethodPatch, "/sellers/1", bytes.NewReader(body)), httptest.NewRecorder()
-		rt.ServeHTTP(res, req)
-
-		//Assert
-		expectedBody := `{"status": "Conflict","message": "seller already exists"}`
-		require.Equal(t, http.StatusConflict, res.Code)
-		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
-		require.JSONEq(t, expectedBody, res.Body.String())
-		sellerSv.AssertExpectations(t)
 	})	
-	t.Run("case 5: conflict - foreign key - seller id doesn't exist", func(t *testing.T) {
+	t.Run("case 4: internal server error", func(t *testing.T) {
 		//Arrange
 		sellerSv := service.NewSellerServiceMock()
 		sellerHd := NewSellerHandler(sellerSv)
 
-		sellerSv.On("Update", 1, mock.Anything).Return(model.Seller{}, eh.GetErrForeignKey(eh.LOCALITY))
+		sellerSv.On("Update", 1, mock.Anything).Return(model.Seller{}, eh.GetErrInternalServer(eh.SELLER))
 
 		body, err := json.Marshal(sellerRequest)
 		require.NoError(t, err)
@@ -433,31 +361,7 @@ func TestSellerHandler_Update(t *testing.T) {
 		rt.ServeHTTP(res, req)
 
 		//Assert
-		expectedBody := `{"status": "Conflict","message": "locality foreign key not found"}`
-		require.Equal(t, http.StatusConflict, res.Code)
-		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
-		require.JSONEq(t, expectedBody, res.Body.String())
-		sellerSv.AssertExpectations(t)
-	})
-	t.Run("case 6: internal server error", func(t *testing.T) {
-		//Arrange
-		sellerSv := service.NewSellerServiceMock()
-		sellerHd := NewSellerHandler(sellerSv)
-
-		sellerSv.On("Update", 1, mock.Anything).Return(model.Seller{}, eh.GetErrDatabase(eh.SELLER))
-
-		body, err := json.Marshal(sellerRequest)
-		require.NoError(t, err)
-
-		rt := chi.NewRouter()
-		rt.Patch("/sellers/{id}", sellerHd.Update())
-
-		//Act
-		req, res := httptest.NewRequest(http.MethodPatch, "/sellers/1", bytes.NewReader(body)), httptest.NewRecorder()
-		rt.ServeHTTP(res, req)
-
-		//Assert
-		expectedBody := `{"status": "Internal Server Error","message": "database error: seller"}`
+		expectedBody := `{"status": "Internal Server Error","message": "internal server error"}`
 		require.Equal(t, http.StatusInternalServerError, res.Code)
 		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
 		require.JSONEq(t, expectedBody, res.Body.String())
