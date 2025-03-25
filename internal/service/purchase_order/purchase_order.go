@@ -30,6 +30,12 @@ func NewPurchaseOrderService(purchaseOrderRp purchaseOrderRepository.IPurchaseOr
 
 // Create new purchase order
 func (s *PurchaseOrderService) Create(purchaseOrder model.PurchaseOrderAttributes) (model.PurchaseOrder, error) {
+	// Validate Purchase Order doesn't exist
+	exist := s.purchaseOrderRp.OrderNumberExists(*purchaseOrder.OrderNumber)
+	if exist {
+		return model.PurchaseOrder{}, eh.GetErrAlreadyExists(eh.ORDER_NUMBER)
+	}
+
 	// Validate Buyer exist
 	_, err := s.buyerRp.GetByID(*purchaseOrder.BuyerID)
 	if err != nil {
