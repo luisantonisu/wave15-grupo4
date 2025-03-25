@@ -21,7 +21,7 @@ var (
 	carryID     = "C1"
 	companyName = "Company 1"
 	address     = "Address 1"
-	telephone   = uint(123456789)
+	telephone   = "123456789"
 	LocalityID  = 1
 
 	carryModel = model.Carry{
@@ -62,7 +62,7 @@ func TestCarryHandler_Create(t *testing.T) {
 		rt.ServeHTTP(res, req)
 
 		// Assert
-		expectedBody := `{"data":{"id":1,"carry_id":"C1","company_name":"Company 1","address":"Address 1","telephone":123456789,"locality_id":1}}`
+		expectedBody := `{"data":{"id":1,"carry_id":"C1","company_name":"Company 1","address":"Address 1","telephone":"123456789","locality_id":1}}`
 		require.Equal(t, http.StatusCreated, res.Code)
 		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
 		require.JSONEq(t, expectedBody, res.Body.String())
@@ -106,7 +106,7 @@ func TestCarryHandler_Create(t *testing.T) {
 		rt.ServeHTTP(res, req)
 
 		// Assert
-		expectedBody := `{"status": "Internal Server Error","message": "database error: carry"}`
+		expectedBody := `{"status": "Internal Server Error","message": "internal server error"}`
 		require.Equal(t, http.StatusInternalServerError, res.Code)
 		require.Equal(t, "application/json", res.Header().Get("Content-Type"))
 		require.JSONEq(t, expectedBody, res.Body.String())
