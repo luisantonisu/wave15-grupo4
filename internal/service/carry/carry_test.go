@@ -15,7 +15,7 @@ var (
 	carryID     = "C1"
 	companyName = "Company 1"
 	address     = "Address 1"
-	telephone   = uint(123456789)
+	telephone   = "123456789"
 	LocalityID  = 1
 
 	carry = model.Carry{
@@ -93,7 +93,27 @@ func TestCarryService_Create(t *testing.T) {
 		localityRepo.AssertExpectations(t)
 	})
 
-	t.Run("case 4: foreign key - locality not found", func(t *testing.T) {
+	t.Run("case 4: internal server error - get by carry id error", func(t *testing.T) {
+		// Arrange
+		carryRepo := carryRepository.NewCarryRepositoryMock()
+		localityRepo := localityRepository.NewLocalityRepositoryMock()
+		carryService := service.NewCarryService(carryRepo, localityRepo)
+
+		carryRepo.On("GetByCarryID", *carry.CarryID).Return(model.Carry{}, eh.GetErrDatabase(eh.CARRY))
+
+		// Act
+		result, err := carryService.Create(carry)
+
+		// Assert
+		require.Error(t, err)
+		require.ErrorIs(t, err, eh.ErrDatabase)
+		require.Equal(t, eh.GetErrDatabase(eh.CARRY), err)
+		require.Equal(t, model.Carry{}, result)
+		carryRepo.AssertExpectations(t)
+		localityRepo.AssertExpectations(t)
+	})
+
+	t.Run("case 5: foreign key - locality not found", func(t *testing.T) {
 		// Arrange
 		carryRepo := carryRepository.NewCarryRepositoryMock()
 		localityRepo := localityRepository.NewLocalityRepositoryMock()
@@ -114,7 +134,7 @@ func TestCarryService_Create(t *testing.T) {
 		localityRepo.AssertExpectations(t)
 	})
 
-	t.Run("case 5: database error - carry repository create", func(t *testing.T) {
+	t.Run("case 6: database error - carry repository create", func(t *testing.T) {
 		// Arrange
 		carryRepo := carryRepository.NewCarryRepositoryMock()
 		localityRepo := localityRepository.NewLocalityRepositoryMock()

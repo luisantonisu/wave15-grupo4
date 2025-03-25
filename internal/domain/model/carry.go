@@ -9,6 +9,6 @@ type CarryAttributes struct {
 	CarryID     *string
 	CompanyName *string
 	Address     *string
-	Telephone   *uint
+	Telephone   *string
 	LocalityID  *int
 }
