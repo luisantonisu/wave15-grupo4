@@ -3,6 +3,8 @@ package service
 import (
 	"github.com/luisantonisu/wave15-grupo4/internal/domain/model"
 	buyerRepository "github.com/luisantonisu/wave15-grupo4/internal/repository/buyer"
+	eh "github.com/luisantonisu/wave15-grupo4/pkg/error_handler"
+	"errors"
 )
 
 func NewBuyerService(rp buyerRepository.IBuyer) *BuyerService {
@@ -15,6 +17,16 @@ type BuyerService struct {
 
 // Create a new buyer
 func (s *BuyerService) Create(buyer model.BuyerAttributes) (model.Buyer, error) {
+	// Validate card number id doesnt already exist
+	exists, err := s.rp.GetByCardNumberID(*buyer.CardNumberId)
+	if exists != (model.Buyer{}) {
+		return model.Buyer{}, eh.GetErrAlreadyExists(eh.CARD_NUMBER) 
+	}
+	if err != nil && !errors.Is(err, eh.ErrNotFound) {
+		return model.Buyer{}, err
+	}
+
+	// Create new buyer
 	newBuyer, err := s.rp.Create(buyer)
 	if err != nil {
 		return model.Buyer{}, err
@@ -38,7 +50,14 @@ func (s *BuyerService) GetByID(id int) (model.Buyer, error) {
 
 // Delete a buyer by id
 func (s *BuyerService) Delete(id int) error {
-	err := s.rp.Delete(id)
+	// Validate buyer exists
+	_, err := s.rp.GetByID(id)
+	if err != nil {
+		return err
+	}
+	
+	// Delete the buyer if exists
+	err = s.rp.Delete(id)
 	if err != nil {
 		return err
 	}
@@ -47,6 +66,21 @@ func (s *BuyerService) Delete(id int) error {
 
 // Update a buyer by id
 func (s *BuyerService) Update(id int, buyer model.BuyerAttributes) (model.Buyer, error) {
+	// Validate buyer exists
+	existingBuyer, err := s.rp.GetByID(id)
+	if err != nil {
+		return model.Buyer{}, err
+	}
+
+	// Validate new card number id doesn't already exist or it's the same
+	exists, err := s.rp.GetByCardNumberID(*buyer.CardNumberId)
+	if exists != (model.Buyer{}) && exists.ID != existingBuyer.ID {
+		return model.Buyer{}, eh.GetErrAlreadyExists(eh.CARD_NUMBER)	
+	}
+	if err != nil && !errors.Is(err, eh.ErrNotFound) {
+		return model.Buyer{}, err
+	}
+	// Update buyer
 	updatedBuyer, err := s.rp.Update(id, buyer)
 	if err != nil {
 		return model.Buyer{}, err
